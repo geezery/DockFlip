@@ -17,6 +17,7 @@
 </p>
 
 <p align="center">
+  <a href="https://geezery.github.io/DockFlip/"><b>Homepage</b></a> ·
   <a href="#install">Install</a> ·
   <a href="#features">Features</a> ·
   <a href="#shortcuts">Shortcuts</a> ·
@@ -107,7 +108,7 @@ drag a window to an edge or a corner and let go.
 ## Install
 
 <p>
-  <a href="https://github.com/geezery/DockFlip/releases/latest"><img src="https://img.shields.io/badge/Download-DockFlip.dmg-0c9a6a?style=for-the-badge&logo=apple&logoColor=white" alt="Download DockFlip.dmg"></a>
+  <a href="https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg"><img src="https://img.shields.io/badge/Download-DockFlip.dmg-0c9a6a?style=for-the-badge&logo=apple&logoColor=white" alt="Download DockFlip.dmg"></a>
   <br><sub>macOS 26 or later · Apple silicon and Intel · free</sub>
 </p>
 

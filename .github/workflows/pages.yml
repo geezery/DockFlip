@@ -1,0 +1,38 @@
+name: Homepage
+
+# Publishes site/ (plus the illustrations in docs/assets) to GitHub Pages:
+# https://geezery.github.io/DockFlip/
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'docs/assets/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Assemble
+        run: |
+          mkdir -p _site/assets
+          cp -R site/. _site/
+          cp docs/assets/*.gif docs/assets/social-preview.png _site/assets/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
