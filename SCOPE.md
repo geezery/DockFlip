@@ -70,8 +70,9 @@ settings.
   window in front.
 - Previews if enabled; otherwise a card per window: title bar tinted with the
   app's colour, app icon, document file name, display name, size, mini-map.
-- While open, Plinth is the active app and holds the keyboard; the previous app
-  gets no key presses. Esc returns to it.
+- While open, the switcher is the key window (a non-activating panel, made key
+  without activating Plinth, as in AltTab and DockDoor); the previous app gets no
+  key presses and stays the active app. Esc returns to it.
 - Triggered by Carbon `RegisterEventHotKey` (works while another app holds secure
   keyboard input); ⌘ release is seen by a listen-only modifier tap (AltTab's approach).
 - Replaces the native ⌘Tab app switcher while Plinth runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting Plinth restores the native switcher.

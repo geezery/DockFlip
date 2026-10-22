@@ -1,10 +1,17 @@
 import AppKit
 import SwiftUI
 
-/// Drives the ⌘Tab switcher. While it is open, Plinth is the active app and its
-/// full-screen panel has the keyboard: the app you came from (say, Terminal) gets
-/// no key presses, and its secure keyboard input is released. Releasing ⌘ opens
-/// the window in front; Esc or a click outside goes back to where you were.
+/// Drives the ⌘Tab switcher. While it is open, its full-screen panel is the key
+/// window and has the keyboard, so the app you came from (say, Terminal) gets no
+/// key presses. Releasing ⌘ opens the window in front; Esc or a click outside goes
+/// back to where you were.
+///
+/// The panel is a non-activating panel that is made key *without activating
+/// Plinth* — what AltTab and DockDoor do. Since macOS 14, an app in the background
+/// cannot reliably activate itself (cooperative activation), but a non-activating
+/// panel can always become key. The app you came from stays the active app, so
+/// cancelling needs no re-activation, and keys reach the panel even while that app
+/// holds secure keyboard input (where event taps see no key presses at all).
 @MainActor
 final class SwitcherController {
     private let registry: WindowRegistry
@@ -15,6 +22,7 @@ final class SwitcherController {
     private var previewTask: Task<Void, Never>?
     private var previousApp: NSRunningApplication?
     private var localMonitor: Any?
+    private var resignKeyToken: NSObjectProtocol?
 
     /// Called with true when the switcher opens and false when it closes.
     var onActiveChanged: ((Bool) -> Void)?
@@ -121,8 +129,12 @@ final class SwitcherController {
     private func cancel() {
         guard isActive else { return }
         let previous = previousApp
+        let plinthWasActivated = NSApp.isActive
         hide()
-        _ = previous?.activate(from: NSRunningApplication.current, options: [])
+        // Normally Plinth never became active and the previous app still is.
+        if plinthWasActivated {
+            _ = previous?.activate(from: NSRunningApplication.current, options: [])
+        }
     }
 
     private func hide() {
@@ -160,15 +172,31 @@ final class SwitcherController {
         guard let screen = DisplayLayout.screen(containingMouse: NSEvent.mouseLocation) else { return }
         panel.setFrame(screen.frame, display: true)
 
-        // Take the keyboard while switching (see the type comment).
+        // Take the keyboard while switching, without activating Plinth (see the type comment).
         let own = ProcessInfo.processInfo.processIdentifier
         if let front = NSWorkspace.shared.frontmostApplication, front.processIdentifier != own {
             previousApp = front
         }
-        NSApp.activate()
         panel.makeKeyAndOrderFront(nil)
         panel.orderFrontRegardless()
         installLocalMonitor()
+        let isKey = panel.isKeyWindow
+        Log.keys.debug("Switcher panel shown, key window: \(isKey, privacy: .public)")
+    }
+
+    /// Another window can take key status while the switcher is open (an app
+    /// opening a window, a notification). Take it back on the next turn of the
+    /// run loop — making it key again inside the notification is ignored.
+    private func observeResignKey(of panel: NSPanel) {
+        resignKeyToken = NotificationCenter.default.addObserver(
+            forName: NSWindow.didResignKeyNotification, object: panel, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                guard let self, self.isActive, let panel = self.panel else { return }
+                Log.keys.debug("Switcher panel lost key status; taking it back")
+                panel.makeKeyAndOrderFront(nil)
+            }
+        }
     }
 
     /// While Plinth is active, keys arrive as ordinary app events.
@@ -215,6 +243,7 @@ final class SwitcherController {
         let hosting = FirstMouseHostingView(rootView: SwitcherView(model: model))
         hosting.sizingOptions = []
         panel.contentView = hosting
+        observeResignKey(of: panel)
         return panel
     }
 }

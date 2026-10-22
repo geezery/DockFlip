@@ -139,6 +139,10 @@ private func hotKeyEventHandler(_ next: EventHandlerCallRef?, _ event: EventRef?
 ///   input does not hide modifier changes);
 /// - a key tap that is switched on only while the switcher is open, for Esc,
 ///   the arrow keys and Return. The rest of the time no tap touches typing.
+///   It sits at the HID level, the earliest point: on macOS 26 the Game Overlay
+///   grabs ⌘Esc further down the line, and ⌘ is held while switching (AltTab #5585).
+///   Secure input hides key presses from every tap; then the switcher panel,
+///   which is the key window, gets them as ordinary key events.
 @MainActor
 final class HotkeyTap {
     var onCommandReleased: (() -> Void)?
@@ -166,7 +170,7 @@ final class HotkeyTap {
         let keyMask = (CGEventMask(1) << CGEventMask(CGEventType.keyDown.rawValue))
             | (CGEventMask(1) << CGEventMask(CGEventType.keyUp.rawValue))
         guard let keys = CGEvent.tapCreate(
-            tap: .cgSessionEventTap,
+            tap: .cghidEventTap,
             place: .headInsertEventTap,
             options: .defaultTap,
             eventsOfInterest: keyMask,
