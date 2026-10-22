@@ -8,6 +8,8 @@ struct PopupRow: Identifiable {
     let minimap: CGRect?
     let isMinimized: Bool
     let isActive: Bool
+    /// The app's colour, from its icon; colours the mini-map.
+    let tint: Color
 }
 
 @MainActor
@@ -157,7 +159,8 @@ final class TaskbarPopup {
                 icon: window.icon,
                 minimap: index.map { Geometry.normalized(window.frame, in: axScreens[$0]) },
                 isMinimized: window.isMinimized,
-                isActive: id == activeID
+                isActive: id == activeID,
+                tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName)
             )
         }
         let previews = PreviewProvider.shared.isAvailable && !model.rows.isEmpty
@@ -295,8 +298,8 @@ struct PopupListRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Minimap(rect: row.minimap, isMinimized: row.isMinimized)
-                .frame(width: 48, height: 30)
+            Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
+                .frame(width: 52, height: 33)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: row.title)
                     .font(.system(size: 13, weight: row.isActive ? .semibold : .regular))
@@ -363,7 +366,7 @@ struct PopupCard: View {
                 if let thumbnail {
                     Image(nsImage: thumbnail).resizable().interpolation(.high).aspectRatio(contentMode: .fit)
                 } else {
-                    AppIconView(icon: row.icon, size: 40).opacity(row.isMinimized ? 0.5 : 1)
+                    Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                 }
             }
             .frame(width: 188, height: 112)
