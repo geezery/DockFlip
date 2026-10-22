@@ -156,6 +156,8 @@ menu, where clicking one applies it.
 
 ## Privacy: no screen recording required
 
+<img src="docs/assets/feature-privacy.gif" alt="DockFlip asks for Accessibility only: no Screen Recording, no network access, no third-party code" width="100%">
+
 Most Dock preview apps and window switchers ask for **Screen Recording** the
 moment you open them, because they're built around screenshots of your windows.
 DockFlip isn't. Its window cards, mini-maps and tab lists are drawn from what

@@ -1,5 +1,7 @@
 # Privacy and Permissions
 
+<img src="https://github.com/geezery/DockFlip/raw/main/docs/assets/feature-privacy.gif" alt="What DockFlip asks for" width="100%">
+
 DockFlip is nosy about your windows and nothing else.
 
 ## No screen recording required
