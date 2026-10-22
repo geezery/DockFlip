@@ -54,8 +54,15 @@ struct SwitcherFilterTests {
         #expect(!SwitcherFilter.matches("team excel", fields: ["Chat | HVV", "Microsoft Teams"]))
     }
 
-    @Test func ignoresAccentsAndEmptyQuery() {
-        #expect(SwitcherFilter.matches("paate", fields: ["plinth — zsh", "Pääte"]))
+    @Test func accentsAreLetters() {
+        #expect(!SwitcherFilter.matches("öö", fields: ["Inbox", "Microsoft Outlook"]))
+        #expect(!SwitcherFilter.matches("paate", fields: ["plinth — zsh", "Pääte"]))
+        #expect(SwitcherFilter.matches("PÄÄ", fields: ["plinth — zsh", "Pääte"]))
+        // Decomposed "ä" (a + combining diaeresis), as in many file names.
+        #expect(SwitcherFilter.matches("pää", fields: ["Pa\u{308}a\u{308}te"]))
+    }
+
+    @Test func emptyQueryMatchesAll() {
         #expect(SwitcherFilter.matches("   ", fields: ["anything"]))
     }
 }

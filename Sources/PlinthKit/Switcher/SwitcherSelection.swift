@@ -28,14 +28,17 @@ public struct SwitcherSelection: Equatable {
 
 /// Type-to-filter in the ⌘Tab switcher. Pure, unit-tested.
 public enum SwitcherFilter {
-    /// True when every word of `query` appears in one of `fields`, ignoring case
-    /// and accents: "team" finds "Microsoft Teams", "budj xls" finds "Budjetti.xlsx".
+    /// True when every word of `query` appears in one of `fields`, ignoring case:
+    /// "team" finds "Microsoft Teams", "budj xls" finds "Budjetti.xlsx".
+    /// Accents count: ä and ö are letters of their own in Finnish and Swedish, so
+    /// "öö" must not find "Outlook". Composed and decomposed forms (file names
+    /// often use the latter) still match each other.
     public static func matches(_ query: String, fields: [String]) -> Bool {
         let words = query.split(whereSeparator: \.isWhitespace)
         guard !words.isEmpty else { return true }
         let haystack = fields.joined(separator: " ")
         return words.allSatisfy { word in
-            haystack.range(of: word, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+            haystack.range(of: word, options: [.caseInsensitive]) != nil
         }
     }
 }

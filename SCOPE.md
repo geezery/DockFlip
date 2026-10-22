@@ -72,7 +72,7 @@ settings.
 - Windows 7 Flip 3D look: windows in a slanted, receding 3D stack; the selected
   window in front.
 - Type to filter: typed words narrow the stack to windows whose title, app or
-  document contains them (case and accents ignored). While filtering, releasing
+  document contains them (case ignored; ä and ö count as letters of their own). While filtering, releasing
   ⌘ does not switch; Return does, Esc clears the filter. Cleared on close.
 - Previews if enabled; otherwise a card per window: title bar tinted with the
   app's colour, app icon, document file name, display name, size, mini-map.
