@@ -64,8 +64,7 @@ final class CleanupController {
             window.center()
             self.window = window
         }
-        NSApp.activate()
-        window?.makeKeyAndOrderFront(nil)
+        if let window { WindowPresenter.bringToFront(window) }
     }
 
     // MARK: - Actions

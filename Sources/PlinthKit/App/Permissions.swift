@@ -18,3 +18,18 @@ enum Permissions {
         }
     }
 }
+
+/// Brings one of Plinth's own windows to the front.
+///
+/// Plinth is an accessory app, and since macOS 14 activation is cooperative:
+/// when Plinth starts from Terminal (`make install`) or from its menu bar item,
+/// macOS may refuse to activate it and the window would open behind other apps.
+/// `orderFrontRegardless` puts the window in front even then.
+@MainActor
+enum WindowPresenter {
+    static func bringToFront(_ window: NSWindow) {
+        NSApp.activate()
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+    }
+}

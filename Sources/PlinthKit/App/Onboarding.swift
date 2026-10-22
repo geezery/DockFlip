@@ -76,8 +76,7 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         model.dockFitted = SystemTweaks.isDockFitted
         model.nativeTilingOn = SystemTweaks.isNativeEdgeTilingOn
         startWatching()
-        NSApp.activate()
-        window?.makeKeyAndOrderFront(nil)
+        if let window { WindowPresenter.bringToFront(window) }
     }
 
     func windowWillClose(_ notification: Notification) {
