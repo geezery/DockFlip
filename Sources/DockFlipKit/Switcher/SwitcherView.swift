@@ -19,6 +19,8 @@ struct SwitcherItem: Identifiable {
     let screenName: String?
     /// "1440 × 900"
     let sizeText: String
+    /// The window's size in points; places the cover over its buttons in a thumbnail.
+    let windowSize: CGSize
     /// The app's colour, taken from its icon; tints the card's title bar.
     let tint: Color
     /// Thumbnails are on, but this app is never pictured (password managers, System Settings).
@@ -183,15 +185,15 @@ struct FanCard: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 7) {
-                Circle().fill(Color(red: 1, green: 0.37, blue: 0.34)).frame(width: 11, height: 11)
-                Circle().fill(Color(red: 1, green: 0.74, blue: 0.18)).frame(width: 11, height: 11)
-                Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25)).frame(width: 11, height: 11)
+            // The app's icon where a window has its close, minimize and zoom
+            // buttons: they cannot be pressed here, and twenty sets of them are noise.
+            HStack(spacing: 8) {
+                AppIconView(icon: item.icon, size: 20)
                 Text(verbatim: item.title)
                     .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
                     .frame(maxWidth: .infinity)
-                    .padding(.trailing, 44)
+                    .padding(.trailing, 28)
             }
             .padding(.horizontal, 14)
             .frame(height: 36)
@@ -205,10 +207,7 @@ struct FanCard: View {
                     LinearGradient(colors: [item.tint.opacity(0.16), item.tint.opacity(0.03)], startPoint: .top, endPoint: .bottom)
                 }
                 if let thumbnail {
-                    Image(nsImage: thumbnail)
-                        .resizable()
-                        .interpolation(.high)
-                        .aspectRatio(contentMode: .fit)
+                    ThumbnailView(image: thumbnail, windowSize: item.windowSize, icon: item.icon)
                 } else {
                     details
                 }
@@ -267,5 +266,54 @@ struct FanCard: View {
         }
         .padding(28)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+}
+
+/// A window's picture, with its own close, minimize and zoom buttons covered by
+/// frosted glass and the app's icon, the same way every card shows them.
+struct ThumbnailView: View {
+    let image: NSImage
+    let windowSize: CGSize
+    let icon: NSImage?
+
+    /// The area the buttons sit in, in window points: wide enough for all three,
+    /// tall enough for a title bar or a tall macOS 26 toolbar.
+    private static let buttonArea = CGSize(width: 86, height: 52)
+
+    var body: some View {
+        GeometryReader { geo in
+            let shown = Self.fitted(image.size, in: geo.size)
+            let scale = windowSize.width > 0 ? shown.width / windowSize.width : 0
+            let cover = CGSize(width: Self.buttonArea.width * scale, height: Self.buttonArea.height * scale)
+            ZStack(alignment: .topLeading) {
+                Image(nsImage: image)
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: shown.width, height: shown.height)
+                if scale > 0 {
+                    ZStack {
+                        Rectangle().fill(.ultraThinMaterial)
+                        AppIconView(icon: icon, size: cover.height * 0.6)
+                            .opacity(0.9)
+                    }
+                    .frame(width: cover.width, height: cover.height)
+                    .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: cover.height * 0.3, style: .continuous))
+                }
+            }
+            .offset(x: shown.minX, y: shown.minY)
+        }
+    }
+
+    /// Where an image of `size` lands when fitted into `bounds`, centred.
+    static func fitted(_ size: CGSize, in bounds: CGSize) -> CGRect {
+        guard size.width > 0, size.height > 0 else { return CGRect(origin: .zero, size: bounds) }
+        let scale = min(bounds.width / size.width, bounds.height / size.height)
+        let fitted = CGSize(width: size.width * scale, height: size.height * scale)
+        return CGRect(
+            x: (bounds.width - fitted.width) / 2,
+            y: (bounds.height - fitted.height) / 2,
+            width: fitted.width,
+            height: fitted.height
+        )
     }
 }

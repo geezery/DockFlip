@@ -112,6 +112,7 @@ final class SwitcherController {
                 document: window.document,
                 screenName: placement?.screen.localizedName,
                 sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
+                windowSize: window.frame.size,
                 tint: WindowAppearance.tint(of: window),
                 neverPictured: previews && PreviewProvider.neverPictured(window.bundleID)
             )
