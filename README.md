@@ -72,10 +72,11 @@ are missing (a window asks you to click Install), then builds and installs
 DockFlip, and tells you what to do next. **Uninstall DockFlip.command** removes
 everything again.
 
-The first time, macOS may refuse to open the file because it was downloaded
-("Apple could not verify…"). Click *Done*, open **System Settings → Privacy &
-Security**, scroll down and click **Open Anyway** next to the message about
-"Install DockFlip.command", then double-click it again.
+The first time, macOS refuses to open the file because it was downloaded and
+DockFlip is not registered with Apple: click **Done** (not *Move to Trash*), open
+**System Settings → Privacy & Security**, scroll to *Security*, click **Open
+Anyway** next to "Install DockFlip.command", enter your password and confirm.
+The same steps are in **READ ME FIRST.txt** in the download.
 
 **From the command line:**
 

@@ -1,0 +1,28 @@
+Installing DockFlip
+===================
+
+1. Double-click "Install DockFlip.command".
+
+2. macOS says it cannot verify the file and offers only "Done" and
+   "Move to Trash". Click DONE (not Move to Trash).
+   This happens because DockFlip is free software that is not registered
+   with Apple. It happens once.
+
+3. Open System Settings → Privacy & Security. Scroll down to "Security".
+   There is a line: "Install DockFlip.command" was blocked to protect your Mac.
+   Click "Open Anyway", enter your Mac password, and click "Open Anyway" again.
+   (The line only stays there for about an hour after step 1. If it is gone,
+   do step 1 again.)
+
+4. The installer window opens and does the rest. It may install Apple's free
+   Command Line Tools first (click Install when asked), and asks for your Mac
+   password once.
+
+5. DockFlip starts and its setup window asks for one permission,
+   Accessibility. Follow the steps there.
+
+Uninstalling: double-click "Uninstall DockFlip.command" (the same one-time
+"Open Anyway" applies).
+
+If you are comfortable with Terminal, this does the same without step 2–3:
+    cd ~/Downloads/dockflip && make install
