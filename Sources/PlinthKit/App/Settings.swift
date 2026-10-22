@@ -67,19 +67,14 @@ final class Settings: ObservableObject {
         shortcutsEnabled = defaults.bool(forKey: Key.shortcuts)
         onboardingCompleted = defaults.bool(forKey: Key.onboarded)
         debugLogging = defaults.bool(forKey: Key.debug)
-        if let folders = defaults.stringArray(forKey: Key.folders) {
-            pinnedFolderPaths = folders
-        } else {
-            pinnedFolderPaths = SystemTweaks.dockFolderPaths()
-            defaults.set(pinnedFolderPaths, forKey: Key.folders)
-        }
-        if let stored = defaults.stringArray(forKey: Key.pinned) {
-            pinnedBundleIDs = stored
-        } else {
-            // First launch: start from what the user already has in the Dock.
-            pinnedBundleIDs = SystemTweaks.dockPinnedBundleIDs()
-            defaults.set(pinnedBundleIDs, forKey: Key.pinned)
-        }
+        // First launch: start from what the user already has in the Dock.
+        // (Locals: properties cannot be read before every one of them is set.)
+        let folders = defaults.stringArray(forKey: Key.folders) ?? SystemTweaks.dockFolderPaths()
+        let pinned = defaults.stringArray(forKey: Key.pinned) ?? SystemTweaks.dockPinnedBundleIDs()
+        defaults.set(folders, forKey: Key.folders)
+        defaults.set(pinned, forKey: Key.pinned)
+        pinnedFolderPaths = folders
+        pinnedBundleIDs = pinned
     }
 
     var launchAtLogin: Bool {
