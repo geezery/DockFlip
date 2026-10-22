@@ -377,12 +377,22 @@ struct PopupListRow: View {
         HStack(spacing: 10) {
             Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                 .frame(width: 52, height: 33)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .strokeBorder(Color.accentColor, lineWidth: row.isActive ? 1.5 : 0)
+                )
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: row.title)
                     .font(.system(size: 13, weight: row.isActive ? .semibold : .regular))
                     .lineLimit(1)
                     .truncationMode(.tail)
-                if row.isMinimized {
+                if row.isActive {
+                    // The window in front: said in words too, not only with weight.
+                    Text(verbatim: row.tabs.count > 1 ? L("Active window") + " · " + TabSummary.text(for: row.tabs) : L("Active window"))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color.accentColor)
+                        .lineLimit(1)
+                } else if row.isMinimized {
                     Text("Minimized").font(.system(size: 11)).foregroundStyle(.secondary)
                 } else if row.tabs.count > 1 {
                     Text(verbatim: TabSummary.text(for: row.tabs))
@@ -410,8 +420,17 @@ struct PopupListRow: View {
         .frame(height: PopupLayout.rowHeight)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
+                .fill(Color.accentColor.opacity((row.isActive ? 0.14 : 0) + (hovering ? 0.10 : 0)))
         )
+        // Windows 11's active marker: a short accent pill at the edge.
+        .overlay(alignment: .leading) {
+            if row.isActive {
+                Capsule()
+                    .fill(Color.accentColor)
+                    .frame(width: 3, height: 20)
+                    .offset(x: 1)
+            }
+        }
         .contentShape(Rectangle())
         .onHover { model.setHovered(row.id, $0) }
         .onTapGesture { popup.pick(row.id) }
@@ -468,7 +487,11 @@ struct PopupCard: View {
         .frame(width: PopupLayout.cardWidth - 4)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
+                .fill(Color.accentColor.opacity((row.isActive ? 0.14 : 0) + (hovering ? 0.10 : 0)))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color.accentColor, lineWidth: row.isActive ? 2 : 0)
         )
         .contentShape(Rectangle())
         .onHover { model.setHovered(row.id, $0) }
