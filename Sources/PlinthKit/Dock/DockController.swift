@@ -125,8 +125,10 @@ final class DockController: PopupSource {
     func item(_ itemID: String, on displayID: CGDirectDisplayID) -> TaskbarItem? {
         // All the app's windows, including full-screen ones and those on other desktops.
         let windows = registry.switcherWindows().filter { $0.bundleID == itemID }
+        // Running without windows (the Dock's dot, but nothing open — common on a Mac):
+        // no popup, the Dock's own name label is enough.
+        guard !windows.isEmpty else { return nil }
         let app = NSRunningApplication.runningApplications(withBundleIdentifier: itemID).first
-        guard app != nil || !windows.isEmpty else { return nil }
         let active = registry.activeWindowID()
         let name = app?.localizedName ?? windows.first?.appName ?? itemID
         return TaskbarItem(
