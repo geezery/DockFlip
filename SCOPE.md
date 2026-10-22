@@ -33,7 +33,7 @@ settings.
 | CPU at idle | 0 % (no timers running while nothing changes) |
 | Memory (resident) | < 50 MB |
 | Launch to usable | < 0.5 s |
-| ⌥Tab: key press to switcher visible | < 50 ms |
+| ⌘Tab: key press to switcher visible | < 50 ms |
 
 ## In scope (v1)
 
@@ -52,11 +52,11 @@ settings.
 - Dragging a file over a button activates that window (Windows behaviour).
 - Right end: clock with calendar flyout, and a "show desktop" strip.
 
-### Window switcher (⌥Tab)
+### Window switcher (⌘Tab)
 - All windows on the current Space, most-recently-used order.
 - Hold ⌥, press Tab to advance; ⇧ reverses; Esc cancels; release ⌥ to switch.
 - Shows icon and title; previews if enabled.
-- ⌘Tab is left untouched.
+- Replaces the native ⌘Tab app switcher while Plinth runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting Plinth restores the native switcher.
 
 ### Window management (Windows parity only)
 - Keyboard snapping: halves, maximize, restore/minimize, quarters by combination,
@@ -69,7 +69,7 @@ settings.
 ### Previews (opt-in)
 - Offered explicitly as a choice during onboarding — not preselected, not hidden
   in settings.
-- When on: captured only on hover and while ⌥Tab is visible, at thumbnail size,
+- When on: captured only on hover and while ⌘Tab is visible, at thumbnail size,
   kept in memory, never written to disk.
 - When off: large app icon, window title, and a mini-map of the window's outline
   on its display. A small "Enable previews" link appears in the hover panel.
@@ -85,7 +85,7 @@ with app shortcuts; Globe combinations belong to macOS's own tiling.)
 
 | Windows | Plinth |
 |---|---|
-| Alt+Tab | ⌥Tab |
+| Alt+Tab | ⌘Tab |
 | Win+← / → | ⌃⌥← / → |
 | Win+↑ | ⌃⌥↑ (maximize) |
 | Win+↓ | ⌃⌥↓ (restore, then minimize) |

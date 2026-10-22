@@ -13,14 +13,14 @@ its exit criteria hold on a clean macOS 26 install with default settings.
 **Exit:** CI green on every push; the app launches, asks for Accessibility, and
 shows a menu bar icon.
 
-## M1 — Window core and ⌥Tab
+## M1 — Window core and ⌘Tab
 - `WindowRegistry`: windows from `CGWindowListCopyWindowInfo` + Accessibility API;
   `AXObserver` per app; `NSWorkspace` notifications; MRU history.
 - Only `AXStandardWindow` subrole; panels, sheets and dialogs ignored.
 - Reconcile after wake and display changes.
-- ⌥Tab switcher: icon + title + window mini-map.
+- ⌘Tab switcher: icon + title + window mini-map.
 
-**Exit:** ⌥Tab switches correctly between 30+ windows across Finder, Safari,
+**Exit:** ⌘Tab switches correctly between 30+ windows across Finder, Safari,
 Chrome, VS Code, Slack (Electron), Terminal and Xcode, through sleep/wake and
 monitor plug/unplug, for a week of daily use without a wrong switch.
 

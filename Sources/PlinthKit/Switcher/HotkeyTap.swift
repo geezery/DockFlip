@@ -2,15 +2,15 @@ import AppKit
 import CoreGraphics
 
 public enum SwitcherInput: Equatable {
-    case optionTab(shift: Bool)
+    case commandTab(shift: Bool)
     case escape
     case left
     case right
     case enter
-    case optionReleased
+    case commandReleased
 }
 
-/// Keyboard event tap for ⌥Tab. Translates raw key events into `SwitcherInput`
+/// Keyboard event tap for ⌘Tab. Translates raw key events into `SwitcherInput`
 /// and swallows only the keys the switcher actually used.
 @MainActor
 final class HotkeyTap {
@@ -66,10 +66,10 @@ final class HotkeyTap {
             let flags = event.flags
 
             if code == Key.tab,
-               flags.contains(.maskAlternate),
-               !flags.contains(.maskCommand),
+               flags.contains(.maskCommand),
+               !flags.contains(.maskAlternate),
                !flags.contains(.maskControl) {
-                return consume(.optionTab(shift: flags.contains(.maskShift)), code: code)
+                return consume(.commandTab(shift: flags.contains(.maskShift)), code: code)
             }
 
             guard isActive?() == true else { return false }
@@ -91,8 +91,8 @@ final class HotkeyTap {
             return swallowed.remove(code) != nil
 
         case .flagsChanged:
-            if !event.flags.contains(.maskAlternate) {
-                _ = handler?(.optionReleased)
+            if !event.flags.contains(.maskCommand) {
+                _ = handler?(.commandReleased)
             }
             return false
 

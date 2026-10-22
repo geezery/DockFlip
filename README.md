@@ -3,14 +3,14 @@
 The Windows 11 taskbar, Alt-Tab and window snapping for macOS — in one small,
 free, open-source app that works with default settings.
 
-> **Status:** early development (milestone M1: window core and ⌥Tab).
+> **Status:** early development (milestone M1: window core and ⌘Tab).
 > See [SCOPE.md](SCOPE.md) and [ROADMAP.md](ROADMAP.md).
 
 ## What works today
 
-- **⌥Tab** switches between all windows on the current Space in most-recently-used
+- **⌘Tab** switches between all windows on the current Space in most-recently-used
   order, including minimized windows and windows of hidden apps.
-  Hold ⌥ and press Tab to move forward, ⇧ to go back, Esc to cancel, release ⌥ to
+  Hold ⌘ and press Tab to move forward, ⇧ to go back, Esc to cancel, release ⌘ to
   switch. ← → and Return work too; you can also click a window.
 - Each window shows its app icon, its title and a **mini-map** of where the window
   sits on its display — no Screen Recording permission needed.
@@ -47,7 +47,14 @@ The setup window opens the right page for you.
 
 Other targets: `make` (build only), `make run`, `make test`, `make clean`.
 
-### If ⌥Tab does nothing after a rebuild
+### ⌘Tab and the native app switcher
+
+While Plinth runs, ⌘Tab opens Plinth's window switcher instead of macOS's app
+switcher (⌘\` still cycles windows of the current app). Quitting Plinth gives ⌘Tab
+back to macOS. If Plinth ever crashes and the native switcher does not come
+back, start and quit Plinth once, or log out and in.
+
+### If ⌘Tab does nothing after a rebuild
 
 macOS can keep a stale Accessibility entry. Remove Plinth from the Accessibility
 list with the – button, start Plinth again and allow it once more.
@@ -67,7 +74,7 @@ list with the – button, start Plinth again and allow it once more.
 Sources/Plinth/          executable entry point
 Sources/PlinthKit/App/       app delegate, onboarding, permissions
 Sources/PlinthKit/Core/      window registry (Accessibility + window server), geometry
-Sources/PlinthKit/Switcher/  ⌥Tab: event tap, selection, panel and view
+Sources/PlinthKit/Switcher/  ⌘Tab: event tap, selection, panel and view
 Tests/PlinthKitTests/    unit tests (Swift Testing)
 Resources/               Info.plist, localizations (en, fi)
 scripts/                 local signing certificate

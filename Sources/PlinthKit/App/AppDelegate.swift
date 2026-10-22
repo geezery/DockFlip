@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var switcher: SwitcherController?
     private var hotkeys: HotkeyTap?
     private var hotkeysRunning = false
+    private var isRelaunching = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setUpStatusItem()
@@ -37,7 +38,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             switcher?.isActive ?? false
         }
         hotkeysRunning = hotkeys.start()
-        if !hotkeysRunning {
+        if hotkeysRunning {
+            NativeCommandTab.setEnabled(false)
+        } else {
             // Right after Accessibility is granted, macOS sometimes refuses the
             // event tap until the app is restarted.
             NSLog("Plinth: could not create the keyboard event tap.")
@@ -63,7 +66,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         controller.show()
     }
 
+    func applicationWillTerminate(_ notification: Notification) {
+        // Give ⌘Tab back to macOS — unless a new Plinth instance is taking over.
+        if !isRelaunching {
+            NativeCommandTab.setEnabled(true)
+        }
+    }
+
     private func relaunch() {
+        isRelaunching = true
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.createsNewApplicationInstance = true
         NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { _, _ in
@@ -100,7 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         if registry != nil {
-            addStatus(hotkeysRunning ? L("⌥Tab: active") : L("⌥Tab: not active"), to: menu)
+            addStatus(hotkeysRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), registry?.trackedWindowCount ?? 0), to: menu)
         }
         if registry != nil && !hotkeysRunning {

@@ -67,7 +67,7 @@ public final class WindowRegistry {
 
     var trackedWindowCount: Int { windows.count }
 
-    /// Windows for the ⌥Tab switcher in MRU order: windows on the current Space,
+    /// Windows for the ⌘Tab switcher in MRU order: windows on the current Space,
     /// plus minimized windows and windows of hidden apps.
     public func switcherWindows() -> [WindowSnapshot] {
         let onScreen = Set(Self.onScreenWindowIDs())

@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Drives the ⌥Tab switcher: takes a snapshot of windows when ⌥Tab is first
+/// Drives the ⌘Tab switcher: takes a snapshot of windows when ⌘Tab is first
 /// pressed, moves the selection, and focuses the chosen window on release.
 @MainActor
 final class SwitcherController {
@@ -23,7 +23,7 @@ final class SwitcherController {
     /// Returns true when the input was consumed.
     func handle(_ input: SwitcherInput) -> Bool {
         switch input {
-        case .optionTab(let shift):
+        case .commandTab(let shift):
             if isActive {
                 step(shift ? -1 : 1)
                 return true
@@ -45,7 +45,7 @@ final class SwitcherController {
             guard isActive else { return false }
             hide()
             return true
-        case .optionReleased:
+        case .commandReleased:
             if let selection { commit(at: selection.index) }
             return false
         }

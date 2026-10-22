@@ -1,9 +1,9 @@
-/// Selection state of the ⌥Tab switcher. Pure value type, unit-tested.
+/// Selection state of the ⌘Tab switcher. Pure value type, unit-tested.
 public struct SwitcherSelection: Equatable {
     public private(set) var index: Int
     public let count: Int
 
-    /// ⌥Tab starts on the previous window (index 1); ⌥⇧Tab on the last one.
+    /// ⌘Tab starts on the previous window (index 1); ⌘⇧Tab on the last one.
     public init(count: Int, reverse: Bool) {
         self.count = count
         if count <= 1 {

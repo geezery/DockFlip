@@ -108,7 +108,7 @@ struct OnboardingView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("Accessibility is used to list, focus, move and minimize windows, and for the ⌥Tab and ⌃⌥ shortcuts.")
+            Text("Accessibility is used to list, focus, move and minimize windows, and for the ⌘Tab and ⌃⌥ shortcuts.")
                 .font(.system(size: 13))
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
