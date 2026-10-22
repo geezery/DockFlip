@@ -157,11 +157,11 @@ final class SwitcherController {
         model.items = matches
         // The best match — the most recently used one — comes to the front, unless
         // tabs arrived while the user was already stepping through the results.
-        var selection = SwitcherSelection(count: matches.count, reverse: false)
-        let kept = keepSelection ? matches.firstIndex { $0.id == previouslySelected } : nil
-        selection.select(kept ?? 0)
-        self.selection = selection
-        model.selection = selection.index
+        var newSelection = SwitcherSelection(count: matches.count, reverse: false)
+        let kept = keepSelection ? matches.firstIndex(where: { $0.id == previouslySelected }) : nil
+        newSelection.select(kept ?? 0)
+        selection = newSelection
+        model.selection = newSelection.index
         let ids = Set(matches.map(\.windowID))
         loadPreviews(for: allWindows.filter { ids.contains($0.id) })
     }
