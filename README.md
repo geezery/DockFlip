@@ -282,4 +282,11 @@ too.
 
 [GPL-3.0](LICENSE). Free as in beer, and free as in you can read every line.
 
+<p align="center"><b>Know someone who misses Windows on their Mac?</b><br>
+  <a href="https://x.com/intent/post?text=DockFlip%20brings%20the%20best%20bits%20of%20Windows%20to%20the%20Mac%3A%20window%20lists%20in%20the%20Dock%2C%20a%20Flip%203D%20%E2%8C%98Tab%20that%20switches%20windows%2C%20and%20snapping.%20Free%2C%20open%20source%2C%20no%20screen%20recording.&url=https%3A%2F%2Fgithub.com%2Fgeezery%2FDockFlip">Share on X</a> ·
+  <a href="https://bsky.app/intent/compose?text=DockFlip%20brings%20the%20best%20bits%20of%20Windows%20to%20the%20Mac%3A%20window%20lists%20in%20the%20Dock%2C%20a%20Flip%203D%20%E2%8C%98Tab%20that%20switches%20windows%2C%20and%20snapping.%20Free%2C%20open%20source%2C%20no%20screen%20recording.%20https%3A//github.com/geezery/DockFlip">Bluesky</a> ·
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fgithub.com%2Fgeezery%2FDockFlip">LinkedIn</a> ·
+  or just send them <code>github.com/geezery/DockFlip</code>
+</p>
+
 <p align="center"><sub>If DockFlip cured your Alt-Tab withdrawal, a ⭐ helps the next Windows refugee find it.</sub></p>
