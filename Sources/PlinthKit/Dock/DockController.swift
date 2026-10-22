@@ -30,9 +30,12 @@ final class DockController: PopupSource {
     /// The mouse-down was taken over, so its mouse-up is too.
     private var swallowNextUp = false
     private var tokens: [NSObjectProtocol] = []
-    /// Watches the mouse while an icon is hovered: the Dock does not always say
-    /// when the mouse leaves it, which left the popup standing.
-    private var exitWatch: Task<Void, Never>?
+    /// Mouse-move monitor, present only while the mouse is on the Dock or the popup.
+    private var mouseMonitor: Any?
+    /// The icon the mouse just left, to reopen if it comes straight back.
+    private var lastHovered: HoveredIcon?
+    /// The Dock's icon list on screen (Cocoa coordinates).
+    private var dockFrame: NSRect?
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -111,31 +114,56 @@ final class DockController: PopupSource {
             registry.probe(pid: app.processIdentifier)
         }
         popup.itemEntered(hovered.key, on: 0)
-        watchForExit()
+        if let frame = list.frame {
+            dockFrame = Geometry.cocoaRect(fromAX: frame, primaryHeight: DisplayLayout.primaryHeight)
+        }
+        watchMouse()
     }
 
-    /// Ten times a second, only while an icon is hovered: once the mouse is
-    /// neither on that icon nor on the popup, the popup goes.
-    private func watchForExit() {
-        guard exitWatch == nil else { return }
-        exitWatch = Task { @MainActor [weak self] in
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(100))
-                guard let self, let hovered = self.hovered else { break }
-                let mouse = NSEvent.mouseLocation
-                // The icon, reaching up to the popup so the way there counts as inside.
-                let icon = hovered.anchor.insetBy(dx: -4, dy: -4).union(
-                    NSRect(x: hovered.anchor.minX, y: hovered.anchor.maxY, width: hovered.anchor.width, height: 14)
-                )
-                let onPopup = self.popup.visibleFrame?.insetBy(dx: -6, dy: -6).contains(mouse) ?? false
-                if !icon.contains(mouse), !onPopup {
-                    self.hovered = nil
-                    self.popup.itemExited()
-                    break
-                }
-            }
-            self?.exitWatch = nil
+    /// Mouse moves, while the mouse is on the Dock or the popup — event-driven:
+    /// macOS calls this only when the mouse actually moves, and the monitor
+    /// exists only from the first hovered icon until the mouse leaves the Dock.
+    private func watchMouse() {
+        guard mouseMonitor == nil else { return }
+        mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { [weak self] _ in
+            MainActor.assumeIsolated { self?.mouseMoved() }
         }
+    }
+
+    private func stopWatchingMouse() {
+        if let mouseMonitor { NSEvent.removeMonitor(mouseMonitor) }
+        mouseMonitor = nil
+        lastHovered = nil
+    }
+
+    private func mouseMoved() {
+        let mouse = NSEvent.mouseLocation
+        let onPopup = popup.visibleFrame?.insetBy(dx: -6, dy: -6).contains(mouse) ?? false
+        if let hovered {
+            // Off the icon (and the way up to the popup) and off the popup: close.
+            // The Dock does not always report this itself.
+            if !Self.zone(of: hovered).contains(mouse), !onPopup {
+                lastHovered = hovered
+                self.hovered = nil
+                popup.itemExited()
+            }
+        } else if let last = lastHovered, last.anchor.contains(mouse) {
+            // Back on the same icon: the Dock reports no change, so reopen here.
+            hovered = last
+            lastHovered = nil
+            popup.itemEntered(last.key, on: 0)
+        }
+        let onDock = dockFrame?.insetBy(dx: -4, dy: -4).contains(mouse) ?? false
+        if hovered == nil, !onDock, !onPopup {
+            stopWatchingMouse()
+        }
+    }
+
+    /// The icon, reaching up to the popup so the way there counts as on it.
+    private static func zone(of icon: HoveredIcon) -> NSRect {
+        icon.anchor.insetBy(dx: -4, dy: -4).union(
+            NSRect(x: icon.anchor.minX, y: icon.anchor.maxY, width: icon.anchor.width, height: 14)
+        )
     }
 
     /// The app behind a Dock icon, or nil for folders, the Trash and separators.
