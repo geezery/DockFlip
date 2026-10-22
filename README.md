@@ -23,7 +23,8 @@
   <a href="#shortcuts">Shortcuts</a> ·
   <a href="#privacy-no-screen-recording-required">Privacy</a> ·
   <a href="https://github.com/geezery/DockFlip/wiki">Wiki</a> ·
-  <a href="#faq">FAQ</a>
+  <a href="#faq">FAQ</a> ·
+  <a href="docs/IT.md">For IT</a>
 </p>
 
 ---

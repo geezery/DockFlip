@@ -9,6 +9,9 @@
 - [[Languages]]
 - [[Privacy and Permissions]]
 
+**For IT**
+- [Rolling out DockFlip](https://github.com/geezery/DockFlip/blob/main/docs/IT.md)
+
 **Help**
 - [[Troubleshooting]]
 - [[FAQ]]
