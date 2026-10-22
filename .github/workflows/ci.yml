@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          sw_vers
+          swift --version
+
+      - name: Build app bundle (ad-hoc signed)
+        run: make app
+
+      - name: Unit tests
+        run: make test
+
+      - name: Check bundle
+        run: |
+          plutil -lint build/DockFlip.app/Contents/Info.plist
+          codesign --verify --verbose build/DockFlip.app
+          du -sh build/DockFlip.app

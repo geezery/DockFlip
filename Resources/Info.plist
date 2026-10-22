@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>fi</string>
+		<string>sv</string>
+		<string>da</string>
+		<string>nb</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>it</string>
+		<string>pt-BR</string>
+		<string>nl</string>
+		<string>pl</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>zh-Hans</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>DockFlip</string>
+	<key>CFBundleExecutable</key>
+	<string>DockFlip</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>__BUNDLE_ID__</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>DockFlip</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>__VERSION__</string>
+	<key>CFBundleVersion</key>
+	<string>__BUILD__</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>DockFlip is free software, licensed under the GNU GPL v3.</string>
+</dict>
+</plist>
