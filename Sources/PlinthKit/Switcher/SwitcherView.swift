@@ -24,6 +24,8 @@ final class SwitcherModel: ObservableObject {
     @Published var items: [SwitcherItem] = []
     @Published var selection = 0
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
+    /// Typed filter text; empty when not filtering.
+    @Published var query = ""
     var onPick: ((Int) -> Void)?
     var onCancel: (() -> Void)?
 
@@ -80,8 +82,18 @@ struct SwitcherView: View {
                 .animation(.spring(response: 0.42, dampingFraction: 0.80), value: model.selection)
 
                 VStack {
+                    if !model.query.isEmpty {
+                        SearchPill(query: model.query, count: model.items.count)
+                            .padding(.top, geo.size.height * 0.07)
+                    }
                     Spacer()
-                    if model.items.indices.contains(model.selection) {
+                    if model.items.isEmpty && !model.query.isEmpty {
+                        Text("No windows match")
+                            .font(.system(size: 17, weight: .semibold))
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 12)
+                            .background(.regularMaterial, in: Capsule())
+                    } else if model.items.indices.contains(model.selection) {
                         let front = model.items[model.selection]
                         HStack(spacing: 12) {
                             AppIconView(icon: front.icon, size: 30)
@@ -99,10 +111,45 @@ struct SwitcherView: View {
                         .background(.regularMaterial, in: Capsule())
                         .animation(nil, value: model.selection)
                     }
+                    if model.query.isEmpty {
+                        Text("Type to filter")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .padding(.top, 8)
+                    }
                 }
                 .padding(.bottom, geo.size.height * 0.08)
             }
         }
+    }
+}
+
+/// The typed filter, at the top of the screen while filtering.
+struct SearchPill: View {
+    let query: String
+    let count: Int
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.secondary)
+            Text(verbatim: query)
+                .font(.system(size: 22, weight: .semibold))
+                .lineLimit(1)
+            Text(verbatim: "\(count)")
+                .font(.system(size: 12, weight: .semibold).monospacedDigit())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Color.primary.opacity(0.1), in: Capsule())
+        }
+        .padding(.horizontal, 22)
+        .padding(.vertical, 12)
+        .background(.regularMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(Color.accentColor.opacity(0.6), lineWidth: 1.5))
+        .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
+        .accessibilityElement(children: .combine)
     }
 }
 

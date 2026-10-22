@@ -68,6 +68,9 @@ settings.
 - Hold ⌘, press Tab to advance; ⇧ reverses; Esc cancels; release ⌘ to switch.
 - Windows 7 Flip 3D look: windows in a slanted, receding 3D stack; the selected
   window in front.
+- Type to filter: typed words narrow the stack to windows whose title, app or
+  document contains them (case and accents ignored). While filtering, releasing
+  ⌘ does not switch; Return does, Esc clears the filter. Cleared on close.
 - Previews if enabled; otherwise a card per window: title bar tinted with the
   app's colour, app icon, document file name, display name, size, mini-map.
 - While open, the switcher is the key window (a non-activating panel, made key
@@ -134,7 +137,7 @@ Anything else needs a strong case against principle 1.
 - Progress bars on taskbar buttons (no macOS equivalent of `ITaskbarList3`).
 - "Always on top" for other apps' windows (requires disabling SIP).
 - Start menu.
-- Search/filter in the switcher, per-app CPU/memory, cross-display drag.
+- Per-app CPU/memory, cross-display drag.
 - Mac App Store distribution (the sandbox forbids the Accessibility API).
 - macOS versions older than 26.
 

@@ -46,6 +46,20 @@ struct SwitcherSelectionTests {
     }
 }
 
+@Suite("SwitcherFilter")
+struct SwitcherFilterTests {
+    @Test func matchesEveryWordAnywhere() {
+        #expect(SwitcherFilter.matches("team", fields: ["Chat | HVV", "Microsoft Teams"]))
+        #expect(SwitcherFilter.matches("TEAMS chat", fields: ["Chat | HVV", "Microsoft Teams"]))
+        #expect(!SwitcherFilter.matches("team excel", fields: ["Chat | HVV", "Microsoft Teams"]))
+    }
+
+    @Test func ignoresAccentsAndEmptyQuery() {
+        #expect(SwitcherFilter.matches("paate", fields: ["plinth — zsh", "Pääte"]))
+        #expect(SwitcherFilter.matches("   ", fields: ["anything"]))
+    }
+}
+
 @Suite("Geometry")
 struct GeometryTests {
     // Primary 1440×900 at the origin, a second 1920×1080 display to its right,

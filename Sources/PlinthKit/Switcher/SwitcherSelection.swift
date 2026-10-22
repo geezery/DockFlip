@@ -1,3 +1,5 @@
+import Foundation
+
 /// Selection state of the ⌘Tab switcher. Pure value type, unit-tested.
 public struct SwitcherSelection: Equatable {
     public private(set) var index: Int
@@ -21,5 +23,19 @@ public struct SwitcherSelection: Equatable {
     public mutating func select(_ newIndex: Int) {
         guard (0..<count).contains(newIndex) else { return }
         index = newIndex
+    }
+}
+
+/// Type-to-filter in the ⌘Tab switcher. Pure, unit-tested.
+public enum SwitcherFilter {
+    /// True when every word of `query` appears in one of `fields`, ignoring case
+    /// and accents: "team" finds "Microsoft Teams", "budj xls" finds "Budjetti.xlsx".
+    public static func matches(_ query: String, fields: [String]) -> Bool {
+        let words = query.split(whereSeparator: \.isWhitespace)
+        guard !words.isEmpty else { return true }
+        let haystack = fields.joined(separator: " ")
+        return words.allSatisfy { word in
+            haystack.range(of: word, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+        }
     }
 }

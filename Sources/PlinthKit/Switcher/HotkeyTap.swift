@@ -9,6 +9,9 @@ public enum SwitcherInput: Equatable {
     case right
     case enter
     case commandReleased
+    /// Typed text: filters the switcher's windows.
+    case text(String)
+    case deleteBackward
 }
 
 public enum SnapKey: Equatable {
@@ -27,6 +30,7 @@ public enum HotkeyCommand: Equatable {
 
 private enum KeyCode {
     static let tab: UInt32 = 48
+    static let delete: UInt32 = 51
     static let escape: UInt32 = 53
     static let left: UInt32 = 123
     static let right: UInt32 = 124
@@ -218,15 +222,23 @@ final class HotkeyTap {
         case .keyDown:
             let input: SwitcherInput
             switch UInt32(truncatingIfNeeded: code) {
-            case KeyCode.tab: return false // the hot key handles Tab
+            case KeyCode.tab:
+                // ⌘Tab is the hot key's. Plain Tab steps too once ⌘ is up (while filtering).
+                guard !event.flags.contains(.maskCommand) else { return false }
+                input = .commandTab(shift: event.flags.contains(.maskShift))
             case KeyCode.escape: input = .escape
             case KeyCode.left: input = .left
             case KeyCode.right: input = .right
             case KeyCode.returnKey, KeyCode.keypadEnter: input = .enter
+            case KeyCode.delete: input = .deleteBackward
             default:
-                // Other keys do nothing while the switcher is open.
-                swallowed.insert(code)
-                return true
+                // Typing filters the windows; anything else does nothing while the switcher is open.
+                if let text = SwitcherText.typed(NSEvent(cgEvent: event)) {
+                    input = .text(text)
+                } else {
+                    swallowed.insert(code)
+                    return true
+                }
             }
             if onSwitcherKey?(input) == true {
                 swallowed.insert(code)
@@ -238,6 +250,19 @@ final class HotkeyTap {
         default:
             return false
         }
+    }
+}
+
+/// The text a key press types, ignoring ⌘ (held while switching), or nil for
+/// keys that type nothing (function keys, ⌃ and ⌥ combinations).
+enum SwitcherText {
+    static func typed(_ event: NSEvent?) -> String? {
+        guard let event, event.type == .keyDown,
+              !event.modifierFlags.contains(.control), !event.modifierFlags.contains(.option),
+              let text = event.charactersIgnoringModifiers, !text.isEmpty,
+              !text.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) || $0.properties.generalCategory == .privateUse })
+        else { return nil }
+        return text
     }
 }
 

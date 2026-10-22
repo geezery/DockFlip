@@ -19,6 +19,12 @@ final class SwitcherController {
     private var panel: NSPanel?
     private var selection: SwitcherSelection?
     private var windowIDs: [CGWindowID] = []
+    /// Every window of this session; `model.items` holds the ones matching the filter.
+    private var allWindows: [WindowSnapshot] = []
+    private var allItems: [SwitcherItem] = []
+    /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
+    /// switches, Return does. Cleared whenever the switcher closes.
+    private var query = ""
     private var previewTask: Task<Void, Never>?
     private var previousApp: NSRunningApplication?
     private var localMonitor: Any?
@@ -59,11 +65,23 @@ final class SwitcherController {
             return true
         case .escape:
             guard isActive else { return false }
-            cancel()
+            if query.isEmpty {
+                cancel()
+            } else {
+                setQuery("")
+            }
             return true
         case .commandReleased:
-            if let selection { commit(at: selection.index) }
+            if let selection, query.isEmpty { commit(at: selection.index) }
             return false
+        case .text(let text):
+            guard isActive else { return false }
+            setQuery(query + text)
+            return true
+        case .deleteBackward:
+            guard isActive else { return false }
+            if !query.isEmpty { setQuery(String(query.dropLast())) }
+            return true
         }
     }
 
@@ -82,6 +100,9 @@ final class SwitcherController {
         let axScreens = screens.map { Geometry.axRect(fromCocoa: $0.frame, primaryHeight: primaryHeight) }
 
         windowIDs = windows.map(\.id)
+        allWindows = windows
+        query = ""
+        model.query = ""
         model.thumbnails = [:]
         model.items = windows.map { window in
             let screenIndex = Geometry.bestScreenIndex(for: window.frame, screens: axScreens)
@@ -98,6 +119,7 @@ final class SwitcherController {
                 tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName)
             )
         }
+        allItems = model.items
 
         let selection = SwitcherSelection(count: windows.count, reverse: reverse)
         // Open without animating from the previous session's state.
@@ -110,6 +132,25 @@ final class SwitcherController {
         onActiveChanged?(true)
         loadPreviews(for: windows)
         return true
+    }
+
+    /// Shows only the windows whose title, app or document contains every typed word.
+    private func setQuery(_ newQuery: String) {
+        query = newQuery
+        let matching = allItems.indices.filter { index in
+            let item = allItems[index]
+            return SwitcherFilter.matches(newQuery, fields: [item.title, item.appName, item.document ?? ""])
+        }
+        model.query = newQuery
+        model.items = matching.map { allItems[$0] }
+        windowIDs = model.items.map(\.id)
+        // The best match — the most recently used one — comes to the front.
+        let selection = SwitcherSelection(count: windowIDs.count, reverse: false)
+        var first = selection
+        first.select(0)
+        self.selection = first
+        model.selection = 0
+        loadPreviews(for: matching.map { allWindows[$0] })
     }
 
     private func step(_ delta: Int) {
@@ -145,6 +186,10 @@ final class SwitcherController {
         panel?.orderOut(nil)
         selection = nil
         windowIDs = []
+        allWindows = []
+        allItems = []
+        query = ""
+        model.query = ""
         model.thumbnails = [:]
         previousApp = nil
         onActiveChanged?(false)
@@ -220,7 +265,11 @@ final class SwitcherController {
         case 123: handle(.left)
         case 124: handle(.right)
         case 36, 76: handle(.enter)
-        default: break
+        case 51: handle(.deleteBackward)
+        case 48 where !event.modifierFlags.contains(.command):
+            handle(.commandTab(shift: event.modifierFlags.contains(.shift)))
+        default:
+            if let text = SwitcherText.typed(event) { handle(.text(text)) }
         }
         return true // nothing else reaches any app while switching
     }

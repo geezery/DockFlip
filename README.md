@@ -35,7 +35,8 @@ display, on the space the Dock reserves.
 slanted 3D stack, most recently used in front, minimized ones included. Hold ⌘
 and press Tab to flip the front window to the back, ⇧ to go back, Esc to
 cancel, release ⌘ to switch. ← → and Return work too; you can also click a
-window. While the stack is open, Plinth holds the keyboard, so the app you came
+window. Start typing to filter: "team" leaves only windows whose title, app or
+document contains it; then Return switches and Esc clears the filter. While the stack is open, Plinth holds the keyboard, so the app you came
 from (Terminal, say) receives nothing. Without thumbnails, each window is a card
 with the title in a bar tinted in the app's colour, the app icon, the open
 document's file name, the display it is on, its size and a mini-map of its
