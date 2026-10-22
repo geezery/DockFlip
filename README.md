@@ -209,7 +209,7 @@ installing takes a detour through System Settings, and so does every update.
 
 **A 2 € coffee** gets DockFlip closer to being notarized: download, drag to
 Applications, open, done. Updates that simply open. About fifty coffees cover a
-year. [**Buy DockFlip a coffee →**](https://github.com/sponsors/geezery)
+year. [**Buy DockFlip a coffee →**](https://github.com/sponsors/geezery?frequency=one-time)
 
 No coffee? A ⭐ is free and helps the next person find DockFlip.
 

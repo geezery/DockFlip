@@ -35,7 +35,7 @@ DockFlip can't see a single window.
 **Why does macOS warn me the first time I open it?**
 Apple only skips that warning for apps whose developer pays 99 € a year for
 notarization. DockFlip is free, so for now it's one trip to *Privacy & Security
-→ Open Anyway*. A few ☕ [coffees](https://github.com/sponsors/geezery) and the
+→ Open Anyway*. A few ☕ [coffees](https://github.com/sponsors/geezery?frequency=one-time) and the
 warning is gone for everyone.
 
 **Does it slow my Mac down?**

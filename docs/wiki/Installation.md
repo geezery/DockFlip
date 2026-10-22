@@ -13,7 +13,7 @@ Apple silicon and Intel Macs running **macOS 26 or later**.
 
 Steps 2 and 3 are Apple's warning for apps from developers who don't pay for
 notarization (99 € a year). They go away once DockFlip is notarized; that's what
-the ☕ [coffee](https://github.com/sponsors/geezery) is for.
+the ☕ [coffee](https://github.com/sponsors/geezery?frequency=one-time) is for.
 
 ## Build from source (developers)
 

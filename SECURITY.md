@@ -86,7 +86,7 @@ notarization, and DockFlip is free.
 ☕ **That's what the coffee is for.** Once a handful of 2 € coffees cover the
 fee, DockFlip gets notarized: download, drag to Applications, open, done. No
 warning, no trip to System Settings, and updates that simply open.
-[Buy DockFlip a coffee](https://github.com/sponsors/geezery).
+[Buy DockFlip a coffee](https://github.com/sponsors/geezery?frequency=one-time).
 
 ## Supported versions
 
