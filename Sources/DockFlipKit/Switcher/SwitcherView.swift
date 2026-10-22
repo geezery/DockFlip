@@ -77,25 +77,7 @@ struct SwitcherView: View {
 
                 ZStack {
                     ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
-                        let depth = model.depth(of: index)
-                        FanCard(item: item, thumbnail: model.thumbnails[item.windowID], isFront: depth == 0)
-                            .frame(width: cardWidth, height: cardHeight)
-                            // Every window turned the same way: its left edge further away.
-                            .rotation3DEffect(
-                                .degrees(-24),
-                                axis: (x: 0, y: 1, z: 0),
-                                anchor: .center,
-                                perspective: 0.5
-                            )
-                            .scaleEffect(max(0.5, 1 - Double(depth) * 0.06))
-                            // Depth by shade, not see-through: real window pictures
-                            // overlapping through each other look muddy.
-                            .brightness(-min(0.28, Double(depth) * 0.05))
-                            // Receding up and to the left.
-                            .offset(x: CGFloat(depth) * -cardWidth * 0.17, y: CGFloat(depth) * -cardHeight * 0.11)
-                            .opacity(depth > visibleDepth ? 0 : (depth == visibleDepth ? 0.5 : 1))
-                            .zIndex(Double(1000 - depth))
-                            .onTapGesture { model.onPick?(index) }
+                        stackedCard(item, index: index, size: CGSize(width: cardWidth, height: cardHeight))
                     }
                 }
                 // The front window sits right of and below the centre.
@@ -142,6 +124,33 @@ struct SwitcherView: View {
                 .padding(.bottom, geo.size.height * 0.08)
             }
         }
+    }
+}
+
+extension SwitcherView {
+    /// One card placed in the stack by its depth (0 = front). Kept out of `body`
+    /// with every value typed up front: as one expression it takes the type
+    /// checker longer than slower machines allow.
+    private func stackedCard(_ item: SwitcherItem, index: Int, size: CGSize) -> some View {
+        let depth: Int = model.depth(of: index)
+        let level = Double(depth)
+        let scale: Double = max(0.5, 1 - level * 0.06)
+        // Depth by shade, not see-through: real window pictures overlapping
+        // through each other look muddy.
+        let shade: Double = -min(0.28, level * 0.05)
+        // Receding up and to the left.
+        let offset = CGSize(width: CGFloat(level) * -size.width * 0.17, height: CGFloat(level) * -size.height * 0.11)
+        let opacity: Double = depth > visibleDepth ? 0 : (depth == visibleDepth ? 0.5 : 1)
+        return FanCard(item: item, thumbnail: model.thumbnails[item.windowID], isFront: depth == 0)
+            .frame(width: size.width, height: size.height)
+            // Every window turned the same way: its left edge further away.
+            .rotation3DEffect(.degrees(-24), axis: (x: 0, y: 1, z: 0), anchor: .center, perspective: 0.5)
+            .scaleEffect(scale)
+            .brightness(shade)
+            .offset(offset)
+            .opacity(opacity)
+            .zIndex(Double(1000 - depth))
+            .onTapGesture { model.onPick?(index) }
     }
 }
 
