@@ -324,6 +324,19 @@ private struct AccessibilityStep: View {
             .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.primary.opacity(0.04)))
             .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Color.primary.opacity(0.08)))
 
+            if !model.granted {
+                HStack(spacing: 10) {
+                    Text("Plinth is already switched on in the list, but nothing changes?")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                    Button("Reset Permission") {
+                        Permissions.resetAccessibility()
+                        Permissions.requestAccessibility()
+                    }
+                    .controlSize(.small)
+                }
+            }
+
             PrivacyNote(text: "Plinth has no networking code and no third-party code. Nothing it sees leaves your Mac.")
             Spacer(minLength: 0)
         }

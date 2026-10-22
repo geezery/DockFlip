@@ -108,3 +108,5 @@
 "Paste" = "Sijoita";
 "Select All" = "Valitse kaikki";
 "Continue Setup…" = "Jatka käyttöönottoa…";
+"Plinth is already switched on in the list, but nothing changes?" = "Plinth on jo päällä listassa, mutta mitään ei tapahdu?";
+"Reset Permission" = "Nollaa lupa";
