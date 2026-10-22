@@ -55,7 +55,7 @@ single and dual displays.
 - Carbon hot keys for all shortcuts (work under secure keyboard input).
 - Window cards that tell windows apart without thumbnails.
 - English-only UI.
-- Type to filter in ⌘Tab, including browser tabs.
+- Type to filter in ⌘Tab.
 - Browser tabs in the Dock window list.
 - New menu bar icon.
 

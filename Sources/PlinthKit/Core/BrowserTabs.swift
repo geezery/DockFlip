@@ -59,43 +59,69 @@ enum BrowserTabs {
         bundleID.map { apps.contains($0) } ?? false
     }
 
-    /// Reads the tab bar of `window`. Walks the window's Accessibility tree
-    /// breadth-first, never into web pages, with a node limit. Thread-safe:
-    /// call it off the main thread.
-    static func read(window: AXUIElement, windowID: CGWindowID) -> [BrowserTab] {
-        var queue: [(AXUIElement, Int)] = [(window, 0)]
+    /// What a read saw, for the debug log when no tabs were found (role names
+    /// and counts only — never titles).
+    struct ReadStats: Sendable {
         var visited = 0
-        while !queue.isEmpty, visited < 800 {
-            let (element, depth) = queue.removeFirst()
-            visited += 1
-            let role = string(element, kAXRoleAttribute)
-            if role == "AXWebArea" { continue } // page content: never inside
-            if role == kAXTabGroupRole {
-                let tabs = tabButtons(in: element, windowID: windowID)
-                if !tabs.isEmpty { return tabs }
-            }
-            guard depth < 10 else { continue }
-            for child in children(element) {
-                queue.append((child, depth + 1))
-            }
+        var tabGroups = 0
+        var tabButtons = 0
+        var untitledTabs = 0
+        var roles: [String: Int] = [:]
+
+        var summary: String {
+            let top = roles.sorted { $0.value > $1.value }.prefix(14).map { "\($0.key)×\($0.value)" }
+            return "visited \(visited), tab groups \(tabGroups), tab buttons \(tabButtons), untitled \(untitledTabs); " + top.joined(separator: " ")
         }
-        return []
     }
 
-    private static func tabButtons(in group: AXUIElement, windowID: CGWindowID) -> [BrowserTab] {
-        var tabs: [BrowserTab] = []
-        // Some browsers wrap the tabs in one more group.
-        var candidates = children(group)
-        if candidates.count == 1, string(candidates[0], kAXRoleAttribute) == kAXGroupRole {
-            candidates = children(candidates[0])
-        }
-        for element in candidates {
-            let role = string(element, kAXRoleAttribute)
+    /// Reads the tabs of `window`: every tab button inside its tab bar, however
+    /// deeply the browser nests it (Safari puts its tabs a few groups down inside
+    /// the toolbar). Breadth-first, never into web pages, with a node limit.
+    /// Thread-safe: call it off the main thread.
+    static func read(window: AXUIElement, windowID: CGWindowID) -> (tabs: [BrowserTab], stats: ReadStats) {
+        var stats = ReadStats()
+        var queue: [(element: AXUIElement, depth: Int, inTabBar: Bool)] = [(window, 0, false)]
+        var head = 0
+        var found: [(element: AXUIElement, position: CGPoint)] = []
+        var pendingInTabBar = 0
+        while head < queue.count, stats.visited < 1500 {
+            let (element, depth, inTabBar) = queue[head]
+            head += 1
+            if inTabBar { pendingInTabBar -= 1 }
+            // Tabs found and nothing of a tab bar left to look at: done.
+            if !found.isEmpty, pendingInTabBar <= 0, !inTabBar { break }
+            stats.visited += 1
+            let role = string(element, kAXRoleAttribute) ?? "?"
+            stats.roles[role, default: 0] += 1
+            if role == "AXWebArea" { continue } // page content: never inside
             let subrole = string(element, kAXSubroleAttribute)
-            guard role == kAXRadioButtonRole || subrole == "AXTabButton" else { continue }
-            let raw = string(element, kAXTitleAttribute) ?? string(element, kAXDescriptionAttribute) ?? ""
-            let fullTitle = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !fullTitle.isEmpty else { continue }
+            if subrole == "AXTabButton" || (inTabBar && role == kAXRadioButtonRole) {
+                found.append((element, position(of: element)))
+                continue
+            }
+            let isTabBar = role == kAXTabGroupRole
+            if isTabBar { stats.tabGroups += 1 }
+            guard depth < 14 else { continue }
+            for child in children(element) {
+                let childInTabBar = inTabBar || isTabBar
+                if childInTabBar { pendingInTabBar += 1 }
+                queue.append((child, depth + 1, childInTabBar))
+            }
+        }
+        // Breadth-first order is not tab order when pinned tabs sit in a group of
+        // their own: sort by place on screen (left to right, then top to bottom).
+        found.sort { $0.position.x != $1.position.x ? $0.position.x < $1.position.x : $0.position.y < $1.position.y }
+        let vertical = found.count > 1 && Set(found.map(\.position.x)).count == 1
+        if vertical { found.sort { $0.position.y < $1.position.y } }
+
+        stats.tabButtons = found.count
+        var tabs: [BrowserTab] = []
+        for (element, _) in found {
+            let fullTitle = title(of: element)
+            guard !fullTitle.isEmpty else {
+                stats.untitledTabs += 1
+                continue
+            }
             let parts = TabTitle.split(fullTitle)
             var value: CFTypeRef?
             AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value)
@@ -112,7 +138,36 @@ enum BrowserTabs {
                 element: element
             ))
         }
-        return tabs
+        return (tabs, stats)
+    }
+
+    /// A tab's title: its own title or description, or else the text inside it.
+    private static func title(of element: AXUIElement) -> String {
+        for name in [kAXTitleAttribute, kAXDescriptionAttribute] {
+            if let text = string(element, name)?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                return text
+            }
+        }
+        var level = children(element)
+        for _ in 0..<2 {
+            for child in level where string(child, kAXRoleAttribute) == kAXStaticTextRole {
+                if let text = string(child, kAXValueAttribute)?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                    return text
+                }
+            }
+            level = level.flatMap { children($0) }
+        }
+        return ""
+    }
+
+    private static func position(of element: AXUIElement) -> CGPoint {
+        var value: CFTypeRef?
+        var point = CGPoint.zero
+        if AXUIElementCopyAttributeValue(element, kAXPositionAttribute as CFString, &value) == .success,
+           let value, CFGetTypeID(value) == AXValueGetTypeID() {
+            AXValueGetValue(value as! AXValue, .cgPoint, &point)
+        }
+        return point
     }
 
     private static func string(_ element: AXUIElement, _ name: String) -> String? {
@@ -166,7 +221,12 @@ final class TabStore {
         Task.detached(priority: .userInitiated) {
             var results: [(CGWindowID, [BrowserTab])] = []
             for job in jobs {
-                results.append((job.id, BrowserTabs.read(window: job.element.element, windowID: job.id)))
+                let read = BrowserTabs.read(window: job.element.element, windowID: job.id)
+                if read.tabs.isEmpty {
+                    let summary = read.stats.summary
+                    Log.registry.notice("No tabs found in window \(job.id, privacy: .public): \(summary, privacy: .public)")
+                }
+                results.append((job.id, read.tabs))
             }
             let finished = results
             await MainActor.run {
@@ -177,7 +237,7 @@ final class TabStore {
                     store.cache[id] = (time, tabs)
                 }
                 let total = finished.reduce(0) { $0 + $1.1.count }
-                Log.registry.debug("Read \(total, privacy: .public) tabs in \(finished.count, privacy: .public) windows")
+                Log.registry.notice("Read \(total, privacy: .public) tabs in \(finished.count, privacy: .public) windows")
                 done()
             }
         }

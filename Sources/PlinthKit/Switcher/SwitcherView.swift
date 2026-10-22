@@ -5,8 +5,6 @@ struct SwitcherItem: Identifiable {
     /// "w123" for a window, "w123:4" for one of its tabs.
     let id: String
     let windowID: CGWindowID
-    /// Set when this card is a browser tab (shown only while filtering).
-    var tab: BrowserTab? = nil
     let title: String
     let appName: String
     let icon: NSImage?
@@ -28,7 +26,6 @@ struct SwitcherItem: Identifiable {
 extension SwitcherItem {
     /// "Safari", "Safari · Minimized", "Safari · On another desktop".
     var subtitle: String {
-        if let tab { return "\(appName) · \(L("Tab"))" + (tab.site.map { " · \($0)" } ?? "") }
         if isMinimized { return "\(appName) · \(L("Minimized"))" }
         if isOnOtherSpace { return "\(appName) · \(L("On another desktop"))" }
         return appName
@@ -76,8 +73,7 @@ struct SwitcherView: View {
                 ZStack {
                     ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
                         let depth = model.depth(of: index)
-                        // A tab's card never shows the window's picture: that is another tab.
-                        FanCard(item: item, thumbnail: item.tab == nil ? model.thumbnails[item.windowID] : nil, isFront: depth == 0)
+                        FanCard(item: item, thumbnail: model.thumbnails[item.windowID], isFront: depth == 0)
                             .frame(width: cardWidth, height: cardHeight)
                             // Every window turned the same way: its left edge further away.
                             .rotation3DEffect(
@@ -232,10 +228,6 @@ struct FanCard: View {
                 Text(verbatim: item.title)
                     .font(.system(size: 22, weight: .semibold))
                     .lineLimit(3)
-                if item.tab != nil {
-                    Label("Browser tab", systemImage: "square.on.square")
-                        .font(.system(size: 14))
-                }
                 if let document = item.document, document != item.title {
                     Label {
                         Text(verbatim: document).lineLimit(1)
