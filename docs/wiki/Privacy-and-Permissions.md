@@ -2,6 +2,15 @@
 
 DockFlip is nosy about your windows and nothing else.
 
+## No screen recording required
+
+Most Dock preview apps and window switchers ask for Screen Recording on first
+launch, because they're built around screenshots. DockFlip draws its window
+cards, mini-maps and tab lists from what macOS already shares through
+Accessibility: titles, positions, icons and tabs. It looks polished from the
+first second without ever seeing your screen. Thumbnails exist, but they're
+opt-in.
+
 ## Permissions
 
 | Permission | Needed? | Used for |
@@ -34,3 +43,9 @@ If you turn thumbnails on:
 
 All of this lives in one file, `Sources/DockFlipKit/Previews/PreviewProvider.swift`,
 so you can read every rule yourself.
+
+## Check it yourself
+
+[SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md) shows
+how to confirm there's no networking code, verify a download's build provenance
+and check its signature.

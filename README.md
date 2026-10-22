@@ -8,18 +8,19 @@
   <img src="https://img.shields.io/badge/Swift-6-0c9a6a" alt="Swift 6">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0c9a6a" alt="GPL-3.0"></a>
   <img src="https://img.shields.io/badge/price-%E2%82%AC0-0c9a6a" alt="Price: €0">
+  <img src="https://img.shields.io/badge/screen%20recording-not%20needed-0c9a6a" alt="Screen recording: not needed">
 </p>
 
 <p align="center">
   <b>Window lists in your Dock · a Flip 3D ⌘Tab that switches <i>windows</i> · Win-style snapping</b><br>
-  One small, free, open-source app. Works the moment you open it.
+  One small, free, open-source app. One permission, no screen recording, and it works the moment you open it.
 </p>
 
 <p align="center">
   <a href="#install">Install</a> ·
   <a href="#features">Features</a> ·
   <a href="#shortcuts">Shortcuts</a> ·
-  <a href="#privacy">Privacy</a> ·
+  <a href="#privacy-no-screen-recording-required">Privacy</a> ·
   <a href="https://github.com/geezery/DockFlip/wiki">Wiki</a> ·
   <a href="#faq">FAQ</a>
 </p>
@@ -37,6 +38,14 @@ prompts and three ways for things to argue with each other.
 **DockFlip is one app that does all three.** It takes the bits Windows got right
 and leaves the rest where it was. No Start menu, no surprise restarts, no
 paperclip.
+
+- **Polished without peeking.** Window cards, mini-maps and tab lists look the
+  part without Screen Recording. Other switchers want to see your screen;
+  DockFlip only needs Accessibility.
+- **Lean for real.** No polling, no timers, no dependencies, no network. When
+  you're not using it, it's doing nothing at all.
+- **Right out of the box.** Three settings, all with sensible defaults. You
+  install it, allow one permission, and get on with your day.
 
 ## Features
 
@@ -145,20 +154,37 @@ Other targets: `make` (build only), `make run`, `make test`, `make clean`.
 All of these are also listed under **Window Layout** in DockFlip's menu bar
 menu, where clicking one applies it.
 
-## Privacy
+## Privacy: no screen recording required
 
-DockFlip is nosy about your windows and nothing else.
+Most Dock preview apps and window switchers ask for **Screen Recording** the
+moment you open them, because they're built around screenshots of your windows.
+DockFlip isn't. Its window cards, mini-maps and tab lists are drawn from what
+macOS already shares with it (titles, positions, icons, tabs), so it looks
+polished from the first second without ever seeing your screen.
 
-- **One required permission:** Accessibility, used to list, focus, move and
-  minimize windows and to catch the shortcuts.
-- **No networking code at all.** No analytics, no update check, no "anonymous"
-  anything. You're welcome to grep for it.
+- **One permission:** Accessibility. That's the whole list.
+- **No networking code.** No analytics, no crash reporter, no update check.
+  DockFlip can't phone home, and nothing can phone it.
 - **No third-party code.** Apple frameworks only.
-- **Thumbnails are opt-in**, and they're the only thing that uses Screen
-  Recording. Pictures are taken on demand at thumbnail size and kept in memory
-  only: at most 24, for two minutes. They're never taken while a password
-  field is active, and never of password managers or System Settings.
-- **Window and tab titles are never written to the debug log.**
+- **Your typing stays yours.** DockFlip sees ordinary keys only while the ⌘Tab
+  switcher is open, for type-to-filter.
+- **Thumbnails are opt-in.** If you want real pictures, they're taken on demand,
+  kept in memory for two minutes at most, and never taken of password managers,
+  System Settings or while a password field is active.
+
+The details, and how to check every claim yourself, are in [SECURITY.md](SECURITY.md).
+
+## ☕ Buy DockFlip a coffee
+
+DockFlip is free and stays free. Apple, however, charges developers 99 € a year
+to let an app open without a scary "could not verify" warning. Until then,
+installing takes a detour through System Settings, and so does every update.
+
+**A 2 € coffee** gets DockFlip closer to being notarized: download, drag to
+Applications, open, done. Updates that simply open. About fifty coffees cover a
+year. [**Buy DockFlip a coffee →**](https://github.com/sponsors/geezery)
+
+No coffee? A ⭐ is free and helps the next person find DockFlip.
 
 ## FAQ
 
