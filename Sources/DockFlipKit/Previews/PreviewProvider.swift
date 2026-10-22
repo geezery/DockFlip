@@ -39,6 +39,9 @@ final class PreviewProvider {
     ]
 
     private var cache: [CGWindowID: (image: NSImage, time: Date)] = [:]
+    /// Minimized windows cannot be captured; their last picture is kept until
+    /// they come back, not just two minutes (still within `maxCached`).
+    private var keptWhileMinimized = Set<CGWindowID>()
     /// The window list from ScreenCaptureKit, reused for a moment so one ⌘Tab does not ask for it 20 times.
     private var content: (value: SCShareableContent, time: Date)?
     /// The window list being fetched; captures that start together share it.
@@ -68,6 +71,7 @@ final class PreviewProvider {
         let clear: @Sendable (Notification) -> Void = { [weak self] _ in
             Task { @MainActor in
                 self?.cache.removeAll()
+                self?.keptWhileMinimized.removeAll()
                 self?.content = nil
             }
         }
@@ -84,6 +88,11 @@ final class PreviewProvider {
         Settings.shared.previewsEnabled && CGPreflightScreenCaptureAccess()
     }
 
+    /// Apps never pictured, whatever the settings: they show passwords and secrets.
+    static func neverPictured(_ bundleID: String?) -> Bool {
+        bundleID.map { neverCapture.contains($0) } ?? false
+    }
+
     /// Asks macOS for Screen Recording. macOS may require DockFlip to restart before it applies.
     static func requestPermission() {
         _ = CGRequestScreenCaptureAccess()
@@ -98,11 +107,16 @@ final class PreviewProvider {
 
     private func prune() {
         let now = Date()
-        cache = cache.filter { now.timeIntervalSince($0.value.time) < Self.keptFor }
+        cache = cache.filter { keptWhileMinimized.contains($0.key) || now.timeIntervalSince($0.value.time) < Self.keptFor }
         if cache.count > Self.maxCached {
-            let oldest = cache.sorted { $0.value.time < $1.value.time }.prefix(cache.count - Self.maxCached)
-            for (id, _) in oldest { cache[id] = nil }
+            // Over the limit: the oldest pictures go first, minimized windows' last.
+            let order = cache.sorted {
+                let kept = (keptWhileMinimized.contains($0.key), keptWhileMinimized.contains($1.key))
+                return kept.0 != kept.1 ? !kept.0 : $0.value.time < $1.value.time
+            }
+            for (id, _) in order.prefix(cache.count - Self.maxCached) { cache[id] = nil }
         }
+        keptWhileMinimized.formIntersection(cache.keys)
     }
 
     /// A fresh image of the window — or, when it cannot be captured right now
@@ -112,6 +126,11 @@ final class PreviewProvider {
         if let bundleID = window.bundleID, Self.neverCapture.contains(bundleID) { return nil }
         guard !IsSecureEventInputEnabled() else { return nil }
 
+        if window.isMinimized, cache[window.id] != nil {
+            keptWhileMinimized.insert(window.id)
+        } else if !window.isMinimized {
+            keptWhileMinimized.remove(window.id)
+        }
         prune()
         let cached = cache[window.id]
         if let cached, Date().timeIntervalSince(cached.time) < Self.freshFor { return cached.image }

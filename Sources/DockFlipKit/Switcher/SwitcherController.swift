@@ -95,6 +95,7 @@ final class SwitcherController {
         guard !windows.isEmpty else { return false }
 
         allWindows = windows
+        let previews = PreviewProvider.shared.isAvailable
         query = ""
         model.query = ""
         model.thumbnails = [:]
@@ -111,7 +112,8 @@ final class SwitcherController {
                 document: window.document,
                 screenName: placement?.screen.localizedName,
                 sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
-                tint: WindowAppearance.tint(of: window)
+                tint: WindowAppearance.tint(of: window),
+                neverPictured: previews && PreviewProvider.neverPictured(window.bundleID)
             )
         }
         allItems = model.items

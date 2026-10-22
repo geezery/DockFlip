@@ -21,6 +21,8 @@ struct SwitcherItem: Identifiable {
     let sizeText: String
     /// The app's colour, taken from its icon; tints the card's title bar.
     let tint: Color
+    /// Thumbnails are on, but this app is never pictured (password managers, System Settings).
+    let neverPictured: Bool
 }
 
 extension SwitcherItem {
@@ -243,6 +245,11 @@ struct FanCard: View {
                 Text(verbatim: item.subtitle)
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
+                if item.neverPictured {
+                    Label("No picture, for privacy", systemImage: "lock")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                }
                 HStack(spacing: 14) {
                     Minimap(rect: item.minimap, isMinimized: item.isMinimized, tint: item.tint, icon: item.icon)
                         .frame(width: 160, height: 100)
