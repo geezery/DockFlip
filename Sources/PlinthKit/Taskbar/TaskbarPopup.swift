@@ -184,8 +184,13 @@ final class TaskbarPopup {
     }
 
     private func presentUnmeasured(_ itemID: String, on displayID: CGDirectDisplayID) {
+        // Nothing to list (say, the mouse moved on to an app with no windows):
+        // the previous app's list must not stay up.
         guard let source, let item = source.item(itemID, on: displayID),
-              let anchor = source.anchorRect(for: itemID, on: displayID) else { return }
+              let anchor = source.anchorRect(for: itemID, on: displayID) else {
+            hideNow()
+            return
+        }
         let changedItem = current?.itemID != itemID
         current = (itemID, displayID)
         if changedItem { model.expanded = [] }
