@@ -226,8 +226,3 @@ final class TabStore {
         }
     }
 }
-
-/// An Accessibility element handed to a background task (AX calls are thread-safe).
-struct SendableElement: @unchecked Sendable {
-    let element: AXUIElement
-}

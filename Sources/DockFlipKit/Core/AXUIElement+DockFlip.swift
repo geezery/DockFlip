@@ -81,3 +81,9 @@ extension AXUIElement {
         AXUIElementPerformAction(self, action as CFString) == .success
     }
 }
+
+/// An Accessibility element handed between the main thread and a background
+/// task. Accessibility calls are thread-safe, so this is safe to send.
+struct SendableElement: @unchecked Sendable {
+    let element: AXUIElement
+}

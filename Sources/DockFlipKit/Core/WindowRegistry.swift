@@ -436,14 +436,15 @@ public final class WindowRegistry {
         searchedElsewhere[pid, default: []].formUnion(missing)
         let name = tracked.app.localizedName ?? "?"
         Task.detached(priority: .utility) { [weak self] in
-            let found = WindowServer.findWindows(pid: pid, ids: missing)
-            await MainActor.run {
-                guard let self else { return }
-                self.searchingElsewhere.remove(pid)
-                self.adopt(found, pid: pid)
-                Log.registry.notice("\(name, privacy: .public): \(found.count, privacy: .public) of \(missing.count, privacy: .public) windows found on other Spaces")
-            }
+            let found = WindowServer.findWindows(pid: pid, ids: missing).mapValues { SendableElement(element: $0) }
+            await self?.searchFinished(found, pid: pid, of: missing.count, name: name)
         }
+    }
+
+    private func searchFinished(_ found: [CGWindowID: SendableElement], pid: pid_t, of total: Int, name: String) {
+        searchingElsewhere.remove(pid)
+        adopt(found.mapValues(\.element), pid: pid)
+        Log.registry.notice("\(name, privacy: .public): \(found.count, privacy: .public) of \(total, privacy: .public) windows found on other Spaces")
     }
 
     private func adopt(_ found: [CGWindowID: AXUIElement], pid: pid_t) {

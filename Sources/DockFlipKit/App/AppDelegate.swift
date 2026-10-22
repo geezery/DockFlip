@@ -86,12 +86,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         isRelaunching = true
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.createsNewApplicationInstance = true
+        // The app delegate lives as long as the app, so capturing it strongly is fine.
         NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { app, error in
             let started = app != nil && error == nil
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 guard started else {
                     // Nothing takes over: stay, and keep ⌘Tab working.
-                    self?.isRelaunching = false
+                    self.isRelaunching = false
                     Log.app.error("Restart failed; DockFlip keeps running")
                     return
                 }
