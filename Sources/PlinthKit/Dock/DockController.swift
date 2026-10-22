@@ -30,6 +30,9 @@ final class DockController: PopupSource {
     /// The mouse-down was taken over, so its mouse-up is too.
     private var swallowNextUp = false
     private var tokens: [NSObjectProtocol] = []
+    /// Watches the mouse while an icon is hovered: the Dock does not always say
+    /// when the mouse leaves it, which left the popup standing.
+    private var exitWatch: Task<Void, Never>?
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -108,6 +111,31 @@ final class DockController: PopupSource {
             registry.probe(pid: app.processIdentifier)
         }
         popup.itemEntered(hovered.key, on: 0)
+        watchForExit()
+    }
+
+    /// Ten times a second, only while an icon is hovered: once the mouse is
+    /// neither on that icon nor on the popup, the popup goes.
+    private func watchForExit() {
+        guard exitWatch == nil else { return }
+        exitWatch = Task { @MainActor [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(100))
+                guard let self, let hovered = self.hovered else { break }
+                let mouse = NSEvent.mouseLocation
+                // The icon, reaching up to the popup so the way there counts as inside.
+                let icon = hovered.anchor.insetBy(dx: -4, dy: -4).union(
+                    NSRect(x: hovered.anchor.minX, y: hovered.anchor.maxY, width: hovered.anchor.width, height: 14)
+                )
+                let onPopup = self.popup.visibleFrame?.insetBy(dx: -6, dy: -6).contains(mouse) ?? false
+                if !icon.contains(mouse), !onPopup {
+                    self.hovered = nil
+                    self.popup.itemExited()
+                    break
+                }
+            }
+            self?.exitWatch = nil
+        }
     }
 
     /// The app behind a Dock icon, or nil for folders, the Trash and separators.

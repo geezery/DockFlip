@@ -114,6 +114,8 @@ final class TaskbarPopup {
     private var current: (itemID: String, displayID: CGDirectDisplayID)?
 
     var isVisible: Bool { panel?.isVisible == true }
+    /// The popup's frame on screen while it is visible.
+    var visibleFrame: NSRect? { isVisible ? panel?.frame : nil }
 
     init(registry: WindowRegistry) {
         self.registry = registry
