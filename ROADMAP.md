@@ -24,15 +24,9 @@ shows a menu bar icon.
 Chrome, VS Code, Slack (Electron), Terminal and Xcode, through sleep/wake and
 monitor plug/unplug, for a week of daily use without a wrong switch.
 
-## M2 — Taskbar
-- Per-display non-activating panel drawn over the Dock area.
-- Combined buttons (default) and never-combine mode.
-- Pins imported from the Dock on first launch.
-- Click / click-to-minimize / middle-click / right-click menu.
-- Hover window list. Badges. File-drag hover activation.
-- Clock + calendar flyout, show-desktop strip.
-
-**Exit:** a Windows user can use the taskbar without reading anything.
+## M2 — Taskbar (done, then replaced)
+- An own taskbar drawn over the Dock area. Built and tested; dropped in favour of
+  the Dock itself (M3.6). Kept in the git history.
 
 ## M3 — Window management
 - ⌃⌥ keyboard snapping per the keyboard map.
@@ -48,20 +42,19 @@ single and dual displays.
 - "Not responding" indicator.
 - Debug logging, timing statistics and debug log export.
 
-## M3.6 — Dock mode and Flip 3D (v0.3)
-- Dock mode as the default: hover window lists and click-to-minimize on the real Dock.
-- DockFlip's own taskbar becomes the alternative in Settings.
-- ⌘Tab as Windows 7 Flip 3D; DockFlip holds the keyboard while it is open.
+## M3.6 — The Dock and Flip 3D (v0.3)
+- Hover window lists and click-to-minimize on the real Dock; the own taskbar removed.
+- ⌘Tab as Windows 7 Flip 3D, with type-to-filter; holds the keyboard while open.
 - Carbon hot keys for all shortcuts (work under secure keyboard input).
+- Windows on other Spaces and full-screen apps.
 - Window cards that tell windows apart without thumbnails.
-- English-only UI.
-- Type to filter in ⌘Tab.
 - Browser tabs in the Dock window list.
-- New menu bar icon.
+- Window Layout cheat sheet in the menu bar menu.
+- 15 languages with a language menu.
+- Code review: feature folders, shared helpers, ARCHITECTURE.md; renamed to DockFlip.
 
 ## M4 — Previews and polish
 - Opt-in previews with ScreenCaptureKit; capture on demand, memory only.
-- English UI; translations welcome later (strings use English keys).
 - Performance budgets verified.
 
 ## M5 — Release (v1.0) — no Apple account, no fees
@@ -79,4 +72,4 @@ single and dual displays.
 - Build provenance attestations on every release.
 
 ## Later (Windows defaults, deferred)
-- Snap layouts, snap assist, jump lists, other Spaces.
+- Snap layouts, snap assist, jump lists.

@@ -35,7 +35,7 @@ app: build
 	     -e 's/__BUILD__/$(BUILD_NUM)/' \
 	     -e 's/__BUNDLE_ID__/$(BUNDLE_ID)/' \
 	     Resources/Info.plist > "$(APP)/Contents/Info.plist"
-	@cp -R Resources/en.lproj "$(APP)/Contents/Resources/"
+	@cp -R Resources/*.lproj "$(APP)/Contents/Resources/"
 	@cp Resources/AppIcon.icns "$(APP)/Contents/Resources/AppIcon.icns"
 	@$(MAKE) --no-print-directory sign
 	@echo "Built $(APP)"

@@ -40,7 +40,7 @@ final class OnboardingModel: ObservableObject {
 }
 
 /// First-run setup: what DockFlip is, the one required permission, the previews
-/// choice (nothing preselected), and fitting the Dock and macOS tiling to DockFlip.
+/// choice (nothing preselected), and turning off macOS's own edge tiling.
 /// The only timer in the app lives here, and only while this window is open.
 @MainActor
 final class OnboardingController: NSObject, NSWindowDelegate {

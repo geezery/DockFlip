@@ -32,6 +32,7 @@ extension SwitcherItem {
     }
 }
 
+/// What the switcher view draws; the controller changes it, the view only reads it.
 @MainActor
 final class SwitcherModel: ObservableObject {
     @Published var items: [SwitcherItem] = []

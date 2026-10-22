@@ -7,6 +7,20 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
+		<string>fi</string>
+		<string>sv</string>
+		<string>da</string>
+		<string>nb</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>it</string>
+		<string>pt-BR</string>
+		<string>nl</string>
+		<string>pl</string>
+		<string>ja</string>
+		<string>ko</string>
+		<string>zh-Hans</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>DockFlip</string>

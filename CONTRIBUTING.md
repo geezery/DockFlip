@@ -8,7 +8,8 @@ Thanks for helping. A few rules keep DockFlip small and predictable.
    New settings and features beyond it need a strong case — open an issue first.
 2. **No third-party dependencies.** Apple frameworks only.
 3. **No networking code.** Not even an update check.
-4. **No polling.** React to Accessibility and NSWorkspace notifications.
+4. **No polling, no repeating timers.** React to Accessibility, NSWorkspace and
+   input events.
 5. **Reliability first.** Test with Electron apps (Slack, VS Code), Finder,
    Safari, Chrome, Terminal, sleep/wake and plugging a display in and out.
 
@@ -29,8 +30,11 @@ make run
 - UI state on the main actor; C callbacks hop in with `MainActor.assumeIsolated`.
 - Pure logic (ordering, geometry, selection) lives in small value types with
   unit tests.
-- User-facing strings are English and use the English text as the key
-  (`L("…")`), so translations can be added later.
+- User-facing strings are English and use the English text as the key:
+  `L("…")` in AppKit code, `Text("…")` in SwiftUI. Add every new string to each
+  `Resources/*.lproj/Localizable.strings` (English as a placeholder is fine).
+- Read [ARCHITECTURE.md](ARCHITECTURE.md) for where things live. New code goes
+  into the feature folder it belongs to; shared views go to `UI/`.
 
 ## License
 

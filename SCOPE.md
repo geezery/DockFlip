@@ -1,8 +1,8 @@
 # DockFlip — Scope
 
-> Working name. DockFlip is a free, open-source (GPL-3.0) macOS app that brings the
-> Windows 11 taskbar, Alt-Tab window switching and basic window snapping to the Mac —
-> alongside the Dock, not instead of it.
+> DockFlip is a free, open-source (GPL-3.0) macOS app that gives the Dock the Windows 11
+> taskbar's habits, adds Alt-Tab style window switching (as Windows 7 Flip 3D) and basic
+> window snapping — on top of the Dock, not instead of it.
 
 ## Why
 
@@ -20,9 +20,8 @@ settings.
 2. **Zero configuration.** A new user installs, grants one permission, and is done.
 3. **Reliability before features.** A feature that misbehaves in edge cases
    (Electron apps, dialogs, sleep/wake, display changes) is worse than no feature.
-4. **Lightweight.** No third-party dependencies. Event-driven, no polling — with one
-   documented exception: Dock badges are read every 15 seconds, because macOS
-   offers no notification for them.
+4. **Lightweight.** No third-party dependencies. Event-driven, no polling, no
+   repeating timers.
 5. **Private by default.** Full functionality with Accessibility permission only.
    Screen Recording is opt-in, used only for previews. No networking code at all.
 6. **Latest macOS only.** macOS 26 or later. No back-porting.
@@ -39,7 +38,7 @@ settings.
 
 ## In scope (v1)
 
-### Dock mode (default)
+### The Dock
 - The macOS Dock stays as it is: folders, Trash, badges, drag and drop, settings.
 - Hover an app icon: list of the app's windows (titles), or previews if enabled.
 - Click the front app's icon: minimize its window; click again: restore.
@@ -53,21 +52,6 @@ settings.
   Firefox turns on its accessibility engine when asked for its tabs.
 - How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
   takes over clicks only on icons of apps that have windows (DockDoor's approach).
-
-### DockFlip taskbar (alternative, Settings → Taskbar)
-- One taskbar per display, showing the windows on that display.
-- Default: buttons combined per app, icons only (Windows 11 default).
-  Single alternative: never combine, titles shown.
-- Pinned apps; on first launch, pins are imported from the Dock.
-- Only apps with windows are shown, plus pinned apps.
-- Click: activate window. Click on the active window: minimize. Click again: restore.
-- Middle-click: close window. Right-click: minimize, close, close all windows,
-  quit app, pin/unpin.
-- Hover: list of the app's windows (titles), or previews if enabled.
-- Minimized and hidden (⌘H) windows are listed and restorable.
-- Badges (unread counts) read from the Dock's accessibility tree.
-- Dragging a file over a button activates that window (Windows behaviour).
-- Right end: clock with calendar flyout, and a "show desktop" strip.
 
 ### Window switcher (⌘Tab)
 - All windows, most-recently-used order: the current Space, minimized windows,
@@ -109,10 +93,13 @@ settings.
   under the mouse below it.
 - When off: large app icon, window title, and a mini-map of the window's outline
   on its display. Previews are switched on in onboarding or Settings only — no
-  reminders in the taskbar.
+  reminders anywhere else.
 
-### Localization
-- English only in v1 (strings are ready for translation).
+### Languages
+- 15: English, Finnish, Swedish, Danish, Norwegian, German, French, Spanish,
+  Italian, Portuguese (Brazil), Dutch, Polish, Japanese, Korean, Chinese
+  (Simplified). Follows macOS; the menu bar menu can pin one for DockFlip only,
+  every language shown with its English name so English is always findable.
 
 ## Keyboard map
 
@@ -127,28 +114,26 @@ with app shortcuts; Globe combinations belong to macOS's own tiling.)
 | Win+↓ | ⌃⌥↓ (restore, then minimize) |
 | Win+→ then Win+↑ | ⌃⌥→ then ⌃⌥↑ (top-right quarter) |
 | Win+Shift+← / → | ⌃⌥⇧← / → (move to other display) |
-| Win+1…9 | ⌃⌥1…9 |
+| Win+1…9 | ⌃⌥1…9 (n-th app in the Dock) |
 | Win+D | ⌃⌥D (show desktop) |
-| Win+T | ⌃⌥T (cycle taskbar buttons) |
 | Win+E | ⌃⌥E (new Finder window) |
 
-## Settings (maximum five)
+## Settings (three)
 
 1. Launch at login — on
-2. Window previews — off until chosen in onboarding
-3. Combine taskbar buttons — always / never
-4. Show taskbar on all displays — on
-5. Keyboard shortcuts — on
+2. Window thumbnails — off until chosen in onboarding
+3. Keyboard shortcuts — on
 
 Anything else needs a strong case against principle 1.
 
 ## Out of scope
 
-- Replacing the Dock (Trash, Dock folders, Launchpad). The Dock stays.
+- Replacing the Dock. The Dock stays; an own taskbar was built and dropped
+  before v1 (it is in the git history).
 - Rectangle-style extras: thirds, almost-maximize, centering, gaps,
   grow/shrink, cycling sizes.
 - Moving other apps' menu bar icons into a tray.
-- Progress bars on taskbar buttons (no macOS equivalent of `ITaskbarList3`).
+- Progress bars on Dock icons (no macOS equivalent of `ITaskbarList3`).
 - "Always on top" for other apps' windows (requires disabling SIP).
 - Start menu.
 - Per-app CPU/memory, cross-display drag.
@@ -162,23 +147,22 @@ Anything else needs a strong case against principle 1.
 
 ### Also Windows 11 defaults, included
 - Remember window locations per display setup, restore on reconnect.
-- "Not responding" on a hung app's taskbar button.
+- "Not responding" on a hung app's window list.
 
 ## Deferred (after v1, still Windows defaults)
 
 - Snap layouts (hover over the green button).
 - Snap assist (offer other windows for the remaining half after a snap).
 - Jump lists (recent files per app, from Spotlight metadata).
-- Windows on other Spaces (requires private SkyLight calls).
 
 ## Platform constraints and how we handle them
 
 | Constraint | Handling |
 |---|---|
-| No AppBar API: an app cannot reserve screen space | Keep the Dock at the bottom and draw the taskbar over it; "fill" and maximize respect the Dock's reserved area. |
+| No API to extend the Dock | Watch the Dock's Accessibility tree for the hovered icon; take over clicks with a mouse event tap only on icons of apps with windows. |
 | No DWM-style thumbnails: any window image means pixel access | Previews are opt-in behind Screen Recording; full function without it. |
 | Window titles via `CGWindowList` need Screen Recording | Read titles via the Accessibility API instead. |
-| Accessibility API sees only the current Space | v1 covers the current Space only. |
+| Accessibility API sees only the current Space | The window server lists all Spaces; their windows are reached with AltTab's element-id walk. |
 | TCC permissions are tied to the code signature | Sign every release with the project's own self-signed certificate — a stable identity without an Apple account. Ad-hoc builds would lose permissions on every update. |
 | No notarization (no Apple account, by choice) | One-time approval in Privacy & Security on first launch, explained in onboarding. Distributed from our own Homebrew tap; the official `homebrew/cask` requires notarization. |
 
