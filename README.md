@@ -36,7 +36,11 @@ The usual fix is three apps: one for Dock previews, one for an Alt-Tab clone,
 one for window snapping. That's three settings windows, three permission
 prompts and three ways for things to argue with each other.
 
-**DockFlip is one app that does all three.** It takes the bits Windows got right
+Or you're Pentti: 52, runs a company, and on Monday IT swapped his Lenovo for a
+Mac. Pentti doesn't do settings. He wants to hover the taskbar, press Alt+Tab
+and drag a window to the side, like he has for twenty years.
+
+**DockFlip is one app that does all three, for Pentti and for you.** It takes the bits Windows got right
 and leaves the rest where it was. No Start menu, no surprise restarts, no
 paperclip.
 
