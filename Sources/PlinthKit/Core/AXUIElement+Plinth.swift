@@ -31,17 +31,27 @@ extension AXUIElement {
         (copyAttribute(name) as? [AXUIElement]) ?? []
     }
 
-    private func axValue<T>(_ name: String, type: AXValueType, initial: T) -> T? {
+    private func axValue(_ name: String) -> AXValue? {
         guard let value = copyAttribute(name), CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
-        var result = initial
-        return AXValueGetValue(value as! AXValue, type, &result) ? result : nil
+        return (value as! AXValue)
+    }
+
+    private func point(_ name: String) -> CGPoint? {
+        guard let value = axValue(name) else { return nil }
+        var point = CGPoint.zero
+        return AXValueGetValue(value, .cgPoint, &point) ? point : nil
+    }
+
+    private func size(_ name: String) -> CGSize? {
+        guard let value = axValue(name) else { return nil }
+        var size = CGSize.zero
+        return AXValueGetValue(value, .cgSize, &size) ? size : nil
     }
 
     /// Frame in global coordinates with the origin at the top-left of the primary display.
     var frame: CGRect? {
-        guard let origin = axValue(kAXPositionAttribute, type: .cgPoint, initial: CGPoint.zero),
-              let size = axValue(kAXSizeAttribute, type: .cgSize, initial: CGSize.zero) else { return nil }
-        return CGRect(origin: origin, size: size)
+        guard let origin = point(kAXPositionAttribute), let extent = size(kAXSizeAttribute) else { return nil }
+        return CGRect(origin: origin, size: extent)
     }
 
     var windowID: CGWindowID? {
