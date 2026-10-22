@@ -1,6 +1,6 @@
-# Contributing to Plinth
+# Contributing to DockFlip
 
-Thanks for helping. A few rules keep Plinth small and predictable.
+Thanks for helping. A few rules keep DockFlip small and predictable.
 
 ## Before you open a pull request
 
@@ -24,7 +24,7 @@ make run
 
 - Swift, AppKit for windows and panels, SwiftUI for content.
 - **No SwiftUI macros** (`@State`, `@Observable`, `@Entry`, `#Preview` …): their
-  implementations ship only with full Xcode, and Plinth must build with the
+  implementations ship only with full Xcode, and DockFlip must build with the
   Command Line Tools alone. Keep view state in an `ObservableObject` model.
 - UI state on the main actor; C callbacks hop in with `MainActor.assumeIsolated`.
 - Pure logic (ordering, geometry, selection) lives in small value types with

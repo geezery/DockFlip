@@ -1,20 +1,20 @@
-# Plinth — build with the Command Line Tools only (xcode-select --install).
+# DockFlip — build with the Command Line Tools only (xcode-select --install).
 #
-#   make            build build/Plinth.app
+#   make            build build/DockFlip.app
 #   make install    create the local signing certificate (first time only),
 #                   build, and install to /Applications
 #   make run        build and run from build/
 #   make test       run unit tests
 #   make clean
 
-APP_NAME  := Plinth
-BUNDLE_ID ?= io.github.plinth.Plinth
+APP_NAME  := DockFlip
+BUNDLE_ID ?= io.github.dockflip.DockFlip
 VERSION   ?= 0.3.0
 BUILD_NUM ?= 1
 CONFIG    ?= release
-SIGN_ID   ?= Plinth Signing
-SIGN_KEYCHAIN := $(HOME)/Library/Keychains/plinth-signing.keychain-db
-SIGN_PASSFILE := $(HOME)/Library/Application Support/Plinth/signing-keychain-password
+SIGN_ID   ?= DockFlip Signing
+SIGN_KEYCHAIN := $(HOME)/Library/Keychains/dockflip-signing.keychain-db
+SIGN_PASSFILE := $(HOME)/Library/Application Support/DockFlip/signing-keychain-password
 
 BUILD_DIR := build
 APP       := $(BUILD_DIR)/$(APP_NAME).app

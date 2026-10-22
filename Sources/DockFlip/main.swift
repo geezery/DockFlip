@@ -1,0 +1,3 @@
+import DockFlipKit
+
+DockFlipApp.run()

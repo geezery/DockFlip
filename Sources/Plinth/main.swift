@@ -1,3 +1,0 @@
-import PlinthKit
-
-PlinthApp.run()

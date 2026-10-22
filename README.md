@@ -1,4 +1,4 @@
-# Plinth
+# DockFlip
 
 The Windows 11 taskbar, Alt-Tab and window snapping for macOS — in one small,
 free, open-source app that works with default settings.
@@ -21,7 +21,7 @@ Windows 11 taskbar:
   long lists fold behind "Show all N tabs".
 - Folders, the Trash, badges, drag and drop and Dock settings are untouched.
 
-**Plinth taskbar** (Settings → Taskbar) — Plinth's own taskbar instead, one per
+**DockFlip taskbar** (Settings → Taskbar) — DockFlip's own taskbar instead, one per
 display, on the space the Dock reserves.
 - Buttons combined per app (Windows 11 default) or one per window.
 - Click to focus, click the active button to minimize, middle-click to close.
@@ -41,7 +41,7 @@ desktops included. Hold ⌘
 and press Tab to flip the front window to the back, ⇧ to go back, Esc to
 cancel, release ⌘ to switch. ← → and Return work too; you can also click a
 window. Start typing to filter: "team" leaves only windows whose title, app or
-document contains it; then Return switches and Esc clears the filter. While the stack is open, Plinth holds the keyboard, so the app you came
+document contains it; then Return switches and Esc clears the filter. While the stack is open, DockFlip holds the keyboard, so the app you came
 from (Terminal, say) receives nothing. Without thumbnails, each window is a card
 with the title in a bar tinted in the app's colour, the app icon, the open
 document's file name, the display it is on, its size and a mini-map of its
@@ -59,7 +59,7 @@ position.
 | ⌃⌥ D | Show desktop |
 | ⌃⌥ E | New Finder window |
 
-All of these are listed, with their keys, under **Window Layout** in Plinth's
+All of these are listed, with their keys, under **Window Layout** in DockFlip's
 menu bar menu — click one to apply it to the front window.
 
 Drag a window to the left or right edge for a half, to the top edge to
@@ -91,39 +91,39 @@ Window titles are never logged. Nothing is sent anywhere.
 ## Build and install
 
 ```sh
-git clone <repo-url> plinth
-cd plinth
+git clone <repo-url> dockflip
+cd dockflip
 make install
 ```
 
 `make install` does three things:
 
-1. **Creates a local code-signing identity** ("Plinth Signing") — first time only —
-   in its own keychain (`~/Library/Keychains/plinth-signing.keychain-db`) with a
-   random password kept in `~/Library/Application Support/Plinth/`. macOS asks for
+1. **Creates a local code-signing identity** ("DockFlip Signing") — first time only —
+   in its own keychain (`~/Library/Keychains/dockflip-signing.keychain-db`) with a
+   random password kept in `~/Library/Application Support/DockFlip/`. macOS asks for
    your login password once, to trust the certificate. A stable signature keeps the
    Accessibility permission valid across rebuilds. The login keychain is not used,
    so codesign never asks for a keychain password.
-2. Builds `build/Plinth.app` and signs it with that certificate.
+2. Builds `build/DockFlip.app` and signs it with that certificate.
 3. Copies it to `/Applications` and starts it.
 
-Then allow Plinth under **System Settings → Privacy & Security → Accessibility**.
+Then allow DockFlip under **System Settings → Privacy & Security → Accessibility**.
 The setup window opens the right page for you.
 
 Other targets: `make` (build only), `make run`, `make test`, `make clean`.
 
 ### ⌘Tab and the native app switcher
 
-While Plinth runs, ⌘Tab opens Plinth's window switcher instead of macOS's app
-switcher (⌘\` still cycles windows of the current app). Quitting Plinth gives ⌘Tab
-back to macOS. If Plinth ever crashes and the native switcher does not come
-back, start and quit Plinth once, or log out and in.
+While DockFlip runs, ⌘Tab opens DockFlip's window switcher instead of macOS's app
+switcher (⌘\` still cycles windows of the current app). Quitting DockFlip gives ⌘Tab
+back to macOS. If DockFlip ever crashes and the native switcher does not come
+back, start and quit DockFlip once, or log out and in.
 
 ### If ⌘Tab does nothing after a rebuild
 
 macOS can keep a stale Accessibility entry: the switch shows "on" but belongs to
-an older signature. Press **Reset Permission** in Plinth's setup, or run
-`tccutil reset Accessibility io.github.plinth.Plinth`, then allow Plinth again.
+an older signature. Press **Reset Permission** in DockFlip's setup, or run
+`tccutil reset Accessibility io.github.dockflip.DockFlip`, then allow DockFlip again.
 
 ## Privacy
 
@@ -132,29 +132,29 @@ an older signature. Press **Reset Permission** in Plinth's setup, or run
 - Window titles are read through Accessibility, not through screen capture.
 - **No networking code** and no third-party dependencies.
 - **Window thumbnails are opt-in** and are the only feature that uses Screen
-  Recording. When on, Plinth captures one window at a time, at thumbnail size,
+  Recording. When on, DockFlip captures one window at a time, at thumbnail size,
   only while you hover the taskbar or use ⌘Tab; images stay in memory for a few
   seconds and are dropped when the screen locks. Nothing is captured while a
   password field is active anywhere, and never from password managers, Keychain
   Access or System Settings. All of it lives in
-  `Sources/PlinthKit/Previews/PreviewProvider.swift`.
+  `Sources/DockFlipKit/Previews/PreviewProvider.swift`.
 - The only periodic work is reading the Dock's unread badges every 15 seconds.
 
 ## Project layout
 
 ```
-Sources/Plinth/          executable entry point
-Sources/PlinthKit/App/       app delegate, onboarding, permissions
-Sources/PlinthKit/Core/      window registry (Accessibility + window server), geometry
-Sources/PlinthKit/Dock/      Dock mode: hover window lists, click to minimize
-Sources/PlinthKit/Switcher/  ⌘Tab: Carbon hot keys, modifier tap, Flip 3D panel
-Sources/PlinthKit/Taskbar/   taskbar panels, hover popup, calendar, badges
-Sources/PlinthKit/Snap/      snapping state machine, keyboard and drag snapping
-Sources/PlinthKit/Previews/  opt-in thumbnails and their safety rules
-Sources/PlinthKit/Cleanup/   usage tracking and the Clean Up window
-Sources/PlinthKit/Placement/ window positions per display setup
-Sources/PlinthKit/Diagnostics/ logging, timing statistics, debug log export
-Tests/PlinthKitTests/    unit tests (Swift Testing)
+Sources/DockFlip/          executable entry point
+Sources/DockFlipKit/App/       app delegate, onboarding, permissions
+Sources/DockFlipKit/Core/      window registry (Accessibility + window server), geometry
+Sources/DockFlipKit/Dock/      Dock mode: hover window lists, click to minimize
+Sources/DockFlipKit/Switcher/  ⌘Tab: Carbon hot keys, modifier tap, Flip 3D panel
+Sources/DockFlipKit/Taskbar/   taskbar panels, hover popup, calendar, badges
+Sources/DockFlipKit/Snap/      snapping state machine, keyboard and drag snapping
+Sources/DockFlipKit/Previews/  opt-in thumbnails and their safety rules
+Sources/DockFlipKit/Cleanup/   usage tracking and the Clean Up window
+Sources/DockFlipKit/Placement/ window positions per display setup
+Sources/DockFlipKit/Diagnostics/ logging, timing statistics, debug log export
+Tests/DockFlipKitTests/    unit tests (Swift Testing)
 Resources/               Info.plist, localizations (en, fi)
 scripts/                 local signing certificate, app icon generator
 ```

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Creates a self-signed code-signing identity for local builds of Plinth.
+# Creates a self-signed code-signing identity for local builds of DockFlip.
 #
 # Why: macOS ties Accessibility and Screen Recording permissions to an app's
 # signature. Ad-hoc signatures change with every build, so permissions would be
@@ -16,9 +16,9 @@
 
 set -eu
 
-NAME="${1:-Plinth Signing}"
-SUPPORT="$HOME/Library/Application Support/Plinth"
-KEYCHAIN="$HOME/Library/Keychains/plinth-signing.keychain-db"
+NAME="${1:-DockFlip Signing}"
+SUPPORT="$HOME/Library/Application Support/DockFlip"
+KEYCHAIN="$HOME/Library/Keychains/dockflip-signing.keychain-db"
 PASSFILE="$SUPPORT/signing-keychain-password"
 
 mkdir -p "$SUPPORT"
@@ -66,9 +66,9 @@ EOF
     -keyout "$WORK/key.pem" -out "$WORK/cert.pem" -config "$WORK/cert.cfg" >/dev/null 2>&1
 /usr/bin/openssl pkcs12 -export -name "$NAME" \
     -inkey "$WORK/key.pem" -in "$WORK/cert.pem" \
-    -out "$WORK/identity.p12" -passout pass:plinth >/dev/null 2>&1
+    -out "$WORK/identity.p12" -passout pass:dockflip >/dev/null 2>&1
 
-security import "$WORK/identity.p12" -k "$KEYCHAIN" -P plinth -T /usr/bin/codesign >/dev/null
+security import "$WORK/identity.p12" -k "$KEYCHAIN" -P dockflip -T /usr/bin/codesign >/dev/null
 # Let codesign use the key without any prompt (needs this keychain's password, which we have).
 security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$PASS" "$KEYCHAIN" >/dev/null
 

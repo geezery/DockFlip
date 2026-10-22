@@ -60,7 +60,7 @@ def build():
     window(236, 214, 676, 552, accent=False)
     window(336, 300, 790, 650, accent=True)
 
-    # The plinth: the taskbar every window stands on.
+    # The Dock bar every window stands on.
     sh = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     ImageDraw.Draw(sh).rounded_rectangle(R(176, 716, 848, 812), radius=int(36*k), fill=(16, 50, 120, 90))
     img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12*k)))

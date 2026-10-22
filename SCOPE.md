@@ -1,6 +1,6 @@
-# Plinth — Scope
+# DockFlip — Scope
 
-> Working name. Plinth is a free, open-source (GPL-3.0) macOS app that brings the
+> Working name. DockFlip is a free, open-source (GPL-3.0) macOS app that brings the
 > Windows 11 taskbar, Alt-Tab window switching and basic window snapping to the Mac —
 > alongside the Dock, not instead of it.
 
@@ -9,7 +9,7 @@
 On macOS, the things a Windows user does a hundred times a day are spread across
 several apps (a dock-preview app, an Alt-Tab clone, a window manager), each with its
 own settings, permissions and quirks — and none of them behaves like Windows out of
-the box. Plinth does that one job in one small app that is right with default
+the box. DockFlip does that one job in one small app that is right with default
 settings.
 
 ## Guiding principles
@@ -54,7 +54,7 @@ settings.
 - How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
   takes over clicks only on icons of apps that have windows (DockDoor's approach).
 
-### Plinth taskbar (alternative, Settings → Taskbar)
+### DockFlip taskbar (alternative, Settings → Taskbar)
 - One taskbar per display, showing the windows on that display.
 - Default: buttons combined per app, icons only (Windows 11 default).
   Single alternative: never combine, titles shown.
@@ -83,18 +83,18 @@ settings.
 - Previews if enabled; otherwise a card per window: title bar tinted with the
   app's colour, app icon, document file name, display name, size, mini-map.
 - While open, the switcher is the key window (a non-activating panel, made key
-  without activating Plinth, as in AltTab and DockDoor); the previous app gets no
+  without activating DockFlip, as in AltTab and DockDoor); the previous app gets no
   key presses and stays the active app. Esc returns to it.
 - Triggered by Carbon `RegisterEventHotKey` (works while another app holds secure
   keyboard input); ⌘ release is seen by a listen-only modifier tap (AltTab's approach).
-- Replaces the native ⌘Tab app switcher while Plinth runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting Plinth restores the native switcher.
+- Replaces the native ⌘Tab app switcher while DockFlip runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting DockFlip restores the native switcher.
 
 ### Window management (Windows parity only)
 - Keyboard snapping: halves, maximize, restore/minimize, quarters by combination,
   move to next display.
 - Drag snapping: drag to left/right edge (half), top edge (maximize),
   corners (quarter).
-- If macOS's native edge tiling is on, Plinth detects it and offers to turn it off
+- If macOS's native edge tiling is on, DockFlip detects it and offers to turn it off
   (the two conflict).
 
 ### Previews (opt-in)
@@ -116,10 +116,10 @@ settings.
 
 ## Keyboard map
 
-Apple keyboards have no Win key. Plinth uses **⌃⌥** as the Win key. (⌘ conflicts
+Apple keyboards have no Win key. DockFlip uses **⌃⌥** as the Win key. (⌘ conflicts
 with app shortcuts; Globe combinations belong to macOS's own tiling.)
 
-| Windows | Plinth |
+| Windows | DockFlip |
 |---|---|
 | Alt+Tab | ⌘Tab |
 | Win+← / → | ⌃⌥← / → |

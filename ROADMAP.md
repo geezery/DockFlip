@@ -1,4 +1,4 @@
-# Plinth — Roadmap
+# DockFlip — Roadmap
 
 Each milestone ends in a build that is usable on its own. A milestone is done when
 its exit criteria hold on a clean macOS 26 install with default settings.
@@ -50,8 +50,8 @@ single and dual displays.
 
 ## M3.6 — Dock mode and Flip 3D (v0.3)
 - Dock mode as the default: hover window lists and click-to-minimize on the real Dock.
-- Plinth's own taskbar becomes the alternative in Settings.
-- ⌘Tab as Windows 7 Flip 3D; Plinth holds the keyboard while it is open.
+- DockFlip's own taskbar becomes the alternative in Settings.
+- ⌘Tab as Windows 7 Flip 3D; DockFlip holds the keyboard while it is open.
 - Carbon hot keys for all shortcuts (work under secure keyboard input).
 - Window cards that tell windows apart without thumbnails.
 - English-only UI.
@@ -72,7 +72,7 @@ single and dual displays.
   launch. Onboarding shows exactly where to click.
 - Investigate early: whether Gatekeeper asks again after each update, and how to
   avoid it.
-- Homebrew cask in our own tap: `brew install <owner>/tap/plinth`.
+- Homebrew cask in our own tap: `brew install <owner>/tap/dockflip`.
   (The official `homebrew/cask` requires notarization, so it is not an option.)
 - `make install` for building from source; on first run the Makefile creates a
   local self-signed certificate so permissions survive rebuilds.

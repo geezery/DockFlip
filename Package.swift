@@ -1,27 +1,27 @@
 // swift-tools-version: 6.0
 import PackageDescription
 
-// Plinth builds with the Command Line Tools alone (`xcode-select --install`).
+// DockFlip builds with the Command Line Tools alone (`xcode-select --install`).
 // No Xcode project and no Apple account are needed. `make` assembles the .app bundle.
 let package = Package(
-    name: "Plinth",
+    name: "DockFlip",
     platforms: [.macOS("26.0")],
     products: [
-        .executable(name: "Plinth", targets: ["Plinth"])
+        .executable(name: "DockFlip", targets: ["DockFlip"])
     ],
     targets: [
         .target(
-            name: "PlinthKit",
+            name: "DockFlipKit",
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .executableTarget(
-            name: "Plinth",
-            dependencies: ["PlinthKit"],
+            name: "DockFlip",
+            dependencies: ["DockFlipKit"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(
-            name: "PlinthKitTests",
-            dependencies: ["PlinthKit"],
+            name: "DockFlipKitTests",
+            dependencies: ["DockFlipKit"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         )
     ]

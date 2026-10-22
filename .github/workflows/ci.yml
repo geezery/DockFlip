@@ -27,6 +27,6 @@ jobs:
 
       - name: Check bundle
         run: |
-          plutil -lint build/Plinth.app/Contents/Info.plist
-          codesign --verify --verbose build/Plinth.app
-          du -sh build/Plinth.app
+          plutil -lint build/DockFlip.app/Contents/Info.plist
+          codesign --verify --verbose build/DockFlip.app
+          du -sh build/DockFlip.app
