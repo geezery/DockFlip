@@ -99,3 +99,12 @@
 
 /* Not responding */
 "Not responding" = "Ei vastaa";
+
+/* Main menu while a Plinth window is open */
+"File" = "Arkisto";
+"Close Window" = "Sulje ikkuna";
+"Edit" = "Muokkaa";
+"Copy" = "Kopioi";
+"Paste" = "Sijoita";
+"Select All" = "Valitse kaikki";
+"Continue Setup…" = "Jatka käyttöönottoa…";

@@ -48,6 +48,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    /// Opening Plinth again (Finder, Spotlight, Launchpad, the Dock) brings up
+    /// setup if it is unfinished, otherwise settings.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !Permissions.isAccessibilityTrusted || !Settings.shared.onboardingCompleted {
+            showOnboarding()
+        } else {
+            settingsWindow.show()
+        }
+        return false
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
         // Give ⌘Tab back to macOS — unless a new Plinth instance is taking over.
         if !isRelaunching {
@@ -161,6 +172,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             addStatus(L("Accessibility: allowed"), to: menu)
         } else {
             menu.addItem(ClosureMenuItem(L("Grant Accessibility…")) { [weak self] in self?.showOnboarding() })
+        }
+        if !Settings.shared.onboardingCompleted {
+            menu.addItem(ClosureMenuItem(L("Continue Setup…")) { [weak self] in self?.showOnboarding() })
         }
         if registry != nil {
             addStatus(hotkeysRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
