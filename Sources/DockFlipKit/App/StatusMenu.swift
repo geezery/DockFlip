@@ -1,7 +1,7 @@
 import AppKit
 
 /// DockFlip's menu bar item and its menu: status, the Window Layout cheat sheet,
-/// Clean Up, Settings, language, debug logging, Quit. Rebuilt every time it
+/// Clean Up, Settings, language, debug logging, sharing, Quit. Rebuilt every time it
 /// opens, so the status lines are always current.
 @MainActor
 final class StatusMenu: NSObject, NSMenuDelegate {
@@ -67,6 +67,14 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         debug.state = Settings.shared.debugLogging ? .on : .off
         menu.addItem(debug)
         menu.addItem(ClosureMenuItem(L("Save Debug Log…")) { Diagnostics.exportLog() })
+
+        menu.addItem(.separator())
+        let share = ClosureMenuItem(L("Tell a Friend…")) { [weak self] in Sharing.tellAFriend(from: self?.statusItem?.button) }
+        share.image = NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: nil)
+        menu.addItem(share)
+        let coffee = ClosureMenuItem(L("Buy DockFlip a Coffee…")) { Sharing.buyACoffee() }
+        coffee.image = NSImage(systemSymbolName: "cup.and.saucer", accessibilityDescription: nil)
+        menu.addItem(coffee)
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: L("Quit DockFlip"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
