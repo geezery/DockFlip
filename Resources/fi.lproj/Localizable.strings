@@ -1,0 +1,13 @@
+/* Finnish */
+"Welcome to Plinth" = "Tervetuloa Plinthiin";
+"Plinth brings the Windows taskbar, Alt-Tab window switching and window snapping to your Mac. It needs one permission to work: Accessibility." = "Plinth tuo Windowsin tehtäväpalkin, ⌥Tab-ikkunanvaihdon ja ikkunoiden snäppäyksen Maciin. Se tarvitsee toimiakseen yhden luvan: Käyttöapu.";
+"Accessibility is used to list, focus, move and minimize windows, and for the ⌥Tab and ⌃⌥ shortcuts." = "Käyttöapu-lupaa käytetään ikkunoiden listaamiseen, aktivointiin, siirtämiseen ja pienentämiseen sekä pikanäppäimiin ⌥Tab ja ⌃⌥.";
+"Accessibility: allowed" = "Käyttöapu: sallittu";
+"Accessibility: not yet allowed" = "Käyttöapu: ei vielä sallittu";
+"Open System Settings" = "Avaa Järjestelmäasetukset";
+"Continue" = "Jatka";
+"Plinth Setup" = "Plinthin käyttöönotto";
+"Grant Accessibility…" = "Salli Käyttöapu…";
+"Launch at Login" = "Käynnistä kirjautuessa";
+"Quit Plinth" = "Lopeta Plinth";
+"Minimized" = "Pienennetty";
