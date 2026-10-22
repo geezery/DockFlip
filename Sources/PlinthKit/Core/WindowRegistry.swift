@@ -24,6 +24,9 @@ final class TrackedApp {
     var observer: AXObserver?
     var windowElements: [CGWindowID: AXUIElement] = [:]
     weak var registry: WindowRegistry?
+    /// A re-read is scheduled because the app did not answer in time.
+    var retryPending = false
+    var retryCount = 0
 
     var pid: pid_t { app.processIdentifier }
 
@@ -73,8 +76,11 @@ public final class WindowRegistry {
     public init() {}
 
     public func start() {
-        // Never let an unresponsive app stall Plinth.
-        AXUIElementSetMessagingTimeout(AXUIElementCreateSystemWide(), 0.3)
+        // Never let an unresponsive app stall Plinth for long — but give slow apps
+        // time to answer: Chrome builds its accessibility tree on the first
+        // request, and Office apps and Notes can take well over 0.3 s. One second,
+        // as in AltTab and DockDoor; a timeout is retried, never taken as "no windows".
+        AXUIElementSetMessagingTimeout(AXUIElementCreateSystemWide(), 1.0)
 
         for app in NSWorkspace.shared.runningApplications where shouldTrack(app) {
             track(app)
@@ -161,7 +167,16 @@ public final class WindowRegistry {
     /// Checks whether an app still answers (one short Accessibility call).
     /// Used when the user points at it, so a hung app is flagged without polling.
     func probe(pid: pid_t) {
-        guard let tracked = apps[pid] else { return }
+        guard let tracked = apps[pid] else {
+            // Not tracked yet (it refused Accessibility at launch): try now.
+            if let app = NSRunningApplication(processIdentifier: pid), shouldTrack(app) { track(app) }
+            return
+        }
+        // Windows missed earlier (the app was busy): read them now, while the user points at it.
+        if tracked.windowElements.isEmpty {
+            refreshWindows(of: tracked)
+            return
+        }
         var value: CFTypeRef?
         let error = Perf.shared.measure("ax.probe", detail: tracked.app.localizedName ?? "", quiet: true) {
             AXUIElementCopyAttributeValue(tracked.element, kAXFocusedWindowAttribute as CFString, &value)
@@ -269,7 +284,11 @@ public final class WindowRegistry {
     }
 
     private func retryTrack(_ app: NSRunningApplication, attempt: Int) {
-        guard attempt < 5 else { return }
+        guard attempt < 8 else {
+            // Picked up again when the app is activated or pointed at in the Dock.
+            Log.registry.notice("Accessibility not available yet for \(app.localizedName ?? "?", privacy: .public); will retry on use")
+            return
+        }
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(400 * (attempt + 1)))
             self?.track(app, attempt: attempt + 1)
@@ -316,10 +335,25 @@ public final class WindowRegistry {
         var value: CFTypeRef?
         let error = AXUIElementCopyAttributeValue(tracked.element, kAXWindowsAttribute as CFString, &value)
         markResponsiveness(of: tracked, error: error)
-        guard error != .cannotComplete else { return } // hung app: keep what we know
+        guard error != .cannotComplete else {
+            // Busy or hung: keep what we know and ask again shortly.
+            scheduleRetry(of: tracked)
+            return
+        }
         var seen = Set<CGWindowID>()
+        var unanswered = false
         for element in (value as? [AXUIElement]) ?? [] {
-            guard element.isStandardWindow, let id = element.windowID else { continue }
+            guard let id = element.windowID else { continue }
+            let role = element.string(kAXRoleAttribute)
+            let subrole = element.string(kAXSubroleAttribute)
+            // A failed read is not an answer: a window whose role did not arrive in
+            // time is kept if known, and read again shortly — never dropped.
+            if role == nil || (role == kAXWindowRole && subrole == nil) {
+                unanswered = true
+                if tracked.windowElements[id] != nil { seen.insert(id) }
+                continue
+            }
+            guard role == kAXWindowRole, subrole == kAXStandardWindowSubrole else { continue }
             seen.insert(id)
             if tracked.windowElements[id] == nil {
                 tracked.windowElements[id] = element
@@ -334,7 +368,28 @@ public final class WindowRegistry {
             windows[id] = nil
             mru.remove(id)
         }
+        if unanswered {
+            scheduleRetry(of: tracked)
+        } else {
+            tracked.retryCount = 0
+        }
         notifyChange()
+    }
+
+    /// Reads an app's windows again after it failed to answer in time.
+    private func scheduleRetry(of tracked: TrackedApp) {
+        guard !tracked.retryPending, tracked.retryCount < 5 else { return }
+        tracked.retryPending = true
+        tracked.retryCount += 1
+        let name = tracked.app.localizedName ?? "?"
+        let attempt = tracked.retryCount
+        Log.registry.notice("\(name, privacy: .public) did not answer in time; reading its windows again (attempt \(attempt, privacy: .public))")
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(800 * attempt))
+            tracked.retryPending = false
+            guard let self, self.apps[tracked.pid] === tracked else { return }
+            self.refreshWindows(of: tracked)
+        }
     }
 
     private func refreshAll() {
@@ -431,7 +486,15 @@ public final class WindowRegistry {
             MainActor.assumeIsolated {
                 guard let self else { return }
                 if let tracked = self.apps[active.processIdentifier] {
+                    // Windows missed earlier because the app was busy: read them now.
+                    if tracked.windowElements.isEmpty {
+                        tracked.retryCount = 0
+                        self.refreshWindows(of: tracked)
+                    }
                     self.bringFocusedWindowToFront(of: tracked)
+                } else if self.shouldTrack(active) {
+                    // It refused Accessibility at launch; it answers now that it is in use.
+                    self.track(active)
                 }
                 self.notifyChange()
             }
