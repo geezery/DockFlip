@@ -7,6 +7,7 @@ struct PopupRow: Identifiable {
     let icon: NSImage?
     let minimap: CGRect?
     let isMinimized: Bool
+    let isOnOtherSpace: Bool
     let isActive: Bool
     /// The app's colour, from its icon; colours the mini-map.
     let tint: Color
@@ -149,6 +150,7 @@ final class TaskbarPopup {
         let screens = NSScreen.screens
         let axScreens = screens.map { DisplayLayout.axFrame(of: $0) }
         let activeID = registry.activeWindowID()
+        let onScreen = Set(WindowRegistry.onScreenWindowIDs())
         model.title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name
         model.rows = item.windowIDs.compactMap { id -> PopupRow? in
             guard let window = registry.window(id) else { return nil }
@@ -159,6 +161,7 @@ final class TaskbarPopup {
                 icon: window.icon,
                 minimap: index.map { Geometry.normalized(window.frame, in: axScreens[$0]) },
                 isMinimized: window.isMinimized,
+                isOnOtherSpace: !window.isMinimized && !window.isAppHidden && !onScreen.contains(id),
                 isActive: id == activeID,
                 tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName)
             )
@@ -307,6 +310,8 @@ struct PopupListRow: View {
                     .truncationMode(.tail)
                 if row.isMinimized {
                     Text("Minimized").font(.system(size: 11)).foregroundStyle(.secondary)
+                } else if row.isOnOtherSpace {
+                    Text("On another desktop").font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }
             Spacer(minLength: 4)

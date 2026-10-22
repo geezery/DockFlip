@@ -123,7 +123,8 @@ final class DockController: PopupSource {
     // MARK: - PopupSource
 
     func item(_ itemID: String, on displayID: CGDirectDisplayID) -> TaskbarItem? {
-        let windows = registry.currentSpaceWindows().filter { $0.bundleID == itemID }
+        // All the app's windows, including full-screen ones and those on other desktops.
+        let windows = registry.switcherWindows().filter { $0.bundleID == itemID }
         let app = NSRunningApplication.runningApplications(withBundleIdentifier: itemID).first
         guard app != nil || !windows.isEmpty else { return nil }
         let active = registry.activeWindowID()

@@ -9,6 +9,8 @@ struct SwitcherItem: Identifiable {
     /// Window outline as fractions of its screen (top-left origin), for the mini-map.
     let minimap: CGRect?
     let isMinimized: Bool
+    /// On another desktop or full screen.
+    let isOnOtherSpace: Bool
     /// Document file name, when the app reports one.
     let document: String?
     /// Name of the display the window is on, e.g. "Built-in Retina Display".
@@ -17,6 +19,15 @@ struct SwitcherItem: Identifiable {
     let sizeText: String
     /// The app's colour, taken from its icon; tints the card's title bar.
     let tint: Color
+}
+
+extension SwitcherItem {
+    /// "Safari", "Safari · Minimized", "Safari · On another desktop".
+    var subtitle: String {
+        if isMinimized { return "\(appName) · \(L("Minimized"))" }
+        if isOnOtherSpace { return "\(appName) · \(L("On another desktop"))" }
+        return appName
+    }
 }
 
 @MainActor
@@ -101,7 +112,7 @@ struct SwitcherView: View {
                                 Text(verbatim: front.title)
                                     .font(.system(size: 17, weight: .semibold))
                                     .lineLimit(1)
-                                Text(verbatim: front.isMinimized ? "\(front.appName) · \(L("Minimized"))" : front.appName)
+                                Text(verbatim: front.subtitle)
                                     .font(.system(size: 13))
                                     .foregroundStyle(.secondary)
                             }
@@ -223,7 +234,7 @@ struct FanCard: View {
                     }
                     .font(.system(size: 14))
                 }
-                Text(verbatim: item.isMinimized ? "\(item.appName) · \(L("Minimized"))" : item.appName)
+                Text(verbatim: item.subtitle)
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
                 HStack(spacing: 14) {

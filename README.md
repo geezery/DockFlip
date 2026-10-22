@@ -31,8 +31,9 @@ display, on the space the Dock reserves.
   open, drop files on the Trash to delete them.
 - Clock with a calendar, and a "show desktop" strip at the far right.
 
-**⌘Tab** — Windows 7 style Flip 3D: every window on the current Space stands in a
-slanted 3D stack, most recently used in front, minimized ones included. Hold ⌘
+**⌘Tab** — Windows 7 style Flip 3D: every window stands in a slanted 3D stack, most
+recently used in front — minimized ones, full-screen apps and windows on other
+desktops included. Hold ⌘
 and press Tab to flip the front window to the back, ⇧ to go back, Esc to
 cancel, release ⌘ to switch. ← → and Return work too; you can also click a
 window. Start typing to filter: "team" leaves only windows whose title, app or

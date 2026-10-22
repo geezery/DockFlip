@@ -113,6 +113,7 @@ final class SwitcherController {
                 icon: window.icon,
                 minimap: screenIndex.map { Geometry.normalized(window.frame, in: axScreens[$0]) },
                 isMinimized: window.isMinimized,
+                isOnOtherSpace: window.isOnOtherSpace,
                 document: window.document,
                 screenName: screenIndex.map { screens[$0].localizedName },
                 sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",

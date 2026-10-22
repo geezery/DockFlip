@@ -7,6 +7,13 @@ import ApplicationServices
 @discardableResult
 func _AXUIElementGetWindow(_ element: AXUIElement, _ windowID: UnsafeMutablePointer<CGWindowID>) -> AXError
 
+/// Private API (used by AltTab): an Accessibility element from a remote token —
+/// pid (4 bytes), 0 (4), 0x636f636f "coco" (4), element id (8). The only way to
+/// reach windows an app leaves out of `kAXWindowsAttribute`: windows on other
+/// Spaces, including full-screen windows.
+@_silgen_name("_AXUIElementCreateWithRemoteToken")
+func _AXUIElementCreateWithRemoteToken(_ data: CFData) -> Unmanaged<AXUIElement>?
+
 extension AXUIElement {
     func copyAttribute(_ name: String) -> CFTypeRef? {
         var value: CFTypeRef?

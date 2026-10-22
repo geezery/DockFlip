@@ -64,7 +64,10 @@ settings.
 - Right end: clock with calendar flyout, and a "show desktop" strip.
 
 ### Window switcher (⌘Tab)
-- All windows on the current Space, most-recently-used order.
+- All windows, most-recently-used order: the current Space, minimized windows,
+  and windows on other Spaces — on a Mac, full-screen apps live in Spaces of
+  their own (marked "On another desktop"). Windows that Accessibility does not
+  list (other Spaces) are found by AltTab's element-id walk, off the main thread.
 - Hold ⌘, press Tab to advance; ⇧ reverses; Esc cancels; release ⌘ to switch.
 - Windows 7 Flip 3D look: windows in a slanted, receding 3D stack; the selected
   window in front.
