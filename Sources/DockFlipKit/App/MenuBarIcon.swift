@@ -1,10 +1,9 @@
 import AppKit
 
-/// DockFlip's menu bar symbol, the app icon in miniature: two windows, the front
-/// one overlapping the back one, standing on the Dock with three
-/// app slots. Drawn in code as a template image, so it follows light and dark
-/// menu bars. Strokes are 1.3 pt with 2.6 pt title bars, so it stays crisp at
-/// 18 pt on both 1x and 2x displays.
+/// DockFlip's menu bar symbol: two windows, the front one overlapping the back
+/// one, standing on the Dock with three app slots. Drawn in code as a template
+/// image, so it follows light and dark menu bars. Strokes are 1.3 pt with 2.6 pt
+/// title bars, so it stays crisp at 18 pt on both 1x and 2x displays.
 enum MenuBarIcon {
     static func make() -> NSImage {
         let image = NSImage(size: NSSize(width: 18, height: 18), flipped: true) { _ in
