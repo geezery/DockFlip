@@ -101,7 +101,12 @@ settings.
 - Offered explicitly as a choice during onboarding — not preselected, not hidden
   in settings.
 - When on: captured only on hover and while ⌘Tab is visible, at thumbnail size,
-  kept in memory, never written to disk.
+  side by side. The last picture of a window stays in memory for up to two
+  minutes (at most 24), so lists open with pictures at once and minimized or
+  other-desktop windows still show how they looked. Never written to disk;
+  dropped on screen lock and sleep.
+- Browsers with previews on: the tab list stays, with one picture of the window
+  under the mouse below it.
 - When off: large app icon, window title, and a mini-map of the window's outline
   on its display. Previews are switched on in onboarding or Settings only — no
   reminders in the taskbar.

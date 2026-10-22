@@ -25,12 +25,17 @@ final class PopupModel: ObservableObject {
     /// Command Line Tools cannot expand.
     @Published var hoveredRow: CGWindowID?
     @Published var hoveredTab: String?
+    /// The window whose picture the preview pane shows (with tabs and previews on).
+    @Published var peekWindow: CGWindowID?
+
+    var hasTabs: Bool { rows.contains { $0.tabs.count > 1 } }
     /// Windows whose long tab list is shown in full.
     @Published var expanded = Set<CGWindowID>()
 
-    func setHoveredTab(_ id: String, _ inside: Bool) {
+    func setHoveredTab(_ id: String, window: CGWindowID, _ inside: Bool) {
         if inside {
             hoveredTab = id
+            peekWindow = window
         } else if hoveredTab == id {
             hoveredTab = nil
         }
@@ -39,6 +44,7 @@ final class PopupModel: ObservableObject {
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
         if inside {
             hoveredRow = id
+            peekWindow = id
         } else if hoveredRow == id {
             hoveredRow = nil
         }
@@ -71,11 +77,15 @@ enum PopupLayout {
         return (shown, row.tabs.count - shown.count)
     }
 
+    /// The picture under the tab list when previews are on.
+    static let peekHeight: CGFloat = 230
+
     static func size(rows: [PopupRow], expanded: Set<CGWindowID>, previews: Bool) -> NSSize {
         if rows.isEmpty {
             return NSSize(width: 220, height: 44)
         }
-        if previews {
+        let hasTabs = rows.contains { $0.tabs.count > 1 }
+        if previews && !hasTabs {
             let columns = min(rows.count, 5)
             return NSSize(width: CGFloat(columns) * cardWidth + 16, height: 36 + cardHeight + 12)
         }
@@ -87,6 +97,10 @@ enum PopupLayout {
             guard !tabs.isEmpty else { continue }
             hasTabs = true
             height += CGFloat(tabs.count + (hidden > 0 ? 1 : 0)) * tabRowHeight + tabListPadding
+        }
+        if previews {
+            // The tab list on top, one picture of the window under the mouse below it.
+            return NSSize(width: tabListWidth, height: min(height, maxListHeight - peekHeight) + peekHeight + 6)
         }
         return NSSize(width: hasTabs ? tabListWidth : listWidth, height: min(height, maxListHeight))
     }
@@ -110,7 +124,10 @@ final class TaskbarPopup {
     private var panel: NSPanel?
     private var showTask: Task<Void, Never>?
     private var hideTask: Task<Void, Never>?
-    private var previewTask: Task<Void, Never>?
+    private var previewTasks: [Task<Void, Never>] = []
+    /// Windows whose pictures are loading or loaded, so a refresh of the list
+    /// (titles change all the time) does not start them over.
+    private var previewIDs: [CGWindowID] = []
     private var current: (itemID: String, displayID: CGDirectDisplayID)?
 
     var isVisible: Bool { panel?.isVisible == true }
@@ -153,7 +170,9 @@ final class TaskbarPopup {
     func hideNow() {
         showTask?.cancel()
         hideTask?.cancel()
-        previewTask?.cancel()
+        previewTasks.forEach { $0.cancel() }
+        previewTasks = []
+        previewIDs = []
         panel?.orderOut(nil)
         current = nil
         model.thumbnails = [:]
@@ -193,7 +212,10 @@ final class TaskbarPopup {
         }
         let changedItem = current?.itemID != itemID
         current = (itemID, displayID)
-        if changedItem { model.expanded = [] }
+        if changedItem {
+            model.expanded = []
+            model.peekWindow = nil
+        }
 
         let screens = NSScreen.screens
         let axScreens = screens.map { DisplayLayout.axFrame(of: $0) }
@@ -240,18 +262,25 @@ final class TaskbarPopup {
         panel.setFrame(frame, display: true)
         panel.orderFrontRegardless()
 
-        if previews { loadPreviews(for: item.windowIDs) }
+        if previews { loadPreviews(for: Array(item.windowIDs.prefix(8))) }
     }
 
+    /// Shows the pictures memory already has at once, then captures fresh ones
+    /// side by side — not one after another.
     private func loadPreviews(for ids: [CGWindowID]) {
-        previewTask?.cancel()
-        previewTask = Task { @MainActor [weak self] in
-            for id in ids.prefix(5) {
-                guard !Task.isCancelled, let self, let window = self.registry.window(id) else { return }
+        guard ids != previewIDs else { return }
+        previewTasks.forEach { $0.cancel() }
+        previewIDs = ids
+        for id in ids where model.thumbnails[id] == nil {
+            if let cached = PreviewProvider.shared.cachedThumbnail(for: id) { model.thumbnails[id] = cached }
+        }
+        previewTasks = ids.map { id in
+            Task { @MainActor [weak self] in
+                guard let self, let window = self.registry.window(id) else { return }
                 let image = await PreviewProvider.shared.thumbnail(for: window)
                 // The popup may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, self.isVisible else { return }
-                if let image { self.model.thumbnails[id] = image }
+                guard !Task.isCancelled, self.isVisible, let image else { return }
+                self.model.thumbnails[id] = image
             }
         }
     }
@@ -307,7 +336,7 @@ struct PopupView: View {
                 .frame(height: model.rows.isEmpty ? 44 : 36, alignment: .center)
 
             if !model.rows.isEmpty {
-                if model.showsPreviews {
+                if model.showsPreviews && !model.hasTabs {
                     HStack(spacing: 4) {
                         ForEach(model.rows.prefix(5)) { row in
                             PopupCard(row: row, thumbnail: model.thumbnails[row.id], model: model, popup: popup)
@@ -329,11 +358,18 @@ struct PopupView: View {
                         .padding(.horizontal, 6)
                     }
                     .scrollIndicators(.never)
+                    if model.showsPreviews {
+                        PeekPane(model: model)
+                    }
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        // Pictures need a calm, nearly solid backdrop; the lighter glass suits the plain list.
+        .background(
+            model.showsPreviews ? AnyShapeStyle(.thickMaterial) : AnyShapeStyle(.regularMaterial),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
@@ -637,7 +673,7 @@ struct PopupTabRow: View {
                 .padding(.leading, 48)
         )
         .contentShape(Rectangle())
-        .onHover { model.setHoveredTab(tab.id, $0) }
+        .onHover { model.setHoveredTab(tab.id, window: tab.windowID, $0) }
         .onTapGesture { popup.pickTab(tab) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(tab.isSelected ? [.isButton, .isSelected] : [.isButton])
@@ -681,5 +717,41 @@ struct TreeBranch: Shape {
         }
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
         return path
+    }
+}
+
+/// One picture under a browser's tab list: the window under the mouse, else the
+/// active window, else the most recent one.
+struct PeekPane: View {
+    @ObservedObject var model: PopupModel
+
+    var body: some View {
+        let row = model.peekWindow.flatMap { id in model.rows.first { $0.id == id } }
+            ?? model.rows.first { $0.isActive }
+            ?? model.rows.first
+        ZStack {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color.primary.opacity(0.06))
+            if let row {
+                if let image = model.thumbnails[row.id] {
+                    Image(nsImage: image)
+                        .resizable()
+                        .interpolation(.high)
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
+                        .padding(8)
+                        .id(row.id)
+                        .transition(.opacity)
+                } else {
+                    Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
+                        .padding(14)
+                }
+            }
+        }
+        .animation(.easeOut(duration: 0.15), value: row?.id)
+        .frame(height: PopupLayout.peekHeight)
+        .padding(.horizontal, 6)
+        .padding(.bottom, 6)
     }
 }

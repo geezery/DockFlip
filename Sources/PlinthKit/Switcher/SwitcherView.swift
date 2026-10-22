@@ -83,9 +83,12 @@ struct SwitcherView: View {
                                 perspective: 0.5
                             )
                             .scaleEffect(max(0.5, 1 - Double(depth) * 0.06))
+                            // Depth by shade, not see-through: real window pictures
+                            // overlapping through each other look muddy.
+                            .brightness(-min(0.28, Double(depth) * 0.05))
                             // Receding up and to the left.
                             .offset(x: CGFloat(depth) * -cardWidth * 0.17, y: CGFloat(depth) * -cardHeight * 0.11)
-                            .opacity(depth > visibleDepth ? 0 : 1 - Double(depth) * 0.06)
+                            .opacity(depth > visibleDepth ? 0 : (depth == visibleDepth ? 0.5 : 1))
                             .zIndex(Double(1000 - depth))
                             .onTapGesture { model.onPick?(index) }
                     }

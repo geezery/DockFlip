@@ -24,7 +24,7 @@ final class SwitcherController {
     /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
-    private var previewTask: Task<Void, Never>?
+    private var previewTasks: [Task<Void, Never>] = []
     private var previousApp: NSRunningApplication?
     private var localMonitor: Any?
     private var resignKeyToken: NSObjectProtocol?
@@ -177,8 +177,8 @@ final class SwitcherController {
     }
 
     private func hide() {
-        previewTask?.cancel()
-        previewTask = nil
+        previewTasks.forEach { $0.cancel() }
+        previewTasks = []
         if let localMonitor { NSEvent.removeMonitor(localMonitor) }
         localMonitor = nil
         panel?.orderOut(nil)
@@ -192,16 +192,24 @@ final class SwitcherController {
         onActiveChanged?(false)
     }
 
+    /// Pictures memory already has appear with the stack; fresh ones are
+    /// captured side by side, the windows nearest the front first.
     private func loadPreviews(for windows: [WindowSnapshot]) {
-        previewTask?.cancel()
+        previewTasks.forEach { $0.cancel() }
+        previewTasks = []
         guard PreviewProvider.shared.isAvailable else { return }
-        previewTask = Task { @MainActor [weak self] in
-            for window in windows.prefix(12) {
-                guard !Task.isCancelled else { return }
+        let wanted = windows.prefix(16)
+        for window in wanted where model.thumbnails[window.id] == nil {
+            if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
+                model.thumbnails[window.id] = cached
+            }
+        }
+        previewTasks = wanted.map { window in
+            Task { @MainActor [weak self] in
                 let image = await PreviewProvider.shared.thumbnail(for: window)
                 // The switcher may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, let self, self.isActive else { return }
-                if let image { self.model.thumbnails[window.id] = image }
+                guard !Task.isCancelled, let self, self.isActive, let image else { return }
+                self.model.thumbnails[window.id] = image
             }
         }
     }
