@@ -662,7 +662,7 @@ public final class WindowRegistry {
                   let number = info[kCGWindowNumber as String] as? NSNumber,
                   let owner = info[kCGWindowOwnerPID as String] as? NSNumber,
                   let boundsInfo = info[kCGWindowBounds as String] as? NSDictionary,
-                  let bounds = CGRect(dictionaryRepresentation: boundsInfo),
+                  let bounds = CGRect(dictionaryRepresentation: boundsInfo as CFDictionary),
                   bounds.width >= 100, bounds.height >= 60 else { continue }
             result[pid_t(owner.int32Value), default: []].insert(CGWindowID(number.uint32Value))
         }
