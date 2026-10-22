@@ -110,3 +110,5 @@
 "Continue Setup…" = "Jatka käyttöönottoa…";
 "Plinth is already switched on in the list, but nothing changes?" = "Plinth on jo päällä listassa, mutta mitään ei tapahdu?";
 "Reset Permission" = "Nollaa lupa";
+"⌘Tab: paused — secure input in %@" = "⌘Tab: tauolla — suojattu syöttö: %@";
+"another app" = "toinen sovellus";

@@ -66,6 +66,7 @@ final class TaskbarController {
             let bar = bars[id] ?? makeBar(displayID: id)
             bars[id] = bar
             let height = DisplayLayout.taskbarHeight(for: screen)
+            if bar.model.barHeight != height { bar.model.barHeight = height }
             bar.panel.setFrame(
                 NSRect(x: screen.frame.minX, y: screen.frame.minY, width: screen.frame.width, height: height),
                 display: true
@@ -79,6 +80,9 @@ final class TaskbarController {
     private func makeBar(displayID: CGDirectDisplayID) -> Bar {
         let model = TaskbarModel(displayID: displayID)
         let panel = PanelFactory.make(level: PanelFactory.taskbarLevel, shadow: false)
+        // Opaque: the Dock below must neither show through nor receive the mouse.
+        panel.isOpaque = true
+        panel.backgroundColor = TaskbarStyle.background
         let hosting = TaskbarHostingView(rootView: TaskbarView(model: model, controller: self))
         hosting.sizingOptions = [] // the panel's frame decides the size, not SwiftUI
         hosting.controller = self

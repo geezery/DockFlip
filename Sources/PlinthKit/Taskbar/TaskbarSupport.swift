@@ -29,6 +29,21 @@ enum PanelFactory {
     }
 }
 
+/// Taskbar colours (Windows 11: light #F3F3F3, dark #202020). Fully opaque, so the
+/// real Dock underneath never shows through and never gets the mouse.
+enum TaskbarStyle {
+    static let background = NSColor(name: "PlinthTaskbarBackground") { appearance in
+        appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            ? NSColor(srgbRed: 0.125, green: 0.125, blue: 0.133, alpha: 1)
+            : NSColor(srgbRed: 0.953, green: 0.953, blue: 0.957, alpha: 1)
+    }
+
+    /// Icon size for a bar of `height`: as large as the Dock's own icons.
+    static func iconSize(forBarHeight height: CGFloat) -> CGFloat {
+        min(48, max(24, (height * 0.66).rounded()))
+    }
+}
+
 /// A borderless panel that may become key (for controls such as the date picker),
 /// still without activating Plinth.
 final class KeyablePanel: NSPanel {

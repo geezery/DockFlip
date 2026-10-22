@@ -26,6 +26,7 @@ final class TaskbarModel: ObservableObject {
     let displayID: CGDirectDisplayID
     @Published var items: [TaskbarItem] = []
     @Published var hoveredID: String?
+    @Published var barHeight: CGFloat = 48
     /// Hover state of the clock and the show-desktop strip (no @State: it is a
     /// macro that the Command Line Tools cannot expand).
     @Published var clockHovered = false
@@ -53,7 +54,7 @@ struct TaskbarView: View {
         ZStack {
             HStack(spacing: 2) {
                 ForEach(model.items) { item in
-                    TaskbarButton(item: item, isHovered: model.hoveredID == item.id)
+                    TaskbarButton(item: item, isHovered: model.hoveredID == item.id, barHeight: model.barHeight)
                         .background(
                             GeometryReader { geo in
                                 Color.clear.preference(
@@ -90,7 +91,7 @@ struct TaskbarView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .windowBackgroundColor).opacity(0.97))
+        .background(Color(nsColor: TaskbarStyle.background))
         .overlay(alignment: .top) {
             Rectangle().fill(Color.primary.opacity(0.1)).frame(height: 1)
         }
@@ -104,6 +105,10 @@ struct TaskbarView: View {
 struct TaskbarButton: View {
     let item: TaskbarItem
     let isHovered: Bool
+    let barHeight: CGFloat
+
+    private var iconSize: CGFloat { TaskbarStyle.iconSize(forBarHeight: barHeight) }
+    private var buttonHeight: CGFloat { max(36, barHeight - 6) }
 
     private var indicatorWidth: CGFloat {
         if item.isActive { return item.label == nil ? 16 : 28 }
@@ -112,7 +117,7 @@ struct TaskbarButton: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            AppIconView(icon: item.icon, size: 26)
+            AppIconView(icon: item.icon, size: iconSize)
                 .saturation(item.isNotResponding ? 0 : 1)
                 .opacity(item.isNotResponding ? 0.55 : 1)
             if let label = item.label {
@@ -123,8 +128,8 @@ struct TaskbarButton: View {
                     .frame(width: 118, alignment: .leading)
             }
         }
-        .padding(.horizontal, item.label == nil ? 9 : 10)
-        .frame(minWidth: 44, minHeight: 40, maxHeight: 40)
+        .padding(.horizontal, item.label == nil ? 8 : 10)
+        .frame(minWidth: iconSize + 16, minHeight: buttonHeight, maxHeight: buttonHeight)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .fill(Color.primary.opacity(item.isActive ? 0.10 : (isHovered ? 0.06 : 0)))
@@ -143,7 +148,7 @@ struct TaskbarButton: View {
                     .padding(.horizontal, 4)
                     .frame(minWidth: 16, minHeight: 16)
                     .background(Capsule().fill(Color.red))
-                    .offset(x: 26, y: 2)
+                    .offset(x: iconSize, y: 2)
             }
         }
         .contentShape(Rectangle())

@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import Combine
 
 @MainActor
@@ -18,6 +19,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var hotkeysRunning = false
     private var isRelaunching = false
     private var settingsSubscription: AnyCancellable?
+    /// True while some app (Terminal's Secure Keyboard Entry, a password field)
+    /// holds secure keyboard input. macOS then hides all key presses from Plinth.
+    private var secureInputActive = false
+    private var activationToken: NSObjectProtocol?
+    private var nativeCommandTabOn: Bool?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = Perf.shared // starts the clock: the debug log covers everything from launch
@@ -40,10 +46,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         // ⌘Tab belongs to Plinth only while its shortcuts are on.
-        settingsSubscription = Settings.shared.$shortcutsEnabled.sink { [weak self] enabled in
+        settingsSubscription = Settings.shared.$shortcutsEnabled.sink { [weak self] _ in
+            Task { @MainActor in self?.updateNativeCommandTab() }
+        }
+        activationToken = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            // Apps turn secure input on as they become active; look a moment later.
             Task { @MainActor in
-                guard let self, self.hotkeysRunning else { return }
-                NativeCommandTab.setEnabled(!enabled)
+                try? await Task.sleep(for: .milliseconds(300))
+                self?.updateNativeCommandTab()
             }
         }
     }
@@ -69,6 +81,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     // MARK: - Services
+
+    /// ⌘Tab belongs to Plinth while its shortcuts are on — except while another app
+    /// holds secure keyboard input: Plinth cannot see keys then, so macOS's own ⌘Tab
+    /// comes back for that time and the key never goes dead.
+    private func updateNativeCommandTab() {
+        let secure = IsSecureEventInputEnabled()
+        if secure != secureInputActive {
+            secureInputActive = secure
+            let holder = Self.secureInputHolderName() ?? "?"
+            if secure {
+                Log.keys.notice("Secure keyboard input is on (held by \(holder, privacy: .public)); macOS's ⌘Tab is used meanwhile")
+            } else {
+                Log.keys.notice("Secure keyboard input is off; Plinth's ⌘Tab is back")
+            }
+        }
+        guard hotkeysRunning else { return }
+        let nativeOn = !Settings.shared.shortcutsEnabled || secure
+        if nativeOn != nativeCommandTabOn {
+            nativeCommandTabOn = nativeOn
+            NativeCommandTab.setEnabled(nativeOn)
+        }
+    }
+
+    /// Name of the app holding secure keyboard input, from the window server session.
+    static func secureInputHolderName() -> String? {
+        guard let session = CGSessionCopyCurrentDictionary() as? [String: Any],
+              let pid = session["kCGSSessionSecureInputPID"] as? NSNumber,
+              pid.int32Value > 0 else { return nil }
+        return NSRunningApplication(processIdentifier: pid_t(pid.int32Value))?.localizedName
+    }
 
     private func startServices() {
         guard registry == nil else { return }
@@ -110,7 +152,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         hotkeysRunning = hotkeys.start()
         if hotkeysRunning {
-            NativeCommandTab.setEnabled(!Settings.shared.shortcutsEnabled)
+            updateNativeCommandTab()
+            registry.addObserver { [weak self] in self?.updateNativeCommandTab() }
         } else {
             // Right after Accessibility is granted, macOS sometimes refuses the
             // event tap until the app is restarted.
@@ -176,8 +219,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if !Settings.shared.onboardingCompleted {
             menu.addItem(ClosureMenuItem(L("Continue Setup…")) { [weak self] in self?.showOnboarding() })
         }
+        updateNativeCommandTab()
         if registry != nil {
-            addStatus(hotkeysRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
+            if secureInputActive {
+                let holder = Self.secureInputHolderName() ?? L("another app")
+                addStatus(String(format: L("⌘Tab: paused — secure input in %@"), holder), to: menu)
+            } else {
+                addStatus(hotkeysRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
+            }
             addStatus(String(format: L("Windows tracked: %ld"), registry?.trackedWindowCount ?? 0), to: menu)
             if !hotkeysRunning {
                 menu.addItem(ClosureMenuItem(L("Restart Plinth")) { [weak self] in self?.relaunch() })
