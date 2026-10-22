@@ -1,31 +1,37 @@
 # DockFlip — Scope
 
-> DockFlip is a free, open-source (GPL-3.0) macOS app that gives the Dock the Windows 11
-> taskbar's habits, adds Alt-Tab style window switching (as Windows 7 Flip 3D) and basic
-> window snapping — on top of the Dock, not instead of it.
+> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of
+> Windows to the Mac: window lists on the Dock, a Flip 3D window switcher on ⌘Tab and
+> window snapping. It works on top of the Dock, not instead of it.
 
 ## Why
 
 On macOS, the things a Windows user does a hundred times a day are spread across
-several apps (a dock-preview app, an Alt-Tab clone, a window manager), each with its
-own settings, permissions and quirks — and none of them behaves like Windows out of
-the box. DockFlip does that one job in one small app that is right with default
+several apps (a Dock preview app, an Alt-Tab clone, a window manager). Each has its
+own settings, permissions and quirks, and none of them behaves like Windows out of
+the box. DockFlip does that one job in one small app that is right with its default
 settings.
 
 ## Guiding principles
 
-1. **Windows 11 default behaviour is the spec.** When in doubt, do what a fresh
-   Windows 11 install does. We do not improve on it, extend it, or make it
-   configurable. "Should this be a setting?" — default answer: no.
-2. **Zero configuration.** A new user installs, grants one permission, and is done.
-3. **Reliability before features.** A feature that misbehaves in edge cases
+1. **The best bits of Windows, and only those.** A feature gets in when Windows
+   users miss it on a Mac the first week and still miss it a month later. Alt+Tab
+   that switches windows: in. Snapping: in. The Start menu, Cortana and the
+   "restart now?" dialog: no thanks. When Windows versions disagree, take the one
+   people remember fondly (Flip 3D from Windows 7, quarter snapping from
+   Windows 10). Take the behaviour, not the looks: DockFlip should feel at home
+   on a Mac.
+2. **No settings for taste.** "Should this be a setting?" Default answer: no. If
+   people would argue about it, pick the better answer and ship that.
+3. **Zero configuration.** A new user installs, grants one permission, and is done.
+4. **Reliability before features.** A feature that misbehaves in edge cases
    (Electron apps, dialogs, sleep/wake, display changes) is worse than no feature.
-4. **Lightweight.** No third-party dependencies. Event-driven, no polling, no
+5. **Lightweight.** No third-party dependencies. Event-driven, no polling, no
    repeating timers.
-5. **Private by default.** Full functionality with Accessibility permission only.
+6. **Private by default.** Full functionality with Accessibility permission only.
    Screen Recording is opt-in, used only for previews. No networking code at all.
-6. **Latest macOS only.** macOS 26 or later. No back-porting.
-7. **Free and open.** GPL-3.0, installed with Homebrew.
+7. **Latest macOS only.** macOS 26 or later. No back-porting.
+8. **Free and open.** GPL-3.0, installed with Homebrew.
 
 ## Performance budgets (enforced in CI where measurable)
 
@@ -73,7 +79,7 @@ settings.
   keyboard input); ⌘ release is seen by a listen-only modifier tap (AltTab's approach).
 - Replaces the native ⌘Tab app switcher while DockFlip runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting DockFlip restores the native switcher.
 
-### Window management (Windows parity only)
+### Window management (the parts Windows got right)
 - Keyboard snapping: halves, maximize, restore/minimize, quarters by combination,
   move to next display.
 - Drag snapping: drag to left/right edge (half), top edge (maximize),
@@ -124,7 +130,7 @@ with app shortcuts; Globe combinations belong to macOS's own tiling.)
 2. Window thumbnails — off until chosen in onboarding
 3. Keyboard shortcuts — on
 
-Anything else needs a strong case against principle 1.
+Anything else needs a strong case against principles 1 and 2.
 
 ## Out of scope
 
@@ -140,16 +146,16 @@ Anything else needs a strong case against principle 1.
 - Mac App Store distribution (the sandbox forbids the Accessibility API).
 - macOS versions older than 26.
 
-### Beyond Windows (deliberate exceptions)
+### Not from Windows, but earned their place
 - **Clean Up**: suggests closing windows unused for three days and quitting apps
   left without windows. Suggest-only, never automatic; costs nothing when unused.
 - **Debug log export** for troubleshooting; local file only.
 
-### Also Windows 11 defaults, included
+### Also from Windows, included
 - Remember window locations per display setup, restore on reconnect.
 - "Not responding" on a hung app's window list.
 
-## Deferred (after v1, still Windows defaults)
+## Deferred (after v1)
 
 - Snap layouts (hover over the green button).
 - Snap assist (offer other windows for the remaining half after a snap).

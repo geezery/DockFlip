@@ -33,8 +33,8 @@ monitor plug/unplug, for a week of daily use without a wrong switch.
 - Drag snapping to edges and corners, with a snap preview overlay.
 - Native edge tiling detection and an offer to turn it off.
 
-**Exit:** snapping behaves identically to Windows 11 for the listed gestures on
-single and dual displays.
+**Exit:** the listed gestures snap the way a Windows user expects, on one display
+and on two.
 
 ## M3.5 — Daily-use extras
 - Clean Up window (usage tracking, memory per app, keep list).
@@ -71,5 +71,5 @@ single and dual displays.
   local self-signed certificate so permissions survive rebuilds.
 - Build provenance attestations on every release.
 
-## Later (Windows defaults, deferred)
+## Later
 - Snap layouts, snap assist, jump lists.

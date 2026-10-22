@@ -1,118 +1,232 @@
-# DockFlip
+<p align="center">
+  <img src="docs/assets/hero.png" alt="DockFlip: Miss what worked in Windows? We borrowed the good parts." width="100%">
+</p>
 
-Your Mac's Dock with the Windows 11 taskbar's habits, a Windows 7 style Flip 3D
-⌘Tab that switches windows instead of apps, and Windows window snapping — in one
-small, free, open-source app that works with default settings.
+<p align="center">
+  <a href="https://github.com/geezery/DockFlip/actions/workflows/ci.yml"><img src="https://github.com/geezery/DockFlip/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/macOS-26%2B-0c9a6a" alt="macOS 26+">
+  <img src="https://img.shields.io/badge/Swift-6-0c9a6a" alt="Swift 6">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0c9a6a" alt="GPL-3.0"></a>
+  <img src="https://img.shields.io/badge/price-%E2%82%AC0-0c9a6a" alt="Price: €0">
+</p>
 
-> **Status:** v0.3 preview, being tested before the first release.
-> See [SCOPE.md](SCOPE.md), [ROADMAP.md](ROADMAP.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
+<p align="center">
+  <b>Window lists in your Dock · a Flip 3D ⌘Tab that switches <i>windows</i> · Win-style snapping</b><br>
+  One small, free, open-source app. Works the moment you open it.
+</p>
+
+<p align="center">
+  <a href="#install">Install</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#shortcuts">Shortcuts</a> ·
+  <a href="#privacy">Privacy</a> ·
+  <a href="https://github.com/geezery/DockFlip/wiki">Wiki</a> ·
+  <a href="#faq">FAQ</a>
+</p>
+
+---
+
+You moved to a Mac. It's lovely. Then you pressed ⌘Tab looking for that one
+browser window, got *the whole browser* instead, and quietly missed Windows for
+the first time.
+
+The usual fix is three apps: one for Dock previews, one for an Alt-Tab clone,
+one for window snapping. That's three settings windows, three permission
+prompts and three ways for things to argue with each other.
+
+**DockFlip is one app that does all three.** It takes the bits Windows got right
+and leaves the rest where it was. No Start menu, no surprise restarts, no
+paperclip.
 
 ## Features
 
-**The Dock, Windows style.** The Dock stays exactly as it is — folders, Trash,
-badges, drag and drop, your settings — and gains:
-- Rest the mouse on an app's icon: its windows open as a list (title and a
-  mini-map of where each window is), or as pictures if you turned thumbnails on.
-  The active window is marked. Click to switch, × to close.
-- Click the icon of the app in front to minimize its window, click again to
-  restore it; clicking another app brings its most recent window forward.
-- Browsers (Safari, Chrome, Edge, Firefox, Brave, Vivaldi, Opera), Finder and
-  Terminal list each window's tabs under it, with each site in its own colour
-  and duplicate tabs marked. Click a tab to go straight to it.
+### 🪟 Your Dock, now with window lists
 
-**⌘Tab, Flip 3D.** Every window stands in a slanted 3D stack, most recently used
-in front — minimized ones, full-screen apps and windows on other desktops
-included. Hold ⌘ and press Tab to flip through, ⇧ to go back, Esc to cancel,
-release ⌘ to switch; ← → and Return work too, and you can click a window.
-Start typing to filter ("team" leaves the Teams windows); then Return switches.
-Without thumbnails each window is a card: its title in a bar of the app's
-colour, the app icon, the document's file name, the display and a mini-map.
+<img src="docs/assets/feature-dock.gif" alt="Hovering a Dock icon opens a list of the app's windows, with browser tabs under each window" width="100%">
 
-**Snapping.** ⌃⌥ plays the Win key.
+Rest the mouse on an app in the Dock and its windows pop up in a list. Click one
+to go to it, or press × to close it. The Dock itself stays exactly as it is:
+folders, Trash, badges and your settings all keep working.
 
-| Keys | Action |
-|---|---|
-| ⌃⌥ ← / → | Left or right half; again to move on to the next display |
-| ⌃⌥ ↑ | Maximize; from a half, the top quarter |
-| ⌃⌥ ↓ | Restore, then minimize; from a half, the bottom quarter |
-| ⌃⌥⇧ ← / → | Move the window to the next display |
-| ⌃⌥ 1…9 | Open the n-th app in the Dock |
-| ⌃⌥ D | Show desktop (Win+D) |
-| ⌃⌥ E | New Finder window (Win+E) |
+- **Browser tabs, listed.** Safari, Chrome, Edge, Firefox, Brave, Vivaldi and
+  Opera show each window's tabs under it, and so do Finder and Terminal. Each
+  site gets its own colour, duplicate tabs are marked, and a click takes you
+  straight to that tab.
+- **Click to minimize, click again to restore.** Clicking the app you're
+  already in tucks its window away; the next click brings it back, like the
+  taskbar always did.
+- **Pictures, if you want them.** Thumbnails are opt-in. Without them, every
+  window gets a small map of where it sits on screen, which is surprisingly
+  good at telling three "Untitled" windows apart.
 
-Drag a window to the left or right edge for a half, to the top edge to
-maximize, near a corner for a quarter. All shortcuts are listed under
-**Window Layout** in DockFlip's menu bar menu; click one to apply it.
+### 🃏 ⌘Tab, Flip 3D edition
 
-**Window positions per display setup** (Windows 11 default): unplug the
-external display, plug it back in, and every window returns to where it was.
+<img src="docs/assets/feature-flip.gif" alt="Windows standing in a slanted 3D stack; each Tab sends the front one to the back" width="100%">
 
-**Clean Up** — menu bar → *Clean Up*: windows unused for three days and apps
-left running without windows. Nothing closes without you; apps still ask to save.
+⌘Tab now switches between **windows**, not apps, in a slanted 3D stack that
+Windows 7 fans will recognise from across the room. Most recently used is in
+front.
 
-**Not responding** — a hung app's window list says so.
+- **Every window, including the hiding ones.** Minimized windows, full-screen
+  apps and windows on other desktops are all in the stack.
+- **Type to filter.** Hold ⌘ and type `team`, and only the windows with "team"
+  in their title or app name are left. Press Return to switch.
+- **The usual keys.** Tab moves forward, ⇧ moves back, Esc cancels, and
+  releasing ⌘ switches. Arrow keys and clicking work too.
+- **Survives password fields.** It keeps working while another app holds
+  secure keyboard input, which is exactly when lesser switchers give up.
 
-**15 languages** — English, Finnish, Swedish, Danish, Norwegian, German, French,
-Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Japanese, Korean and
-Chinese (Simplified). DockFlip follows macOS; the menu bar menu → 🌐 *Language*
-picks another one for DockFlip only. Every language is listed with its English
-name, and the menu always says "Language" in English too, so English is easy
-to find again.
+### 📐 Snapping
 
-## Requirements
+<img src="docs/assets/feature-snap.gif" alt="Windows snapping into the left half, the right half and the quarters of the screen" width="100%">
 
-- macOS 26 or later
-- Command Line Tools: `xcode-select --install` (no Xcode, no Apple account)
+**⌃⌥ is your Win key.** Use the arrows for halves, maximize and quarters, or
+drag a window to an edge or a corner and let go.
 
-## Build and install
+### 🧹 The small stuff
+
+- **Windows return home.** Unplug the external display and plug it back in, and
+  every window goes back to where it was.
+- **Clean Up.** Lists windows you haven't touched in three days and apps left
+  running with no windows. It only suggests; it never closes anything without
+  you, and apps still ask to save.
+- **"Not responding"** shows in a hung app's window list, so you know it's the
+  app and not you.
+- **15 languages**, with a language menu that always says "Language" in English
+  as well, in case you pick one you can't read.
+
+## Install
+
+You need **macOS 26 or later** and Apple's free **Command Line Tools**.
+Xcode is optional: if you already have it, that works too, and if you don't,
+there's no need to download it.
 
 ```sh
-git clone <repo-url> dockflip
-cd dockflip
-make install        # make uninstall removes everything again
+xcode-select --install                 # Command Line Tools, once
+git clone https://github.com/geezery/DockFlip.git
+cd DockFlip
+make install                           # builds, signs and copies it to /Applications
 ```
 
-`make install`:
-
-1. Creates a local code-signing identity ("DockFlip Signing") the first time, in
-   its own keychain (`~/Library/Keychains/dockflip-signing.keychain-db`) with a
-   random password kept in `~/Library/Application Support/DockFlip/`. macOS asks
-   for your login password once, to trust the certificate. A stable signature
-   keeps the Accessibility permission valid across rebuilds.
-2. Builds `build/DockFlip.app` and signs it.
-3. Copies it to `/Applications` and starts it.
-
 Then allow DockFlip under **System Settings → Privacy & Security →
-Accessibility**; the setup window opens the right page.
+Accessibility**. The setup window opens the right page for you.
 
-Other targets: `make` (build only), `make run`, `make test`, `make clean`, `make uninstall`.
+<details>
+<summary><b>What <code>make install</code> actually does</b></summary>
 
-### Troubleshooting
+1. The first time, it creates a local code-signing identity called
+   "DockFlip Signing" in its own keychain
+   (`~/Library/Keychains/dockflip-signing.keychain-db`). The keychain's random
+   password is kept in `~/Library/Application Support/DockFlip/`. macOS asks
+   for your login password once, to trust the certificate. A stable signature
+   means the Accessibility permission survives rebuilds.
+2. It builds `build/DockFlip.app` and signs it.
+3. It copies the app to `/Applications` and starts it.
 
-- **⌘Tab does nothing after a rebuild:** macOS may keep a stale Accessibility
-  entry for an older signature. Press **Reset Permission** in setup, or run
-  `tccutil reset Accessibility io.github.dockflip.DockFlip`, then allow again.
-- **macOS's own ⌘Tab is gone after a crash:** start and quit DockFlip once.
-- **A language you cannot read:** menu bar → 🌐 → *English*, or run
-  `defaults delete io.github.dockflip.DockFlip AppleLanguages` and restart DockFlip.
+No Apple Developer account and no fees. `make uninstall` removes everything,
+the certificate included.
+
+Other targets: `make` (build only), `make run`, `make test`, `make clean`.
+</details>
+
+## Shortcuts
+
+| Keys | What happens | Windows equivalent |
+|---|---|---|
+| ⌘ Tab | Flip 3D window switcher | Alt+Tab |
+| ⌃⌥ ← / → | Left or right half; press again to move on to the next display | Win+← / → |
+| ⌃⌥ ↑ | Maximize; from a half, the top quarter | Win+↑ |
+| ⌃⌥ ↓ | Restore, then minimize; from a half, the bottom quarter | Win+↓ |
+| ⌃⌥⇧ ← / → | Move the window to the next display | Win+Shift+← / → |
+| ⌃⌥ 1…9 | Open the n-th app in the Dock | Win+1…9 |
+| ⌃⌥ D | Show desktop | Win+D |
+| ⌃⌥ E | New Finder window | Win+E |
+
+All of these are also listed under **Window Layout** in DockFlip's menu bar
+menu, where clicking one applies it.
 
 ## Privacy
 
-- **One permission:** Accessibility, to list, focus, move and minimize windows
-  and for the keyboard shortcuts.
-- **No networking code**, no third-party code.
-- **Thumbnails are opt-in** and the only feature that uses Screen Recording:
-  captured on demand (Dock icon hover, ⌘Tab), one window at a time at thumbnail
-  size, kept in memory only (at most 24, for two minutes), never while a password
-  field is active, never for password managers or System Settings. All of it is in
-  `Sources/DockFlipKit/Previews/PreviewProvider.swift`.
-- Window and tab titles are never written to the debug log.
+DockFlip is nosy about your windows and nothing else.
+
+- **One required permission:** Accessibility, used to list, focus, move and
+  minimize windows and to catch the shortcuts.
+- **No networking code at all.** No analytics, no update check, no "anonymous"
+  anything. You're welcome to grep for it.
+- **No third-party code.** Apple frameworks only.
+- **Thumbnails are opt-in**, and they're the only thing that uses Screen
+  Recording. Pictures are taken on demand at thumbnail size and kept in memory
+  only: at most 24, for two minutes. They're never taken while a password
+  field is active, and never of password managers or System Settings.
+- **Window and tab titles are never written to the debug log.**
+
+## FAQ
+
+<details><summary><b>Does it replace my Dock?</b></summary>
+
+No. Your Dock stays the real macOS Dock. DockFlip only adds the window lists and
+the click behaviour on top.
+</details>
+
+<details><summary><b>Where did macOS's own ⌘Tab go?</b></summary>
+
+DockFlip turns it off while it runs and gives it back when you quit. ⌘` still
+cycles an app's windows the macOS way. If DockFlip ever crashes and your ⌘Tab
+seems to be missing, start DockFlip and quit it once.
+</details>
+
+<details><summary><b>⌘Tab does nothing after I rebuilt it</b></summary>
+
+macOS may be holding on to an Accessibility entry for an older signature. Press
+**Reset Permission** in the setup window, or run
+`tccutil reset Accessibility io.github.dockflip.DockFlip`, and then allow
+DockFlip again.
+</details>
+
+<details><summary><b>I picked a language I can't read</b></summary>
+
+Open the menu bar menu → 🌐 → *English*. Or run
+`defaults delete io.github.dockflip.DockFlip AppleLanguages` and restart DockFlip.
+</details>
+
+<details><summary><b>Why isn't it on the Mac App Store?</b></summary>
+
+App Store apps run in a sandbox that doesn't allow the Accessibility API, and
+without that DockFlip can't see a single window.
+</details>
+
+<details><summary><b>Why ⌃⌥ and not ⌘ for snapping?</b></summary>
+
+⌘ shortcuts belong to the app you're in, and Globe shortcuts belong to macOS's
+own tiling. ⌃⌥ is the closest thing a Mac keyboard has to a free Win key.
+</details>
+
+<details><summary><b>Can you add thirds, gaps or "almost maximize"?</b></summary>
+
+That's what Rectangle is for, and it does it very well. DockFlip sticks to the
+bits Windows got right. See [SCOPE.md](SCOPE.md) for where the line is.
+</details>
+
+More in the [wiki](https://github.com/geezery/DockFlip/wiki).
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
-The guiding rule: Windows 11 default behaviour is the spec ([SCOPE.md](SCOPE.md)).
+Bug reports, translations and pull requests are welcome. Read
+[CONTRIBUTING.md](CONTRIBUTING.md) first: it's short, and it explains why the
+answer to "can this be a setting?" is usually "no".
+[ARCHITECTURE.md](ARCHITECTURE.md) shows how everything fits together.
+
+## Thanks
+
+DockFlip stands on the shoulders of
+[AltTab](https://github.com/lwouis/alt-tab-macos),
+[DockDoor](https://github.com/ejbills/DockDoor) and
+[Rectangle](https://github.com/rxhanson/Rectangle). Their authors worked out
+the hard parts of macOS window wrangling and shared them. Go give them a star
+too.
 
 ## License
 
-GPL-3.0. See [LICENSE](LICENSE).
+[GPL-3.0](LICENSE). Free as in beer, and free as in you can read every line.
+
+<p align="center"><sub>If DockFlip cured your Alt-Tab withdrawal, a ⭐ helps the next Windows refugee find it.</sub></p>

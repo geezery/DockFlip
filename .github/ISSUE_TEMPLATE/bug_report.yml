@@ -1,0 +1,47 @@
+name: Bug report
+description: Something misbehaves. Windows not listed, ⌘Tab picking the wrong one, a snap that missed.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The more exact the steps, the faster the fix.
+        Please don't paste window or tab titles you'd rather keep private.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open two Chrome windows
+        2. Minimize one
+        3. Press ⌘Tab
+    validations:
+      required: true
+  - type: input
+    id: apps
+    attributes:
+      label: Apps involved
+      placeholder: Chrome 131, Slack, Finder…
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "26.1"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: DockFlip version or commit
+  - type: textarea
+    id: log
+    attributes:
+      label: Debug log (optional)
+      description: In the menu bar menu, turn on Debug Logging, reproduce the problem, then choose Save Debug Log… and attach the file. It never contains window or tab titles.

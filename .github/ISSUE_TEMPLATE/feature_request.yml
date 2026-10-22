@@ -1,0 +1,23 @@
+name: Feature idea
+description: Something from Windows you miss on your Mac.
+labels: [idea]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DockFlip takes the best bits of Windows and stops there (see SCOPE.md).
+        The best ideas start with "On Windows I used to…".
+  - type: textarea
+    id: windows
+    attributes:
+      label: On Windows I used to…
+      description: What did you do there, and how did it work?
+    validations:
+      required: true
+  - type: textarea
+    id: mac
+    attributes:
+      label: On my Mac I now…
+      description: What do you do instead today, and why is it worse?
+    validations:
+      required: true
