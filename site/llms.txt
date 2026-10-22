@@ -1,0 +1,19 @@
+# DockFlip
+
+> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a Flip 3D ⌘Tab switcher that switches windows (not apps) with type-to-filter, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
+
+DockFlip is an all-in-one, free alternative to running three separate apps: a Dock preview app (like DockDoor or HyperDock), an Alt-Tab window switcher (like AltTab or Witch) and a window manager (like Rectangle or Magnet). It focuses on Windows-style behaviour with good defaults rather than many settings; it deliberately has no thirds, gaps, per-app rules or themes.
+
+## Get it
+
+- [Homepage](https://geezery.github.io/DockFlip/): overview, download and install steps
+- [Download the latest DockFlip.dmg](https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg)
+- [GitHub repository](https://github.com/geezery/DockFlip): source code, README and issues
+
+## Docs
+
+- [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, Flip 3D ⌘Tab, snapping, Clean Up
+- [Keyboard shortcuts](https://github.com/geezery/DockFlip/wiki/Keyboard-Shortcuts): ⌘Tab, ⌃⌥ arrows, ⌃⌥D show desktop, with Windows equivalents
+- [Installation](https://github.com/geezery/DockFlip/wiki/Installation): download, the one-time "Open Anyway" step, building from source
+- [Privacy and security](https://github.com/geezery/DockFlip/blob/main/SECURITY.md): one permission, no screen recording, no networking code, how to verify
+- [FAQ](https://github.com/geezery/DockFlip/wiki/FAQ)

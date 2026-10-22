@@ -83,6 +83,17 @@ kbd{font:600 .85em Geist,sans-serif;padding:2px 7px;border-radius:6px;background
 .keys div:first-child{border-top:0}
 .keys span{min-width:150px;color:var(--muted);font-size:15px}
 
+.table{margin-top:32px;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.tr{display:grid;grid-template-columns:1.4fr 1fr 1fr;border-top:1px solid var(--line)}
+.tr:first-child{border-top:0}
+.tr div{padding:14px 18px;font-size:15.5px}
+.tr div:first-child{color:var(--ink)}
+.th div{font-weight:600;color:var(--ink);background:var(--card)}
+.th div:nth-child(2){color:var(--em)}
+.y{color:var(--em);font-weight:500}
+.n{color:var(--muted)}
+@media (max-width:640px){.tr{grid-template-columns:1.2fr 1fr 1fr}.tr div{padding:12px 10px;font-size:14px}}
+
 /* Install */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px;counter-reset:step}
 @media (max-width:860px){.steps{grid-template-columns:1fr 1fr}}
@@ -210,6 +221,22 @@ footer .right{margin-left:auto}
       <p><a href="https://github.com/geezery/DockFlip/blob/main/SECURITY.md">How to check every claim yourself →</a></p>
     </div>
     <div class="art"><img src="assets/feature-privacy.gif" alt="DockFlip asks for Accessibility only" width="1280" height="800" loading="lazy"></div>
+  </section>
+
+  <section id="compare">
+    <div class="kicker">One app instead of three</div>
+    <h2>Built for people who never open the settings.</h2>
+    <p class="lede" style="margin-left:0;text-align:left">The usual fix for missing Windows is three apps: a Dock preview app, an Alt-Tab clone and a window manager. They're good apps, and DockFlip learned a lot from AltTab, DockDoor and Rectangle. But most people just want it to work like Windows, with good defaults, so DockFlip does that in one app.</p>
+    <div class="table">
+      <div class="tr th"><div></div><div>DockFlip</div><div>Three separate apps</div></div>
+      <div class="tr"><div>Window lists and tabs in the Dock</div><div class="y">✓</div><div>App 1</div></div>
+      <div class="tr"><div>⌘Tab that switches windows</div><div class="y">✓ Flip 3D, type to filter</div><div>App 2</div></div>
+      <div class="tr"><div>Win-style snapping</div><div class="y">✓</div><div>App 3</div></div>
+      <div class="tr"><div>Permissions to grant</div><div class="y">1 (Accessibility)</div><div>Up to 2 per app</div></div>
+      <div class="tr"><div>Settings to tune</div><div class="y">3, all sensible by default</div><div>Plenty, in three places</div></div>
+      <div class="tr"><div>Price</div><div class="y">Free, open source</div><div>Free to paid</div></div>
+      <div class="tr"><div>Thirds, gaps, per-app rules, themes</div><div class="n">No, on purpose</div><div>Yes, if you want them</div></div>
+    </div>
   </section>
 
   <section id="install">

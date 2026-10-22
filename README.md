@@ -48,6 +48,24 @@ paperclip.
 - **Right out of the box.** Three settings, all with sensible defaults. You
   install it, allow one permission, and get on with your day.
 
+## One app instead of three
+
+| | DockFlip | Three separate apps |
+|---|---|---|
+| Window lists and tabs in the Dock | ✓ | App 1 |
+| ⌘Tab that switches windows | ✓ Flip 3D, type to filter | App 2 |
+| Win-style snapping | ✓ | App 3 |
+| Permissions to grant | 1 (Accessibility) | Up to 2 per app |
+| Settings to tune | 3, all sensible by default | Plenty, in three places |
+| Price | Free, open source | Free to paid |
+| Thirds, gaps, per-app rules, themes | No, on purpose | Yes, if you want them |
+
+Built for people who never open the settings. If you love fine-tuning,
+[AltTab](https://github.com/lwouis/alt-tab-macos),
+[DockDoor](https://github.com/ejbills/DockDoor) and
+[Rectangle](https://github.com/rxhanson/Rectangle) are excellent, and DockFlip
+learned a lot from them.
+
 ## Features
 
 ### 🪟 Your Dock, now with window lists
