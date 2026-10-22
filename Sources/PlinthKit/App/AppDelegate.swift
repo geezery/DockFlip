@@ -219,6 +219,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
 
+        if snapper != nil {
+            menu.addItem(.separator())
+            let layout = NSMenuItem(title: L("Window Layout"), action: nil, keyEquivalent: "")
+            layout.image = NSImage(systemSymbolName: "rectangle.split.2x1", accessibilityDescription: nil)
+            layout.submenu = windowLayoutMenu()
+            menu.addItem(layout)
+        }
+
         if let cleanup {
             let count = cleanup.candidateCount()
             let title = count > 0 ? String(format: L("Clean Up (%ld)…"), count) : L("Clean Up…")
@@ -238,6 +246,69 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: L("Quit Plinth"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+    }
+
+    /// Every keyboard action with its shortcut, as Rectangle lists them: a
+    /// cheat sheet while the shortcuts are new, and each item works on the front
+    /// window when clicked. ⌃⌥ plays the Win key: Win+D is ⌃⌥D.
+    private func windowLayoutMenu() -> NSMenu {
+        let menu = NSMenu()
+        let win: NSEvent.ModifierFlags = [.control, .option]
+        let left = String(Character(UnicodeScalar(NSLeftArrowFunctionKey)!))
+        let right = String(Character(UnicodeScalar(NSRightArrowFunctionKey)!))
+        let up = String(Character(UnicodeScalar(NSUpArrowFunctionKey)!))
+        let down = String(Character(UnicodeScalar(NSDownArrowFunctionKey)!))
+
+        func add(_ title: String, symbol: String, key: String = "", modifiers: NSEvent.ModifierFlags = [],
+                 hint: String? = nil, action: @escaping () -> Void) {
+            let item = ClosureMenuItem(L(title), handler: action)
+            item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+            item.keyEquivalent = key
+            item.keyEquivalentModifierMask = modifiers
+            if let hint { item.subtitle = hint }
+            menu.addItem(item)
+        }
+
+        add("Left Half", symbol: "rectangle.lefthalf.filled", key: left, modifiers: win) { [weak self] in self?.snapper?.snap(to: .leftHalf) }
+        add("Right Half", symbol: "rectangle.righthalf.filled", key: right, modifiers: win) { [weak self] in self?.snapper?.snap(to: .rightHalf) }
+        add("Maximize", symbol: "rectangle.inset.filled", key: up, modifiers: win) { [weak self] in self?.snapper?.snap(to: .maximized) }
+        add("Restore, Then Minimize", symbol: "arrow.down.right.and.arrow.up.left", key: down, modifiers: win) { [weak self] in
+            _ = self?.snapper?.handle(.down)
+        }
+        menu.addItem(.separator())
+        add("Top Left", symbol: "rectangle.inset.topleft.filled", hint: L("From the left half: ⌃⌥↑")) { [weak self] in self?.snapper?.snap(to: .topLeft) }
+        add("Top Right", symbol: "rectangle.inset.topright.filled", hint: L("From the right half: ⌃⌥↑")) { [weak self] in self?.snapper?.snap(to: .topRight) }
+        add("Bottom Left", symbol: "rectangle.inset.bottomleft.filled", hint: L("From the left half: ⌃⌥↓")) { [weak self] in self?.snapper?.snap(to: .bottomLeft) }
+        add("Bottom Right", symbol: "rectangle.inset.bottomright.filled", hint: L("From the right half: ⌃⌥↓")) { [weak self] in self?.snapper?.snap(to: .bottomRight) }
+        menu.addItem(.separator())
+        add("Move to Previous Display", symbol: "arrow.left.to.line", key: left, modifiers: win.union(.shift)) { [weak self] in
+            _ = self?.snapper?.moveToDisplay(.left)
+        }
+        add("Move to Next Display", symbol: "arrow.right.to.line", key: right, modifiers: win.union(.shift)) { [weak self] in
+            _ = self?.snapper?.moveToDisplay(.right)
+        }
+        menu.addItem(.separator())
+        add("Show Desktop", symbol: "menubar.dock.rectangle", key: "d", modifiers: win) { [weak self] in
+            self?.perform(.showDesktop)
+        }
+        add("New Finder Window", symbol: "folder", key: "e", modifiers: win) { [weak self] in
+            self?.perform(.newFinderWindow)
+        }
+        menu.addItem(.separator())
+
+        // Shortcuts that only make sense from the keyboard: listed, not clickable.
+        let info: [(String, String)] = [
+            (L("Switch Windows"), "⌘Tab"),
+            (Settings.shared.useDock ? L("Open the n-th App in the Dock") : L("Open the n-th Taskbar Button"), "⌃⌥1…9"),
+            (L("Snap by Dragging"), L("Drag a window to an edge or corner"))
+        ]
+        for (title, hint) in info {
+            let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            item.subtitle = hint
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+        return menu
     }
 
     private func addStatus(_ title: String, to menu: NSMenu) {

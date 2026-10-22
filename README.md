@@ -59,6 +59,9 @@ position.
 | ⌃⌥ D | Show desktop |
 | ⌃⌥ E | New Finder window |
 
+All of these are listed, with their keys, under **Window Layout** in Plinth's
+menu bar menu — click one to apply it to the front window.
+
 Drag a window to the left or right edge for a half, to the top edge to
 maximize, near a corner for a quarter.
 

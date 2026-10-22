@@ -83,6 +83,16 @@ final class SnapController {
         return true
     }
 
+    /// Puts the front window straight into `region` (from the menu bar menu).
+    func snap(to region: SnapRegion) {
+        guard let (id, frame) = targetWindow() else { return }
+        let screens = DisplayLayout.screensLeftToRight()
+        guard let display = DisplayLayout.screenIndex(for: frame, in: screens) else { return }
+        let area = DisplayLayout.usableArea(of: screens[display])
+        if SnapEngine.region(matching: frame, in: area) == nil { restoreFrames[id] = frame }
+        registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: area))
+    }
+
     private func targetWindow() -> (CGWindowID, CGRect)? {
         guard let id = registry.focusedWindowID() ?? registry.activeWindowID(),
               registry.window(id)?.isMinimized == false,
