@@ -76,6 +76,9 @@ jobs:
           hdiutil create -volname DockFlip -srcfolder dmg -fs HFS+ -format UDZO -ov "DockFlip-$VERSION.dmg"
           codesign --force --timestamp=none --keychain "$KEYCHAIN" --sign "$SIGN_HASH" "DockFlip-$VERSION.dmg"
           shasum -a 256 "DockFlip-$VERSION.dmg" | tee "DockFlip-$VERSION.dmg.sha256"
+          # Same file under a fixed name, so .../releases/latest/download/DockFlip.dmg
+          # always downloads the newest version.
+          cp "DockFlip-$VERSION.dmg" DockFlip.dmg
 
       - uses: actions/attest-build-provenance@v2
         with:
@@ -86,7 +89,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           sed "s/VERSION/$VERSION/g" .github/release-notes.md > notes.md
-          FILES="DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256"
+          FILES="DockFlip.dmg DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" $FILES --clobber
           else
