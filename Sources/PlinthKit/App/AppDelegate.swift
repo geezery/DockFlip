@@ -2,12 +2,13 @@ import AppKit
 import ServiceManagement
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private var onboarding: OnboardingController?
     private var registry: WindowRegistry?
     private var switcher: SwitcherController?
     private var hotkeys: HotkeyTap?
+    private var hotkeysRunning = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setUpStatusItem()
@@ -35,14 +36,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeys.isActive = { [weak switcher] in
             switcher?.isActive ?? false
         }
-        if !hotkeys.start() {
-            NSLog("Plinth: could not create the keyboard event tap. Is Accessibility allowed?")
+        hotkeysRunning = hotkeys.start()
+        if !hotkeysRunning {
+            // Right after Accessibility is granted, macOS sometimes refuses the
+            // event tap until the app is restarted.
+            NSLog("Plinth: could not create the keyboard event tap.")
         }
 
         self.registry = registry
         self.switcher = switcher
         self.hotkeys = hotkeys
-        rebuildMenu()
     }
 
     private func showOnboarding() {
@@ -54,9 +57,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
             self.onboarding = nil
             self.startServices()
+            if !self.hotkeysRunning { self.relaunch() }
         }
         onboarding = controller
         controller.show()
+    }
+
+    private func relaunch() {
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { _, _ in
+            Task { @MainActor in NSApp.terminate(nil) }
+        }
     }
 
     // MARK: - Menu bar
@@ -69,20 +81,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             item.button?.title = "P"
         }
+        let menu = NSMenu()
+        menu.delegate = self
+        item.menu = menu
         statusItem = item
-        rebuildMenu()
     }
 
-    private func rebuildMenu() {
-        let menu = NSMenu()
+    /// Rebuilt every time the menu opens, so the status lines are always current.
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
 
         if Permissions.isAccessibilityTrusted {
-            let status = NSMenuItem(title: L("Accessibility: allowed"), action: nil, keyEquivalent: "")
-            status.isEnabled = false
-            menu.addItem(status)
+            addStatus(L("Accessibility: allowed"), to: menu)
         } else {
-            menu.addItem(withTitle: L("Grant Accessibility…"), action: #selector(grantAccessibility), keyEquivalent: "")
-                .target = self
+            let grant = NSMenuItem(title: L("Grant Accessibility…"), action: #selector(grantAccessibility), keyEquivalent: "")
+            grant.target = self
+            menu.addItem(grant)
+        }
+
+        if registry != nil {
+            addStatus(hotkeysRunning ? L("⌥Tab: active") : L("⌥Tab: not active"), to: menu)
+            addStatus(String(format: L("Windows tracked: %ld"), registry?.trackedWindowCount ?? 0), to: menu)
+        }
+        if registry != nil && !hotkeysRunning {
+            let restart = NSMenuItem(title: L("Restart Plinth"), action: #selector(restartPlinth), keyEquivalent: "")
+            restart.target = self
+            menu.addItem(restart)
         }
 
         menu.addItem(.separator())
@@ -93,15 +117,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(login)
 
         menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: L("Quit Plinth"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+    }
 
-        let quit = NSMenuItem(title: L("Quit Plinth"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        menu.addItem(quit)
-
-        statusItem?.menu = menu
+    private func addStatus(_ title: String, to menu: NSMenu) {
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        item.isEnabled = false
+        menu.addItem(item)
     }
 
     @objc private func grantAccessibility() {
         showOnboarding()
+    }
+
+    @objc private func restartPlinth() {
+        relaunch()
     }
 
     @objc private func toggleLaunchAtLogin() {
@@ -114,7 +144,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch {
             NSLog("Plinth: launch at login change failed: \(error.localizedDescription)")
         }
-        rebuildMenu()
     }
 }
 

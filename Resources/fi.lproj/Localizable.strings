@@ -11,3 +11,7 @@
 "Launch at Login" = "Käynnistä kirjautuessa";
 "Quit Plinth" = "Lopeta Plinth";
 "Minimized" = "Pienennetty";
+"⌥Tab: active" = "⌥Tab: käytössä";
+"⌥Tab: not active" = "⌥Tab: ei käytössä";
+"Windows tracked: %ld" = "Seurattavia ikkunoita: %ld";
+"Restart Plinth" = "Käynnistä Plinth uudelleen";
