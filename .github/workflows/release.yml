@@ -68,6 +68,14 @@ jobs:
           codesign --display --requirements - build/DockFlip.app
           lipo -archs build/DockFlip.app/Contents/MacOS/DockFlip
 
+      # For IT: a package for MDM deployment, and a profile that pre-approves
+      # Accessibility for exactly this signature. See docs/IT.md.
+      - name: IT deployment files
+        run: |
+          pkgbuild --component build/DockFlip.app --install-location /Applications \
+            --identifier io.github.dockflip.DockFlip.pkg --version "$VERSION" "DockFlip-$VERSION.pkg"
+          python3 scripts/make-pppc-profile.py build/DockFlip.app DockFlip-Accessibility.mobileconfig
+
       - name: Disk image
         run: |
           mkdir dmg
@@ -89,7 +97,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           sed "s/VERSION/$VERSION/g" .github/release-notes.md > notes.md
-          FILES="DockFlip.dmg DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256"
+          FILES="DockFlip.dmg DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256 DockFlip-$VERSION.pkg DockFlip-Accessibility.mobileconfig"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" $FILES --clobber
           else

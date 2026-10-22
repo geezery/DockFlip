@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DockFlip: the best bits of Windows, on your Mac</title>
+<title data-i18n="meta.title">DockFlip: the best bits of Windows, on your Mac</title>
 <meta name="description" content="Window lists in your Dock, a Flip 3D ⌘Tab that switches windows, and snapping. One permission, no screen recording. Free and open source.">
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -94,9 +94,15 @@ kbd{font:600 .85em Geist,sans-serif;padding:2px 7px;border-radius:6px;background
 .n{color:var(--muted)}
 @media (max-width:640px){.tr{grid-template-columns:1.2fr 1fr 1fr}.tr div{padding:12px 10px;font-size:14px}}
 
-.pentti{max-width:720px}
-.pentti p{margin:18px 0 0;font-size:clamp(17px,2vw,19px)}
-.pentti b{color:var(--ink)}
+
+.who{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+@media (max-width:760px){.who{grid-template-columns:1fr}}
+.person{background:var(--card);border-radius:18px;padding:26px;box-shadow:inset 0 0 0 1px var(--line)}
+.person .face{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#06120d}
+.person h3{margin:16px 0 4px;font-size:22px;color:var(--ink);letter-spacing:-.01em}
+.person .role{font-size:14px;color:var(--muted)}
+.person p{margin:14px 0 0;font-size:16px}
+.lang{background:var(--card);color:var(--text);border:0;border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;box-shadow:inset 0 0 0 1px var(--line)}
 
 /* Install */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px;counter-reset:step}
@@ -130,10 +136,10 @@ footer .right{margin-left:auto}
   <div class="wrap">
     <a class="logo" href="#"><img src="icon.png" alt="">DockFlip</a>
     <div class="links">
-      <a class="opt" href="#features">Features</a>
-      <a class="opt" href="#privacy">Privacy</a>
+      <a class="opt" href="#features" data-i18n="nav.features">Features</a>
+      <a class="opt" href="#privacy" data-i18n="nav.privacy">Privacy</a>
       <a class="opt" href="https://github.com/geezery/DockFlip">GitHub</a>
-      <a class="btn primary small" href="https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg">Download</a>
+      <a class="btn primary small" href="https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg" data-i18n="nav.download">Download</a>
     </div>
   </div>
 </nav>
@@ -141,22 +147,22 @@ footer .right{margin-left:auto}
 <header class="hero">
   <div class="wrap">
     <img class="icon" src="icon.png" alt="DockFlip icon">
-    <h1>The best bits of Windows.<br><em>On your Mac.</em></h1>
-    <p class="lede">Window lists in your Dock, a Flip 3D <span class="sym">⌘</span>Tab that switches <i>windows</i>, and snapping. One small app that works the moment you open it. Free.</p>
+    <h1 data-i18n="hero.title">The best bits of Windows.<br><em>On your Mac.</em></h1>
+    <p class="lede" data-i18n="hero.lede">Window lists in your Dock, a Flip 3D <span class="sym">⌘</span>Tab that switches <i>windows</i>, and snapping. One small app that works the moment you open it. Free.</p>
     <div class="ctas">
       <a class="btn primary" href="https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 10l6 6 6-6M4 21h16"/></svg>
-        Download for Mac</a>
-      <a class="btn ghost" href="https://github.com/geezery/DockFlip">View on GitHub</a>
+        <span data-i18n="hero.download">Download for Mac</span></a>
+      <a class="btn ghost" href="https://github.com/geezery/DockFlip" data-i18n="hero.github">View on GitHub</a>
     </div>
-    <div class="fine">macOS 26 or later · Apple silicon and Intel · open source (GPL-3.0)</div>
-    <div class="hero-art"><img src="assets/feature-flip.gif" alt="Windows in a slanted 3D stack; typing filters them" width="1280" height="800"></div>
+    <div class="fine" data-i18n="hero.fine">macOS 26 or later · Apple silicon and Intel · open source (GPL-3.0)</div>
+    <div class="hero-art"><img src="assets/feature-flip.gif" alt="DockFlip ⌘Tab" width="1280" height="800"></div>
 
     <div class="trust">
-      <div><b>1 permission</b><span>Accessibility. That's all.</span></div>
-      <div><b>No screen recording</b><span>Looks great without it</span></div>
-      <div><b>No network code</b><span>Can't phone home</span></div>
-      <div><b>0 dependencies</b><span>Apple frameworks only</span></div>
+      <div><b data-i18n="trust.1b">1 permission</b><span data-i18n="trust.1s">Accessibility. That's all.</span></div>
+      <div><b data-i18n="trust.2b">No screen recording</b><span data-i18n="trust.2s">Looks great without it</span></div>
+      <div><b data-i18n="trust.3b">No network code</b><span data-i18n="trust.3s">Can't phone home</span></div>
+      <div><b data-i18n="trust.4b">0 dependencies</b><span data-i18n="trust.4s">Apple frameworks only</span></div>
     </div>
   </div>
 </header>
@@ -165,114 +171,127 @@ footer .right{margin-left:auto}
 
   <section id="features" class="feature">
     <div class="copy">
-      <div class="kicker">The Dock</div>
-      <h2>Every window, one hover away.</h2>
-      <p>Rest the mouse on an app in the Dock and its windows pop up in a list. Click one to go there. Your Dock stays exactly as it is.</p>
+      <div class="kicker" data-i18n="dock.kicker">The Dock</div>
+      <h2 data-i18n="dock.h">Every window, one hover away.</h2>
+      <p data-i18n="dock.p">Rest the mouse on an app in the Dock and its windows pop up in a list. Click one to go there. Your Dock stays exactly as it is.</p>
       <ul>
-        <li><b>Browser tabs, listed.</b> Safari, Chrome, Edge, Firefox and friends show each window's tabs. Click one to jump straight to it.</li>
-        <li><b>Click to minimize, click again to restore</b>, like the taskbar always did.</li>
-        <li>Minimized windows and other desktops included.</li>
+        <li data-i18n="dock.l1"><b>Browser tabs, listed.</b> Safari, Chrome, Edge, Firefox and friends show each window's tabs. Click one to jump straight to it.</li>
+        <li data-i18n="dock.l2"><b>Click to minimize, click again to restore</b>, like the taskbar always did.</li>
+        <li data-i18n="dock.l3">Minimized windows and other desktops included.</li>
       </ul>
     </div>
-    <div class="art"><img src="assets/feature-dock.gif" alt="A window list with browser tabs above a Dock icon" width="1280" height="800" loading="lazy"></div>
+    <div class="art"><img src="assets/feature-dock.gif" alt="" width="1280" height="800" loading="lazy"></div>
   </section>
 
   <section class="feature flip">
     <div class="copy">
-      <div class="kicker"><span class="sym">⌘</span>Tab, Flip 3D edition</div>
-      <h2>Switch windows, not apps.</h2>
-      <p>Hold <kbd class="sym">⌘</kbd> and press <kbd>Tab</kbd>: every window stands in a slanted 3D stack, most recent in front. Windows 7 fans will feel right at home.</p>
+      <div class="kicker" data-i18n="flip.kicker"><span class="sym">⌘</span>Tab, Flip 3D edition</div>
+      <h2 data-i18n="flip.h">Switch windows, not apps.</h2>
+      <p data-i18n="flip.p">Hold <kbd class="sym">⌘</kbd> and press <kbd>Tab</kbd>: every window stands in a slanted 3D stack, most recent in front. Windows 7 fans will feel right at home.</p>
       <ul>
-        <li><b>Type to filter.</b> Type "plan" and only your plans are left. Return opens the one in front.</li>
-        <li>Minimized, full-screen and other-desktop windows are all in the stack.</li>
-        <li>Keeps working next to password fields, where lesser switchers give up.</li>
+        <li data-i18n="flip.l1"><b>Type to filter.</b> Type "plan" and only your plans are left. Return opens the one in front.</li>
+        <li data-i18n="flip.l2">Minimized, full-screen and other-desktop windows are all in the stack.</li>
+        <li data-i18n="flip.l3">Keeps working next to password fields, where lesser switchers give up.</li>
       </ul>
     </div>
     <div class="keys">
-      <div><span><kbd class="sym">⌘</kbd> <kbd>Tab</kbd></span>Open, then next window</div>
-      <div><span><kbd class="sym">⇧</kbd> <kbd>Tab</kbd></span>Previous window</div>
-      <div><span><kbd>plan</kbd></span>Type to filter</div>
-      <div><span><kbd>Return</kbd></span>Open the one in front</div>
-      <div><span>Release <kbd class="sym">⌘</kbd></span>Switch</div>
-      <div><span><kbd>Esc</kbd></span>Never mind</div>
+      <div><span><kbd class="sym">⌘</kbd> <kbd>Tab</kbd></span><em data-i18n="keys.1" style="font-style:normal">Open, then next window</em></div>
+      <div><span><kbd class="sym">⇧</kbd> <kbd>Tab</kbd></span><em data-i18n="keys.2" style="font-style:normal">Previous window</em></div>
+      <div><span><kbd>abc</kbd></span><em data-i18n="keys.3" style="font-style:normal">Type to filter</em></div>
+      <div><span><kbd>Return</kbd></span><em data-i18n="keys.4" style="font-style:normal">Open the one in front</em></div>
+      <div><span><kbd class="sym">⌘</kbd></span><em data-i18n="keys.5" style="font-style:normal">Let go to switch</em></div>
+      <div><span><kbd>Esc</kbd></span><em data-i18n="keys.6" style="font-style:normal">Never mind</em></div>
     </div>
   </section>
 
   <section class="feature">
     <div class="copy">
-      <div class="kicker">Snapping</div>
-      <h2><kbd class="sym">⌃</kbd><kbd class="sym">⌥</kbd> is your Win key.</h2>
-      <p>Arrows for halves, maximize and quarters, or drag a window to an edge or a corner and let go. Unplug your display and plug it back in: every window returns to where it was.</p>
+      <div class="kicker" data-i18n="snap.kicker">Snapping</div>
+      <h2 data-i18n="snap.h"><kbd class="sym">⌃</kbd><kbd class="sym">⌥</kbd> is your Win key.</h2>
+      <p data-i18n="snap.p">Arrows for halves, maximize and quarters, or drag a window to an edge or a corner and let go. Unplug your display and plug it back in: every window returns to where it was.</p>
       <ul>
-        <li><kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> halves, <kbd class="sym">⌃⌥↑</kbd> maximize</li>
-        <li><kbd class="sym">⌃⌥D</kbd> show desktop, <kbd class="sym">⌃⌥E</kbd> new Finder window</li>
-        <li>Every shortcut is listed in DockFlip's menu bar menu.</li>
+        <li data-i18n="snap.l1"><kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> halves, <kbd class="sym">⌃⌥↑</kbd> maximize</li>
+        <li data-i18n="snap.l2"><kbd class="sym">⌃⌥D</kbd> show desktop, <kbd class="sym">⌃⌥E</kbd> new Finder window</li>
+        <li data-i18n="snap.l3">Every shortcut is listed in DockFlip's menu bar menu.</li>
       </ul>
     </div>
-    <div class="art"><img src="assets/feature-snap.gif" alt="Windows snapping into halves and quarters" width="1280" height="800" loading="lazy"></div>
+    <div class="art"><img src="assets/feature-snap.gif" alt="" width="1280" height="800" loading="lazy"></div>
   </section>
 
   <section id="privacy" class="feature flip">
     <div class="copy">
-      <div class="kicker">Privacy</div>
-      <h2>Polished without peeking.</h2>
-      <p>Most window switchers ask to record your screen the moment you open them, because they're built on screenshots. DockFlip draws everything from what macOS already shares with it, so it never needs to see your screen.</p>
+      <div class="kicker" data-i18n="priv.kicker">Privacy</div>
+      <h2 data-i18n="priv.h">Polished without peeking.</h2>
+      <p data-i18n="priv.p">Most window switchers ask to record your screen the moment you open them, because they're built on screenshots. DockFlip draws everything from what macOS already shares with it, so it never needs to see your screen.</p>
       <ul>
-        <li><b>One permission:</b> Accessibility.</li>
-        <li><b>No networking code.</b> No analytics, no tracking, no update pings.</li>
-        <li>Your typing stays yours: ordinary keys only while <span class="sym">⌘</span>Tab is open.</li>
+        <li data-i18n="priv.l1"><b>One permission:</b> Accessibility.</li>
+        <li data-i18n="priv.l2"><b>No networking code.</b> No analytics, no tracking, no update pings.</li>
+        <li data-i18n="priv.l3">Your typing stays yours: ordinary keys only while <span class="sym">⌘</span>Tab is open.</li>
       </ul>
-      <p><a href="https://github.com/geezery/DockFlip/blob/main/SECURITY.md">How to check every claim yourself →</a></p>
+      <p><a href="https://github.com/geezery/DockFlip/blob/main/SECURITY.md" data-i18n="priv.link">How to check every claim yourself →</a></p>
     </div>
-    <div class="art"><img src="assets/feature-privacy.gif" alt="DockFlip asks for Accessibility only" width="1280" height="800" loading="lazy"></div>
+    <div class="art"><img src="assets/feature-privacy.gif" alt="" width="1280" height="800" loading="lazy"></div>
   </section>
 
-  <section id="pentti" class="pentti">
-    <div class="kicker">Who it's for</div>
-    <h2>Meet Pentti.</h2>
-    <p>Pentti is 52 and runs a company. His last laptop was a Lenovo with Windows. On Monday, IT handed him a Mac.</p>
-    <p>Pentti doesn't do settings. He doesn't want to learn a new way to find his windows. He wants to hover the taskbar, press Alt+Tab and drag a window to the side of the screen, like he has for twenty years.</p>
-    <p><b>DockFlip is for Pentti.</b> Install it, allow one permission, and the Mac works the way his hands already do. No preferences to tune, no tutorial, no Linux degree required.</p>
+  <section id="who">
+    <div class="kicker" data-i18n="who.kicker">Who it's for</div>
+    <h2 data-i18n="who.h">Meet {m} and {w}.</h2>
+    <div class="who">
+      <div class="person">
+        <div class="face" style="background:#5aa9e6" data-i18n="who.mi">M</div>
+        <h3 data-i18n="who.mn">{m}, 52</h3>
+        <div class="role" data-i18n="who.mr">Runs a company</div>
+        <p data-i18n="who.mp">His last laptop was a Lenovo with Windows. On Monday, IT handed him a Mac. {m} doesn't do settings: he wants to hover the taskbar, press Alt+Tab and drag a window to the side, like he has for twenty years.</p>
+      </div>
+      <div class="person">
+        <div class="face" style="background:#1fc48d" data-i18n="who.wi">A</div>
+        <h3 data-i18n="who.wn">{w}, 44</h3>
+        <div class="role" data-i18n="who.wr">Runs finance</div>
+        <p data-i18n="who.wp">Twelve Excel workbooks, Outlook and Teams. Two displays at the office, just the laptop at home. She types "budget" after ⌘Tab and she's there. She plugs in at her desk and every window goes back where it was.</p>
+      </div>
+    </div>
+    <p class="lede" style="margin-left:0;text-align:left" data-i18n="who.end"><b style="color:var(--ink)">DockFlip is for {m} and {w}.</b> Install it, allow one permission, and the Mac works the way their hands already do. No preferences, no tutorial, no Linux degree required.</p>
   </section>
 
   <section id="compare">
-    <div class="kicker">One app instead of three</div>
-    <h2>Built for people who never open the settings.</h2>
-    <p class="lede" style="margin-left:0;text-align:left">The usual fix for missing Windows is three apps: a Dock preview app, an Alt-Tab clone and a window manager. They're good apps, and DockFlip learned a lot from AltTab, DockDoor and Rectangle. But most people just want it to work like Windows, with good defaults, so DockFlip does that in one app.</p>
+    <div class="kicker" data-i18n="cmp.kicker">One app instead of three</div>
+    <h2 data-i18n="cmp.h">Built for people who never open the settings.</h2>
+    <p class="lede" style="margin-left:0;text-align:left" data-i18n="cmp.p">The usual fix for missing Windows is three apps: a Dock preview app, an Alt-Tab clone and a window manager. They're good apps, and DockFlip learned a lot from AltTab, DockDoor and Rectangle. But most people just want it to work like Windows, with good defaults, so DockFlip does that in one app.</p>
     <div class="table">
-      <div class="tr th"><div></div><div>DockFlip</div><div>Three separate apps</div></div>
-      <div class="tr"><div>Window lists and tabs in the Dock</div><div class="y">✓</div><div>App 1</div></div>
-      <div class="tr"><div>⌘Tab that switches windows</div><div class="y">✓ Flip 3D, type to filter</div><div>App 2</div></div>
-      <div class="tr"><div>Win-style snapping</div><div class="y">✓</div><div>App 3</div></div>
-      <div class="tr"><div>Permissions to grant</div><div class="y">1 (Accessibility)</div><div>Up to 2 per app</div></div>
-      <div class="tr"><div>Settings to tune</div><div class="y">3, all sensible by default</div><div>Plenty, in three places</div></div>
-      <div class="tr"><div>Price</div><div class="y">Free, open source</div><div>Free to paid</div></div>
-      <div class="tr"><div>Thirds, gaps, per-app rules, themes</div><div class="n">No, on purpose</div><div>Yes, if you want them</div></div>
+      <div class="tr th"><div></div><div>DockFlip</div><div data-i18n="cmp.other">Three separate apps</div></div>
+      <div class="tr"><div data-i18n="cmp.r1a">Window lists and tabs in the Dock</div><div class="y">✓</div><div data-i18n="cmp.r1c">App 1</div></div>
+      <div class="tr"><div data-i18n="cmp.r2a">⌘Tab that switches windows</div><div class="y" data-i18n="cmp.r2b">✓ Flip 3D, type to filter</div><div data-i18n="cmp.r2c">App 2</div></div>
+      <div class="tr"><div data-i18n="cmp.r3a">Win-style snapping</div><div class="y">✓</div><div data-i18n="cmp.r3c">App 3</div></div>
+      <div class="tr"><div data-i18n="cmp.r4a">Permissions to grant</div><div class="y" data-i18n="cmp.r4b">1 (Accessibility)</div><div data-i18n="cmp.r4c">Up to 2 per app</div></div>
+      <div class="tr"><div data-i18n="cmp.r5a">Settings to tune</div><div class="y" data-i18n="cmp.r5b">3, all sensible by default</div><div data-i18n="cmp.r5c">Plenty, in three places</div></div>
+      <div class="tr"><div data-i18n="cmp.r6a">Price</div><div class="y" data-i18n="cmp.r6b">Free, open source</div><div data-i18n="cmp.r6c">Free to paid</div></div>
+      <div class="tr"><div data-i18n="cmp.r7a">Thirds, gaps, per-app rules, themes</div><div class="n" data-i18n="cmp.r7b">No, on purpose</div><div data-i18n="cmp.r7c">Yes, if you want them</div></div>
     </div>
+    <p style="font-size:15px;color:var(--muted)" data-i18n="cmp.it">Rolling out Macs to a team? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip for IT</a>: a package and a profile that pre-approves the permission, so nobody sees a prompt.</p>
   </section>
 
   <section id="install">
-    <div class="kicker">Install</div>
-    <h2>Two minutes, one detour.</h2>
+    <div class="kicker" data-i18n="inst.kicker">Install</div>
+    <h2 data-i18n="inst.h">Two minutes, one detour.</h2>
     <div class="steps">
-      <div class="step"><h3>Download</h3><p>Open DockFlip.dmg and drag DockFlip to Applications.</p></div>
-      <div class="step"><h3>Open it</h3><p>macOS says it can't check the app. Press <b>Done</b>. Not "Move to Trash".</p></div>
-      <div class="step"><h3>Open Anyway</h3><p>System Settings → Privacy &amp; Security → scroll down → <b>Open Anyway</b>.</p></div>
-      <div class="step"><h3>Allow</h3><p>DockFlip's setup opens. Switch it on under <b>Accessibility</b>. Done.</p></div>
+      <div class="step"><h3 data-i18n="inst.1h">Download</h3><p data-i18n="inst.1p">Open DockFlip.dmg and drag DockFlip to Applications.</p></div>
+      <div class="step"><h3 data-i18n="inst.2h">Open it</h3><p data-i18n="inst.2p">macOS says it can't check the app. Press <b>Done</b>. Not "Move to Trash".</p></div>
+      <div class="step"><h3 data-i18n="inst.3h">Open Anyway</h3><p data-i18n="inst.3p">System Settings → Privacy &amp; Security → scroll down → <b>Open Anyway</b>.</p></div>
+      <div class="step"><h3 data-i18n="inst.4h">Allow</h3><p data-i18n="inst.4p">DockFlip's setup opens. Switch it on under <b>Accessibility</b>. Done.</p></div>
     </div>
-    <div class="note">Steps 2 and 3 are Apple's warning for apps whose developer doesn't pay 99 € a year. It's paperwork, not a virus. A few coffees and it's gone for everyone. ☕</div>
+    <div class="note" data-i18n="inst.note">Steps 2 and 3 are Apple's warning for apps whose developer doesn't pay 99 € a year. It's paperwork, not a virus. A few coffees and it's gone for everyone. ☕</div>
   </section>
 
   <div class="coffee" id="coffee">
     <div class="cup">☕</div>
-    <h2>Buy DockFlip a coffee.</h2>
-    <p>DockFlip is free and stays free. Enough coffees cover Apple's notarization, so DockFlip installs with a double-click and updates just open.</p>
+    <h2 data-i18n="cof.h">Buy DockFlip a coffee.</h2>
+    <p data-i18n="cof.p">DockFlip is free and stays free. Enough coffees cover Apple's notarization, so DockFlip installs with a double-click and updates just open.</p>
     <div class="prices">
-      <div class="price"><b>€2</b><span>for us euro folks</span></div>
-      <div class="price"><b>$2.50</b><span>for dollar royalty</span></div>
+      <div class="price"><b>€2</b><span data-i18n="cof.eur">for us euro folks</span></div>
+      <div class="price"><b>$2.50</b><span data-i18n="cof.usd">for dollar royalty</span></div>
     </div>
-    <p style="font-size:14px;color:var(--muted)">GitHub only takes dollars: pick the $2 cup, or type 3 and keep the change, Your Majesty. Bigger cups welcome, zero obligations.</p>
-    <div class="ctas"><a class="btn primary" href="https://github.com/sponsors/geezery?frequency=one-time">Buy a coffee</a><a class="btn ghost" href="https://github.com/geezery/DockFlip">Or leave a ⭐</a></div>
+    <p style="font-size:14px;color:var(--muted)" data-i18n="cof.fine">GitHub only takes dollars: pick the $2 cup, or type 3 and keep the change, Your Majesty. Bigger cups welcome, zero obligations.</p>
+    <div class="ctas"><a class="btn primary" href="https://github.com/sponsors/geezery?frequency=one-time" data-i18n="cof.btn">Buy a coffee</a><a class="btn ghost" href="https://github.com/geezery/DockFlip" data-i18n="cof.star">Or leave a ⭐</a></div>
   </div>
 
 </main>
@@ -281,12 +300,15 @@ footer .right{margin-left:auto}
   <div class="wrap">
     <a href="https://github.com/geezery/DockFlip">GitHub</a>
     <a href="https://github.com/geezery/DockFlip/wiki">Wiki</a>
-    <a href="https://github.com/geezery/DockFlip/releases">Releases</a>
-    <a href="https://github.com/geezery/DockFlip/blob/main/SECURITY.md">Security</a>
+    <a href="https://github.com/geezery/DockFlip/releases" data-i18n="foot.releases">Releases</a>
+    <a href="https://github.com/geezery/DockFlip/blob/main/SECURITY.md" data-i18n="foot.security">Security</a>
+    <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md" data-i18n="foot.it">For IT</a>
     <a href="https://github.com/geezery/DockFlip/blob/main/LICENSE">GPL-3.0</a>
-    <span class="right">Made in Helsinki. Not affiliated with Apple or Microsoft.</span>
+    <select class="lang" id="lang" aria-label="Language"></select>
+    <span class="right" data-i18n="foot.made">Made in Helsinki. Not affiliated with Apple or Microsoft.</span>
   </div>
 </footer>
 
+<script src="i18n.js"></script>
 </body>
 </html>
