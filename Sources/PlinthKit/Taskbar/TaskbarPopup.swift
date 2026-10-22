@@ -128,6 +128,9 @@ final class TaskbarPopup {
     /// Windows whose pictures are loading or loaded, so a refresh of the list
     /// (titles change all the time) does not start them over.
     private var previewIDs: [CGWindowID] = []
+    /// What the open list shows, to skip redrawing when a change elsewhere
+    /// (another app's window) leaves it as it is.
+    private var shownSignature: [String] = []
     private var current: (itemID: String, displayID: CGDirectDisplayID)?
 
     var isVisible: Bool { panel?.isVisible == true }
@@ -173,6 +176,7 @@ final class TaskbarPopup {
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
         previewIDs = []
+        shownSignature = []
         panel?.orderOut(nil)
         current = nil
         model.thumbnails = [:]
@@ -221,7 +225,7 @@ final class TaskbarPopup {
         let axScreens = screens.map { DisplayLayout.axFrame(of: $0) }
         let activeID = registry.activeWindowID()
         let onScreen = Set(WindowRegistry.onScreenWindowIDs())
-        model.title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name
+        let title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name
         let hadTabs = model.rows.contains { !$0.tabs.isEmpty }
         let rows = item.windowIDs.compactMap { id -> PopupRow? in
             guard let window = registry.window(id) else { return nil }
@@ -238,6 +242,15 @@ final class TaskbarPopup {
                 tabs: TabStore.shared.tabs(of: id) ?? []
             )
         }
+        // Window changes arrive for every app; when nothing this list shows
+        // changed, there is nothing to redraw or resize.
+        let signature = rows.map { row in
+            "\(row.id)|\(row.title)|\(row.isMinimized)|\(row.isActive)|\(row.isOnOtherSpace)|\(row.tabs.map(\.fullTitle))"
+        } + ["\(model.expanded.sorted())", title]
+        if !changedItem, isVisible, signature == shownSignature { return }
+        shownSignature = signature
+        model.title = title
+
         // Tabs sliding in under their windows when they arrive.
         if !changedItem, !hadTabs, rows.contains(where: { !$0.tabs.isEmpty }) {
             withAnimation(.snappy(duration: 0.28)) { model.rows = rows }
