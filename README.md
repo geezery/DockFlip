@@ -64,12 +64,25 @@ to find again.
 - macOS 26 or later
 - Command Line Tools: `xcode-select --install` (no Xcode, no Apple account)
 
-## Build and install
+## Install
+
+**Without the command line:** unzip DockFlip and double-click
+**Install DockFlip.command**. It installs Apple's free Command Line Tools if they
+are missing (a window asks you to click Install), then builds and installs
+DockFlip, and tells you what to do next. **Uninstall DockFlip.command** removes
+everything again.
+
+The first time, macOS may refuse to open the file because it was downloaded
+("Apple could not verify…"). Click *Done*, open **System Settings → Privacy &
+Security**, scroll down and click **Open Anyway** next to the message about
+"Install DockFlip.command", then double-click it again.
+
+**From the command line:**
 
 ```sh
 git clone <repo-url> dockflip
 cd dockflip
-make install
+make install        # make uninstall removes everything
 ```
 
 `make install`:
@@ -85,7 +98,7 @@ make install
 Then allow DockFlip under **System Settings → Privacy & Security →
 Accessibility**; the setup window opens the right page.
 
-Other targets: `make` (build only), `make run`, `make test`, `make clean`.
+Other targets: `make` (build only), `make run`, `make test`, `make clean`, `make uninstall`.
 
 ### Troubleshooting
 

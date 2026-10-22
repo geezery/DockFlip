@@ -3,6 +3,7 @@
 #   make            build build/DockFlip.app
 #   make install    create the local signing certificate (first time only),
 #                   build, and install to /Applications
+#   make uninstall  quit and remove DockFlip, its permissions, settings and certificate
 #   make run        build and run from build/
 #   make test       run unit tests
 #   make clean
@@ -20,7 +21,7 @@ BUILD_DIR := build
 APP       := $(BUILD_DIR)/$(APP_NAME).app
 INSTALL_DIR ?= /Applications
 
-.PHONY: all build app sign cert install run test clean
+.PHONY: all build app sign cert install uninstall run test clean
 
 all: app
 
@@ -64,6 +65,16 @@ install: cert app
 	@cp -R "$(APP)" "$(INSTALL_DIR)/"
 	@echo "Installed $(INSTALL_DIR)/$(APP_NAME).app"
 	@open "$(INSTALL_DIR)/$(APP_NAME).app"
+
+uninstall:
+	@-pkill -x "$(APP_NAME)" 2>/dev/null; sleep 1
+	@rm -rf "$(INSTALL_DIR)/$(APP_NAME).app" "$(APP)"
+	@-tccutil reset Accessibility "$(BUNDLE_ID)" >/dev/null 2>&1
+	@-tccutil reset ScreenCapture "$(BUNDLE_ID)" >/dev/null 2>&1
+	@-defaults delete "$(BUNDLE_ID)" >/dev/null 2>&1
+	@-security delete-keychain "$(SIGN_KEYCHAIN)" >/dev/null 2>&1
+	@rm -f "$(SIGN_PASSFILE)"
+	@echo "Removed DockFlip."
 
 run: app
 	@-pkill -x "$(APP_NAME)" 2>/dev/null; sleep 0.5
