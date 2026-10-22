@@ -25,8 +25,11 @@ INSTALL_DIR ?= /Applications
 
 all: app
 
+# -Xlinker -w: the Command Line Tools make SwiftPM point the linker at test
+# framework folders they do not ship ("ld: warning: search path … not found").
+# Harmless; silenced so real problems stand out.
 build:
-	swift build -c $(CONFIG)
+	swift build -c $(CONFIG) -Xlinker -w
 
 app: build
 	@rm -rf "$(APP)"
