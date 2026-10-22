@@ -11,6 +11,8 @@ struct PopupRow: Identifiable {
     let isActive: Bool
     /// The app's colour, from its icon; colours the mini-map.
     let tint: Color
+    /// Browser tabs of this window, once read (empty for other apps).
+    var tabs: [BrowserTab] = []
 }
 
 @MainActor
@@ -22,6 +24,17 @@ final class PopupModel: ObservableObject {
     /// Row under the mouse. Kept here, not in @State: @State is a macro that the
     /// Command Line Tools cannot expand.
     @Published var hoveredRow: CGWindowID?
+    @Published var hoveredTab: String?
+    /// Windows whose long tab list is shown in full.
+    @Published var expanded = Set<CGWindowID>()
+
+    func setHoveredTab(_ id: String, _ inside: Bool) {
+        if inside {
+            hoveredTab = id
+        } else if hoveredTab == id {
+            hoveredTab = nil
+        }
+    }
 
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
         if inside {
@@ -39,16 +52,43 @@ enum PopupLayout {
     static let cardWidth: CGFloat = 212
     static let cardHeight: CGFloat = 156
 
-    static func size(rows: Int, previews: Bool) -> NSSize {
-        if rows == 0 {
+    static let tabListWidth: CGFloat = 400
+    static let tabRowHeight: CGFloat = 28
+    static let tabListPadding: CGFloat = 6
+    /// Longer tab lists are folded behind "Show all N tabs".
+    static let foldedTabs = 8
+    static let maxListHeight: CGFloat = 600
+
+    /// The tabs listed under a window, and how many are folded away.
+    static func visibleTabs(of row: PopupRow, expanded: Bool) -> (tabs: [BrowserTab], hidden: Int) {
+        guard row.tabs.count > 1 else { return ([], 0) }
+        if expanded || row.tabs.count <= foldedTabs { return (row.tabs, 0) }
+        var shown = Array(row.tabs.prefix(foldedTabs - 1))
+        // The tab you are on is always listed.
+        if let selected = row.tabs.first(where: \.isSelected), !shown.contains(where: { $0.id == selected.id }) {
+            shown.append(selected)
+        }
+        return (shown, row.tabs.count - shown.count)
+    }
+
+    static func size(rows: [PopupRow], expanded: Set<CGWindowID>, previews: Bool) -> NSSize {
+        if rows.isEmpty {
             return NSSize(width: 220, height: 44)
         }
         if previews {
-            let columns = min(rows, 5)
+            let columns = min(rows.count, 5)
             return NSSize(width: CGFloat(columns) * cardWidth + 16, height: 36 + cardHeight + 12)
         }
-        let visible = CGFloat(min(rows, maxVisibleRows))
-        return NSSize(width: listWidth, height: 36 + visible * rowHeight + 10)
+        var height: CGFloat = 36 + 10
+        var hasTabs = false
+        for row in rows.prefix(maxVisibleRows) {
+            height += rowHeight
+            let (tabs, hidden) = visibleTabs(of: row, expanded: expanded.contains(row.id))
+            guard !tabs.isEmpty else { continue }
+            hasTabs = true
+            height += CGFloat(tabs.count + (hidden > 0 ? 1 : 0)) * tabRowHeight + tabListPadding
+        }
+        return NSSize(width: hasTabs ? tabListWidth : listWidth, height: min(height, maxListHeight))
     }
 }
 
@@ -146,13 +186,15 @@ final class TaskbarPopup {
               let anchor = source.anchorRect(for: itemID, on: displayID) else { return }
         let changedItem = current?.itemID != itemID
         current = (itemID, displayID)
+        if changedItem { model.expanded = [] }
 
         let screens = NSScreen.screens
         let axScreens = screens.map { DisplayLayout.axFrame(of: $0) }
         let activeID = registry.activeWindowID()
         let onScreen = Set(WindowRegistry.onScreenWindowIDs())
         model.title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name
-        model.rows = item.windowIDs.compactMap { id -> PopupRow? in
+        let hadTabs = model.rows.contains { !$0.tabs.isEmpty }
+        let rows = item.windowIDs.compactMap { id -> PopupRow? in
             guard let window = registry.window(id) else { return nil }
             let index = Geometry.bestScreenIndex(for: window.frame, screens: axScreens)
             return PopupRow(
@@ -163,14 +205,25 @@ final class TaskbarPopup {
                 isMinimized: window.isMinimized,
                 isOnOtherSpace: !window.isMinimized && !window.isAppHidden && !onScreen.contains(id),
                 isActive: id == activeID,
-                tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName)
+                tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName),
+                tabs: TabStore.shared.tabs(of: id) ?? []
             )
+        }
+        // Tabs sliding in under their windows when they arrive.
+        if !changedItem, !hadTabs, rows.contains(where: { !$0.tabs.isEmpty }) {
+            withAnimation(.snappy(duration: 0.28)) { model.rows = rows }
+        } else {
+            model.rows = rows
+        }
+        if BrowserTabs.hasTabs(item.bundleID) {
+            let windows = item.windowIDs.compactMap { id in registry.axElement(for: id).map { (id: id, element: $0) } }
+            TabStore.shared.load(windows) { [weak self] in self?.refreshIfVisible() }
         }
         let previews = PreviewProvider.shared.isAvailable && !model.rows.isEmpty
         model.showsPreviews = previews
         if changedItem { model.thumbnails = [:] }
 
-        let size = PopupLayout.size(rows: model.rows.count, previews: previews)
+        let size = PopupLayout.size(rows: model.rows, expanded: model.expanded, previews: previews)
         let screenFrame = screens.first { NSMouseInRect(NSPoint(x: anchor.midX, y: anchor.midY), $0.frame, false) }?.frame ?? anchor
         let x = min(max(anchor.midX - size.width / 2, screenFrame.minX + 8), screenFrame.maxX - size.width - 8)
         let frame = NSRect(x: x.rounded(), y: (anchor.maxY + 6).rounded(), width: size.width, height: size.height)
@@ -215,6 +268,22 @@ final class TaskbarPopup {
     func close(_ id: CGWindowID) {
         registry.close(id)
     }
+
+    func pickTab(_ tab: BrowserTab) {
+        hideNow()
+        BrowserTabs.select(tab)
+        TabStore.shared.forget(tab.windowID)
+        registry.focus(tab.windowID)
+    }
+
+    func toggleExpanded(_ id: CGWindowID) {
+        if model.expanded.contains(id) {
+            model.expanded.remove(id)
+        } else {
+            model.expanded.insert(id)
+        }
+        refreshIfVisible()
+    }
 }
 
 struct PopupView: View {
@@ -243,6 +312,11 @@ struct PopupView: View {
                         VStack(spacing: 0) {
                             ForEach(model.rows) { row in
                                 PopupListRow(row: row, model: model, popup: popup)
+                                let visible = PopupLayout.visibleTabs(of: row, expanded: model.expanded.contains(row.id))
+                                if !visible.tabs.isEmpty {
+                                    PopupTabList(row: row, tabs: visible.tabs, hidden: visible.hidden, model: model, popup: popup)
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
                             }
                         }
                         .padding(.horizontal, 6)
@@ -310,6 +384,11 @@ struct PopupListRow: View {
                     .truncationMode(.tail)
                 if row.isMinimized {
                     Text("Minimized").font(.system(size: 11)).foregroundStyle(.secondary)
+                } else if row.tabs.count > 1 {
+                    Text(verbatim: TabSummary.text(for: row.tabs))
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 } else if row.isOnOtherSpace {
                     Text("On another desktop").font(.system(size: 11)).foregroundStyle(.secondary)
                 }
@@ -357,6 +436,14 @@ struct PopupCard: View {
                     .font(.system(size: 12, weight: row.isActive ? .semibold : .regular))
                     .lineLimit(1)
                 Spacer(minLength: 0)
+                if row.tabs.count > 1 {
+                    Text(verbatim: "\(row.tabs.count)")
+                        .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 1)
+                        .background(Color.primary.opacity(0.1), in: Capsule())
+                        .help(Text(verbatim: TabSummary.text(for: row.tabs)))
+                }
                 Button {
                     popup.close(row.id)
                 } label: {
@@ -388,5 +475,181 @@ struct PopupCard: View {
         .onTapGesture { popup.pick(row.id) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
+    }
+}
+
+/// "15 tabs · Gmail, YouTube, Teams +3": how many tabs, and the sites most of them are on.
+enum TabSummary {
+    static func text(for tabs: [BrowserTab]) -> String {
+        var counts: [String: Int] = [:]
+        var firstSeen: [String: Int] = [:]
+        for (index, tab) in tabs.enumerated() {
+            guard let site = tab.site else { continue }
+            counts[site, default: 0] += 1
+            if firstSeen[site] == nil { firstSeen[site] = index }
+        }
+        let sites = counts.keys.sorted {
+            counts[$0]! != counts[$1]! ? counts[$0]! > counts[$1]! : firstSeen[$0]! < firstSeen[$1]!
+        }
+        var text = String(format: L("%ld tabs"), tabs.count)
+        if !sites.isEmpty {
+            text += " · " + sites.prefix(3).joined(separator: ", ")
+            if sites.count > 3 { text += " +\(sites.count - 3)" }
+        }
+        return text
+    }
+}
+
+/// A stable colour per site, so the same site always wears the same chip.
+enum SiteColor {
+    static func hue(for site: String) -> Double {
+        var hash: UInt32 = 2_166_136_261
+        for byte in site.lowercased().utf8 {
+            hash = (hash ^ UInt32(byte)) &* 16_777_619
+        }
+        return Double(hash % 360) / 360
+    }
+}
+
+/// The tabs of one browser window, hanging under it like branches.
+struct PopupTabList: View {
+    let row: PopupRow
+    let tabs: [BrowserTab]
+    let hidden: Int
+    @ObservedObject var model: PopupModel
+    let popup: TaskbarPopup
+
+    var body: some View {
+        let titles = Dictionary(grouping: row.tabs, by: \.fullTitle).filter { $0.value.count > 1 }
+        VStack(spacing: 0) {
+            ForEach(Array(tabs.enumerated()), id: \.element.id) { position, tab in
+                // A later copy of a tab already open in this window.
+                let isDuplicate = titles[tab.fullTitle].map { $0.first?.id != tab.id } ?? false
+                PopupTabRow(
+                    tab: tab,
+                    isLast: position == tabs.count - 1 && hidden == 0,
+                    isDuplicate: isDuplicate,
+                    tint: row.tint,
+                    model: model,
+                    popup: popup
+                )
+            }
+            if hidden > 0 {
+                Button {
+                    popup.toggleExpanded(row.id)
+                } label: {
+                    HStack(spacing: 8) {
+                        TreeBranch(isLast: true)
+                            .stroke(Color.primary.opacity(0.18), lineWidth: 1)
+                            .frame(width: 14)
+                        Text(String(format: L("Show all %ld tabs"), row.tabs.count))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(Color.accentColor)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(Color.accentColor)
+                        Spacer()
+                    }
+                    .padding(.leading, 30)
+                    .frame(height: PopupLayout.tabRowHeight)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.bottom, PopupLayout.tabListPadding)
+    }
+}
+
+struct PopupTabRow: View {
+    let tab: BrowserTab
+    let isLast: Bool
+    let isDuplicate: Bool
+    let tint: Color
+    @ObservedObject var model: PopupModel
+    let popup: TaskbarPopup
+
+    private var hovering: Bool { model.hoveredTab == tab.id }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            TreeBranch(isLast: isLast)
+                .stroke(Color.primary.opacity(0.18), lineWidth: 1)
+                .frame(width: 14)
+            Circle()
+                .fill(tab.isSelected ? tint : Color.clear)
+                .overlay(Circle().strokeBorder(Color.primary.opacity(tab.isSelected ? 0 : 0.25), lineWidth: 1))
+                .frame(width: 6, height: 6)
+            Text(verbatim: tab.title)
+                .font(.system(size: 12, weight: tab.isSelected ? .semibold : .regular))
+                .foregroundStyle(tab.isSelected ? Color.primary : Color.primary.opacity(0.85))
+                .lineLimit(1)
+                .truncationMode(.tail)
+            Spacer(minLength: 6)
+            if isDuplicate {
+                Text("Duplicate")
+                    .font(.system(size: 9.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 1)
+                    .overlay(Capsule().strokeBorder(Color.secondary.opacity(0.4), lineWidth: 0.75))
+            }
+            if let site = tab.site {
+                SiteChip(site: site)
+            }
+        }
+        .padding(.leading, 30)
+        .padding(.trailing, 10)
+        .frame(height: PopupLayout.tabRowHeight)
+        .background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
+                .padding(.leading, 48)
+        )
+        .contentShape(Rectangle())
+        .onHover { model.setHoveredTab(tab.id, $0) }
+        .onTapGesture { popup.pickTab(tab) }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(tab.isSelected ? [.isButton, .isSelected] : [.isButton])
+    }
+}
+
+/// The site a tab is on, in its own colour.
+struct SiteChip: View {
+    let site: String
+
+    var body: some View {
+        let hue = SiteColor.hue(for: site)
+        HStack(spacing: 4) {
+            Circle()
+                .fill(Color(hue: hue, saturation: 0.7, brightness: 0.85))
+                .frame(width: 5, height: 5)
+            Text(verbatim: site)
+                .font(.system(size: 10, weight: .semibold))
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 7)
+        .padding(.vertical, 2)
+        .background(Color(hue: hue, saturation: 0.55, brightness: 0.9).opacity(0.18), in: Capsule())
+        .fixedSize()
+    }
+}
+
+/// The branch line in front of a tab: down from the window, then right to the tab.
+struct TreeBranch: Shape {
+    let isLast: Bool
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let x = rect.minX + 3.5
+        path.move(to: CGPoint(x: x, y: rect.minY))
+        path.addLine(to: CGPoint(x: x, y: isLast ? rect.midY - 4 : rect.maxY))
+        if isLast {
+            path.addQuadCurve(to: CGPoint(x: x + 4, y: rect.midY), control: CGPoint(x: x, y: rect.midY))
+        } else {
+            path.move(to: CGPoint(x: x, y: rect.midY))
+        }
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        return path
     }
 }

@@ -44,7 +44,13 @@ settings.
 - Hover an app icon: list of the app's windows (titles), or previews if enabled.
 - Click the front app's icon: minimize its window; click again: restore.
   Click another app's icon: its most recent window comes forward.
-- Apps without windows on the current Space: the Dock's own behaviour (launch, reopen).
+- Apps without windows: no popup; the Dock's own behaviour (launch, reopen).
+- Browser tabs (Safari, Chrome, Edge, Firefox, Brave, Vivaldi, Opera; also Finder
+  and Terminal tabs) are listed under their window, read from the tab bar through
+  Accessibility off the main thread, never from page content. Site chips from the
+  title suffix, duplicates marked, more than 8 folded. Windows 7 showed IE tabs on
+  the taskbar; Windows 11 shows Edge tabs in Alt+Tab. Tab titles are never logged.
+  Firefox turns on its accessibility engine when asked for its tabs.
 - How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
   takes over clicks only on icons of apps that have windows (DockDoor's approach).
 

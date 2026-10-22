@@ -18,10 +18,11 @@ final class SwitcherController {
     private let model = SwitcherModel()
     private var panel: NSPanel?
     private var selection: SwitcherSelection?
-    private var windowIDs: [CGWindowID] = []
     /// Every window of this session; `model.items` holds the ones matching the filter.
     private var allWindows: [WindowSnapshot] = []
     private var allItems: [SwitcherItem] = []
+    /// Tabs of browser windows are read once the user starts typing.
+    private var tabsRequested = false
     /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
@@ -99,15 +100,16 @@ final class SwitcherController {
         let primaryHeight = screens.first?.frame.height ?? 0
         let axScreens = screens.map { Geometry.axRect(fromCocoa: $0.frame, primaryHeight: primaryHeight) }
 
-        windowIDs = windows.map(\.id)
         allWindows = windows
+        tabsRequested = false
         query = ""
         model.query = ""
         model.thumbnails = [:]
         model.items = windows.map { window in
             let screenIndex = Geometry.bestScreenIndex(for: window.frame, screens: axScreens)
             return SwitcherItem(
-                id: window.id,
+                id: "w\(window.id)",
+                windowID: window.id,
                 title: window.title.isEmpty ? window.appName : window.title,
                 appName: window.appName,
                 icon: window.icon,
@@ -135,23 +137,70 @@ final class SwitcherController {
         return true
     }
 
-    /// Shows only the windows whose title, app or document contains every typed word.
-    private func setQuery(_ newQuery: String) {
+    /// Shows only the windows whose title, app or document contains every typed
+    /// word — and, after them, matching tabs of browser windows (as Windows 11
+    /// lists Edge tabs in Alt+Tab), so "youtube" finds the tab, not just the window.
+    private func setQuery(_ newQuery: String, keepSelection: Bool = false) {
+        let previouslySelected = selection.flatMap { model.items.indices.contains($0.index) ? model.items[$0.index].id : nil }
         query = newQuery
-        let matching = allItems.indices.filter { index in
-            let item = allItems[index]
-            return SwitcherFilter.matches(newQuery, fields: [item.title, item.appName, item.document ?? ""])
+        if !newQuery.isEmpty { requestTabs() }
+
+        var matches = allItems.filter { item in
+            SwitcherFilter.matches(newQuery, fields: [item.title, item.appName, item.document ?? ""])
+        }
+        if !newQuery.isEmpty {
+            matches += tabItems().filter { item in
+                SwitcherFilter.matches(newQuery, fields: [item.tab?.fullTitle ?? "", item.appName])
+            }
         }
         model.query = newQuery
-        model.items = matching.map { allItems[$0] }
-        windowIDs = model.items.map(\.id)
-        // The best match — the most recently used one — comes to the front.
-        let selection = SwitcherSelection(count: windowIDs.count, reverse: false)
-        var first = selection
-        first.select(0)
-        self.selection = first
-        model.selection = 0
-        loadPreviews(for: matching.map { allWindows[$0] })
+        model.items = matches
+        // The best match — the most recently used one — comes to the front, unless
+        // tabs arrived while the user was already stepping through the results.
+        var selection = SwitcherSelection(count: matches.count, reverse: false)
+        let kept = keepSelection ? matches.firstIndex { $0.id == previouslySelected } : nil
+        selection.select(kept ?? 0)
+        self.selection = selection
+        model.selection = selection.index
+        let ids = Set(matches.map(\.windowID))
+        loadPreviews(for: allWindows.filter { ids.contains($0.id) })
+    }
+
+    /// Cards for the tabs of browser windows, from what has been read so far.
+    /// The selected tab is left out: its window's card already stands for it.
+    private func tabItems() -> [SwitcherItem] {
+        allItems.flatMap { window -> [SwitcherItem] in
+            guard let tabs = TabStore.shared.tabs(of: window.windowID), tabs.count > 1 else { return [] }
+            return tabs.filter { !$0.isSelected }.map { tab in
+                SwitcherItem(
+                    id: "w\(window.windowID):\(tab.index)",
+                    windowID: window.windowID,
+                    tab: tab,
+                    title: tab.title,
+                    appName: window.appName,
+                    icon: window.icon,
+                    minimap: window.minimap,
+                    isMinimized: window.isMinimized,
+                    isOnOtherSpace: window.isOnOtherSpace,
+                    document: nil,
+                    screenName: window.screenName,
+                    sizeText: window.sizeText,
+                    tint: window.tint
+                )
+            }
+        }
+    }
+
+    private func requestTabs() {
+        guard !tabsRequested else { return }
+        tabsRequested = true
+        let windows = allWindows
+            .filter { BrowserTabs.hasTabs($0.bundleID) }
+            .compactMap { window in registry.axElement(for: window.id).map { (id: window.id, element: $0) } }
+        TabStore.shared.load(windows, maxAge: 10) { [weak self] in
+            guard let self, self.isActive, !self.query.isEmpty else { return }
+            self.setQuery(self.query, keepSelection: true)
+        }
     }
 
     private func step(_ delta: Int) {
@@ -162,10 +211,14 @@ final class SwitcherController {
     }
 
     private func commit(at index: Int) {
-        guard isActive, windowIDs.indices.contains(index) else { return }
-        let id = windowIDs[index]
+        guard isActive, model.items.indices.contains(index) else { return }
+        let item = model.items[index]
         hide()
-        registry.focus(id)
+        if let tab = item.tab {
+            BrowserTabs.select(tab)
+            TabStore.shared.forget(tab.windowID)
+        }
+        registry.focus(item.windowID)
     }
 
     private func cancel() {
@@ -186,7 +239,6 @@ final class SwitcherController {
         localMonitor = nil
         panel?.orderOut(nil)
         selection = nil
-        windowIDs = []
         allWindows = []
         allItems = []
         query = ""

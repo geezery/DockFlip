@@ -55,7 +55,9 @@ single and dual displays.
 - Carbon hot keys for all shortcuts (work under secure keyboard input).
 - Window cards that tell windows apart without thumbnails.
 - English-only UI.
-- Type to filter in ⌘Tab.
+- Type to filter in ⌘Tab, including browser tabs.
+- Browser tabs in the Dock window list.
+- New menu bar icon.
 
 ## M4 — Previews and polish
 - Opt-in previews with ScreenCaptureKit; capture on demand, memory only.

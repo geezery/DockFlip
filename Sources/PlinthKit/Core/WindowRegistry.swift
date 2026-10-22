@@ -163,6 +163,11 @@ public final class WindowRegistry {
         if let sizeValue = AXValueCreate(.cgSize, &size) { element.set(kAXSizeAttribute, sizeValue) }
     }
 
+    /// The Accessibility element of a window (for reading its tabs).
+    func axElement(for id: CGWindowID) -> AXUIElement? {
+        element(for: id)
+    }
+
     private func element(for id: CGWindowID) -> AXUIElement? {
         guard let window = windows[id] else { return nil }
         return apps[window.pid]?.windowElements[id]
