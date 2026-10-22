@@ -12,18 +12,32 @@ jobs:
   build:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Toolchain
         run: |
           sw_vers
           swift --version
+          echo "::notice::$(sw_vers -productVersion), $(swift --version 2>&1 | head -1)"
 
+      # Compiler errors and warnings become annotations on the commit or pull request.
       - name: Build app bundle (ad-hoc signed)
-        run: make app
+        run: |
+          set -o pipefail
+          make app 2>&1 | tee build.log || {
+            grep -E ": (error|warning): " build.log | sort -u | head -40 \
+              | sed -E 's/^([^:]+):([0-9]+):([0-9]+): (error|warning): (.*)$/::\4 file=\1,line=\2,col=\3::\5/'
+            grep -E "^(error|make): " build.log | head -20 | sed 's/^/::error::/'
+            exit 1
+          }
 
       - name: Unit tests
-        run: make test
+        run: |
+          set -o pipefail
+          make test 2>&1 | tee test.log || {
+            grep -E "(error|failed|Expectation failed)" test.log | head -40 | sed 's/^/::error::/'
+            exit 1
+          }
 
       - name: Check bundle
         run: |
