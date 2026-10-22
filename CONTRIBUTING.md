@@ -23,6 +23,9 @@ make run
 ## Code style
 
 - Swift, AppKit for windows and panels, SwiftUI for content.
+- **No SwiftUI macros** (`@State`, `@Observable`, `@Entry`, `#Preview` …): their
+  implementations ship only with full Xcode, and Plinth must build with the
+  Command Line Tools alone. Keep view state in an `ObservableObject` model.
 - UI state on the main actor; C callbacks hop in with `MainActor.assumeIsolated`.
 - Pure logic (ordering, geometry, selection) lives in small value types with
   unit tests.

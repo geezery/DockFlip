@@ -26,6 +26,10 @@ final class TaskbarModel: ObservableObject {
     let displayID: CGDirectDisplayID
     @Published var items: [TaskbarItem] = []
     @Published var hoveredID: String?
+    /// Hover state of the clock and the show-desktop strip (no @State: it is a
+    /// macro that the Command Line Tools cannot expand).
+    @Published var clockHovered = false
+    @Published var stripHovered = false
     /// Item frames in the taskbar's own coordinates (top-left origin).
     var itemFrames: [String: CGRect] = [:]
 
@@ -77,10 +81,10 @@ struct TaskbarView: View {
 
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
-                ClockButton {
+                ClockButton(isHovered: model.clockHovered, onHover: { model.clockHovered = $0 }) {
                     controller.toggleCalendar(on: model.displayID)
                 }
-                ShowDesktopStrip {
+                ShowDesktopStrip(isHovered: model.stripHovered, onHover: { model.stripHovered = $0 }) {
                     controller.showDesktop()
                 }
             }
@@ -151,8 +155,9 @@ struct TaskbarButton: View {
 }
 
 struct ClockButton: View {
+    let isHovered: Bool
+    let onHover: (Bool) -> Void
     let action: () -> Void
-    @State private var hovering = false
 
     var body: some View {
         TimelineView(.everyMinute) { context in
@@ -166,11 +171,11 @@ struct ClockButton: View {
         .frame(maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(Color.primary.opacity(hovering ? 0.06 : 0))
+                .fill(Color.primary.opacity(isHovered ? 0.06 : 0))
                 .padding(.vertical, 4)
         )
         .contentShape(Rectangle())
-        .onHover { hovering = $0 }
+        .onHover(perform: onHover)
         .onTapGesture(perform: action)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
@@ -179,18 +184,19 @@ struct ClockButton: View {
 
 /// The thin strip at the far right that shows the desktop, as on Windows.
 struct ShowDesktopStrip: View {
+    let isHovered: Bool
+    let onHover: (Bool) -> Void
     let action: () -> Void
-    @State private var hovering = false
 
     var body: some View {
         Rectangle()
-            .fill(Color.primary.opacity(hovering ? 0.08 : 0.001))
+            .fill(Color.primary.opacity(isHovered ? 0.08 : 0.001))
             .frame(width: 10)
             .overlay(alignment: .leading) {
                 Rectangle().fill(Color.primary.opacity(0.15)).frame(width: 1).padding(.vertical, 10)
             }
             .contentShape(Rectangle())
-            .onHover { hovering = $0 }
+            .onHover(perform: onHover)
             .onTapGesture(perform: action)
             .accessibilityLabel(Text("Show desktop"))
             .accessibilityAddTraits(.isButton)

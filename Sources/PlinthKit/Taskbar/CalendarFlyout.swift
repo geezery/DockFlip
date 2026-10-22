@@ -6,6 +6,7 @@ import SwiftUI
 final class CalendarFlyout {
     private var panel: NSPanel?
     private var monitor: Any?
+    private let calendarModel = CalendarModel()
 
     var isVisible: Bool { panel?.isVisible == true }
 
@@ -24,7 +25,8 @@ final class CalendarFlyout {
     }
 
     private func show(anchor: NSRect) {
-        let hosting = FirstMouseHostingView(rootView: CalendarView())
+        calendarModel.selection = Date()
+        let hosting = FirstMouseHostingView(rootView: CalendarView(model: calendarModel))
         let size = hosting.fittingSize
         let panel = self.panel ?? PanelFactory.make(level: PanelFactory.popupLevel, shadow: true, canBecomeKey: true)
         self.panel = panel
@@ -42,14 +44,20 @@ final class CalendarFlyout {
     }
 }
 
+/// Holds the picked date (no @State: it is a macro that the Command Line Tools cannot expand).
+@MainActor
+final class CalendarModel: ObservableObject {
+    @Published var selection = Date()
+}
+
 struct CalendarView: View {
-    @State private var selection = Date()
+    @ObservedObject var model: CalendarModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(Date(), format: .dateTime.weekday(.wide).day().month(.wide))
                 .font(.system(size: 15, weight: .semibold))
-            DatePicker("", selection: $selection, displayedComponents: .date)
+            DatePicker("", selection: $model.selection, displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .labelsHidden()
         }

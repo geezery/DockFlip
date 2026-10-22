@@ -17,6 +17,17 @@ final class PopupModel: ObservableObject {
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
     @Published var showsPreviews = false
     @Published var offersPreviews = false
+    /// Row under the mouse. Kept here, not in @State: @State is a macro that the
+    /// Command Line Tools cannot expand.
+    @Published var hoveredRow: CGWindowID?
+
+    func setHovered(_ id: CGWindowID, _ inside: Bool) {
+        if inside {
+            hoveredRow = id
+        } else if hoveredRow == id {
+            hoveredRow = nil
+        }
+    }
 }
 
 enum PopupLayout {
@@ -217,7 +228,7 @@ struct PopupView: View {
                 if model.showsPreviews {
                     HStack(spacing: 4) {
                         ForEach(model.rows.prefix(5)) { row in
-                            PopupCard(row: row, thumbnail: model.thumbnails[row.id], popup: popup)
+                            PopupCard(row: row, thumbnail: model.thumbnails[row.id], model: model, popup: popup)
                         }
                     }
                     .padding(.horizontal, 6)
@@ -225,7 +236,7 @@ struct PopupView: View {
                     ScrollView(.vertical) {
                         VStack(spacing: 0) {
                             ForEach(model.rows) { row in
-                                PopupListRow(row: row, popup: popup)
+                                PopupListRow(row: row, model: model, popup: popup)
                             }
                         }
                         .padding(.horizontal, 6)
@@ -287,8 +298,10 @@ final class PopupHostingView: NSHostingView<PopupView> {
 
 struct PopupListRow: View {
     let row: PopupRow
+    @ObservedObject var model: PopupModel
     let popup: TaskbarPopup
-    @State private var hovering = false
+
+    private var hovering: Bool { model.hoveredRow == row.id }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -323,7 +336,7 @@ struct PopupListRow: View {
                 .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
         )
         .contentShape(Rectangle())
-        .onHover { hovering = $0 }
+        .onHover { model.setHovered(row.id, $0) }
         .onTapGesture { popup.pick(row.id) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
@@ -333,8 +346,10 @@ struct PopupListRow: View {
 struct PopupCard: View {
     let row: PopupRow
     let thumbnail: NSImage?
+    @ObservedObject var model: PopupModel
     let popup: TaskbarPopup
-    @State private var hovering = false
+
+    private var hovering: Bool { model.hoveredRow == row.id }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -371,7 +386,7 @@ struct PopupCard: View {
                 .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
         )
         .contentShape(Rectangle())
-        .onHover { hovering = $0 }
+        .onHover { model.setHovered(row.id, $0) }
         .onTapGesture { popup.pick(row.id) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
