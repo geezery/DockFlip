@@ -207,9 +207,9 @@ DockFlip is free and stays free. Apple, however, charges developers 99 € a yea
 to let an app open without a scary "could not verify" warning. Until then,
 installing takes a detour through System Settings, and so does every update.
 
-**A coffee is $2** if you're dollar royalty, and **€2.50** if you pay in
-euros, because that's what a coffee costs over here. (GitHub only takes dollars,
-so euro folks just type 3 in the custom box. Keep the change.)
+**A coffee is €2** for us euro folks, and **$2.50** if you're dollar royalty.
+(GitHub only takes dollars, so euro folks pick the $2 cup, and royalty types 3
+in the custom box. Keep the change, Your Majesty.)
 
 Every cup gets DockFlip closer to being notarized: download, drag to
 Applications, open, done. Updates that simply open. If DockFlip made your day, a
