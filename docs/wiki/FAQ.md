@@ -32,10 +32,11 @@ well-tested version beats five shaky ones. Consider it a nudge to update.
 The App Store sandbox doesn't allow the Accessibility API, and without that
 DockFlip can't see a single window.
 
-**Why build from source instead of downloading an app?**
-Apps distributed outside the App Store need Apple's notarization (a paid
-developer account) to open without warnings. Building locally sidesteps that,
-and `make install` does all the work. A Homebrew tap is on the [roadmap](https://github.com/geezery/DockFlip/blob/main/ROADMAP.md).
+**Why does macOS warn me the first time I open it?**
+Apple only skips that warning for apps whose developer pays 99 € a year for
+notarization. DockFlip is free, so for now it's one trip to *Privacy & Security
+→ Open Anyway*. A few ☕ [coffees](https://github.com/sponsors/geezery) and the
+warning is gone for everyone.
 
 **Does it slow my Mac down?**
 It shouldn't. DockFlip doesn't poll and runs no repeating timers. When nothing

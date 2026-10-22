@@ -106,9 +106,30 @@ drag a window to an edge or a corner and let go.
 
 ## Install
 
-You need **macOS 26 or later** and Apple's free **Command Line Tools**.
-Xcode is optional: if you already have it, that works too, and if you don't,
-there's no need to download it.
+<p>
+  <a href="https://github.com/geezery/DockFlip/releases/latest"><img src="https://img.shields.io/badge/Download-DockFlip.dmg-0c9a6a?style=for-the-badge&logo=apple&logoColor=white" alt="Download DockFlip.dmg"></a>
+  <br><sub>macOS 26 or later · Apple silicon and Intel · free</sub>
+</p>
+
+1. Open the DockFlip disk image you downloaded and drag **DockFlip** to **Applications**.
+2. Open DockFlip. macOS says it can't check the app for malware: press **Done**.
+3. Open **System Settings → Privacy & Security**, scroll down and press
+   **Open Anyway** next to DockFlip. Confirm with your password or Touch ID.
+4. DockFlip's setup opens. Switch DockFlip on under **Accessibility** when it
+   asks. That's it.
+
+> Steps 2 and 3 are Apple's warning for apps whose developer doesn't pay 99 € a
+> year. ☕ [A coffee](#-buy-dockflip-a-coffee) makes them go away for everyone.
+
+**Updating:** download the new version, quit DockFlip, replace the app in
+Applications and repeat steps 2–3. Your Accessibility permission stays, because
+every release is signed with the same identity.
+
+<details>
+<summary><b>Build from source</b> (for developers)</summary>
+
+You need the Command Line Tools. Xcode is optional: if you already have it,
+that works too.
 
 ```sh
 xcode-select --install                 # Command Line Tools, once
@@ -136,6 +157,10 @@ No Apple Developer account and no fees. `make uninstall` removes everything,
 the certificate included.
 
 Other targets: `make` (build only), `make run`, `make test`, `make clean`.
+</details>
+
+A source build is signed with your own local identity, not the release one, so
+switching between the two means allowing Accessibility once more.
 </details>
 
 ## Shortcuts

@@ -1,15 +1,25 @@
 # Installation
 
-## What you need
+## Download (recommended)
 
-- **macOS 26 or later.** DockFlip uses APIs that only recent macOS versions
-  have, and we'd rather do one version really well. Consider it a reason to
-  update.
+**[⬇ Download the latest DockFlip](https://github.com/geezery/DockFlip/releases/latest)**: one disk image for
+Apple silicon and Intel Macs running **macOS 26 or later**.
+
+1. Open the disk image and drag **DockFlip** to **Applications**.
+2. Open DockFlip. macOS says it can't check the app for malware: press **Done**.
+3. Open **System Settings → Privacy & Security**, scroll down and press
+   **Open Anyway** next to DockFlip. Confirm with your password or Touch ID.
+4. Continue with the setup below.
+
+Steps 2 and 3 are Apple's warning for apps from developers who don't pay for
+notarization (99 € a year). They go away once DockFlip is notarized; that's what
+the ☕ [coffee](https://github.com/sponsors/geezery) is for.
+
+## Build from source (developers)
+
+- **macOS 26 or later.**
 - **Apple's Command Line Tools.** They're free and you don't need an Apple
-  account. **Xcode is optional:** if you already have it, that works too, and if
-  you don't, there's no need to download it.
-
-## Install
+  account. **Xcode is optional:** if you already have it, that works too.
 
 ```sh
 xcode-select --install                 # once; skip it if you already have Xcode or the tools
@@ -19,8 +29,9 @@ make install
 ```
 
 The first `make install` asks for your login password **once**, to trust a
-local code-signing certificate (more on that below). After that, DockFlip
-starts and opens its setup window.
+local code-signing certificate (see below). A source build and a downloaded
+release are signed differently, so switching between them means allowing
+Accessibility once more.
 
 ## Setup (about 30 seconds)
 
@@ -49,22 +60,19 @@ keep their permissions.
 
 ## Updating
 
-```sh
-cd DockFlip
-git pull
-make install
-```
+**Downloaded:** get the new disk image, quit DockFlip, replace the app in
+Applications and repeat steps 2–3 above. Your permission and settings stay,
+because every release is signed with the same identity.
 
-Your permissions and settings stay.
+**From source:** `git pull && make install`.
 
 ## Uninstalling
 
-```sh
-make uninstall
-```
+Quit DockFlip from its menu bar menu and drag it from Applications to the Trash.
+macOS's own ⌘Tab comes back as soon as DockFlip quits.
 
-This removes the app, its settings, its permissions and the signing keychain.
-macOS's own ⌘Tab comes back immediately.
+From source, `make uninstall` also removes its settings, its permissions and the
+signing keychain.
 
 ## Other make targets
 
