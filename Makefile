@@ -13,6 +13,9 @@ BUNDLE_ID ?= io.github.dockflip.DockFlip
 VERSION   ?= 0.3.0
 BUILD_NUM ?= 1
 CONFIG    ?= release
+# Extra flags for swift build, e.g. SWIFT_FLAGS="--arch arm64 --arch x86_64"
+# for a universal build (the release workflow does that).
+SWIFT_FLAGS ?=
 SIGN_ID   ?= DockFlip Signing
 SIGN_KEYCHAIN := $(HOME)/Library/Keychains/dockflip-signing.keychain-db
 SIGN_PASSFILE := $(HOME)/Library/Application Support/DockFlip/signing-keychain-password
@@ -29,12 +32,12 @@ all: app
 # framework folders they do not ship ("ld: warning: search path … not found").
 # Harmless; silenced so real problems stand out.
 build:
-	swift build -c $(CONFIG) -Xlinker -w
+	swift build -c $(CONFIG) $(SWIFT_FLAGS) -Xlinker -w
 
 app: build
 	@rm -rf "$(APP)"
 	@mkdir -p "$(APP)/Contents/MacOS" "$(APP)/Contents/Resources"
-	@cp "$$(swift build -c $(CONFIG) --show-bin-path)/$(APP_NAME)" "$(APP)/Contents/MacOS/$(APP_NAME)"
+	@cp "$$(swift build -c $(CONFIG) $(SWIFT_FLAGS) --show-bin-path)/$(APP_NAME)" "$(APP)/Contents/MacOS/$(APP_NAME)"
 	@sed -e 's/__VERSION__/$(VERSION)/' \
 	     -e 's/__BUILD__/$(BUILD_NUM)/' \
 	     -e 's/__BUNDLE_ID__/$(BUNDLE_ID)/' \

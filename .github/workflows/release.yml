@@ -1,0 +1,98 @@
+name: Release
+
+# Push a tag like v0.3.0 and this builds a universal DockFlip.app (Apple silicon
+# and Intel), signs it with the project's release identity, packs it into a disk
+# image and publishes a GitHub release.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build, e.g. v0.3.0
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Version
+        run: echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+
+      # The same identity signs every release, so users' Accessibility
+      # permission survives updates. See scripts/make-release-identity.sh.
+      - name: Release identity
+        env:
+          RELEASE_IDENTITY: ${{ secrets.RELEASE_IDENTITY }}
+        run: |
+          if [ -z "$RELEASE_IDENTITY" ]; then
+            echo "::error::The RELEASE_IDENTITY secret is missing. Run scripts/make-release-identity.sh once on your Mac."
+            exit 1
+          fi
+          KEYCHAIN="$RUNNER_TEMP/release.keychain-db"
+          PASS="$(openssl rand -hex 16)"
+          printf '%s' "$RELEASE_IDENTITY" | base64 --decode > "$RUNNER_TEMP/identity.p12"
+          security create-keychain -p "$PASS" "$KEYCHAIN"
+          security set-keychain-settings "$KEYCHAIN"
+          security unlock-keychain -p "$PASS" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/identity.p12" -k "$KEYCHAIN" -P dockflip -T /usr/bin/codesign >/dev/null
+          rm -f "$RUNNER_TEMP/identity.p12"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$PASS" "$KEYCHAIN" >/dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          HASH="$(security find-identity -p codesigning "$KEYCHAIN" | awk '/"DockFlip Release"/ { print $2; exit }')"
+          if [ -z "$HASH" ]; then
+            echo "::error::RELEASE_IDENTITY holds no \"DockFlip Release\" identity."
+            exit 1
+          fi
+          echo "KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+          echo "SIGN_HASH=$HASH" >> "$GITHUB_ENV"
+
+      - name: Build (Apple silicon and Intel)
+        run: make app VERSION="$VERSION" BUILD_NUM="${{ github.run_number }}" SWIFT_FLAGS="--arch arm64 --arch x86_64"
+
+      - name: Sign
+        run: |
+          codesign --force --timestamp=none --keychain "$KEYCHAIN" --sign "$SIGN_HASH" build/DockFlip.app
+          codesign --verify --strict --verbose=2 build/DockFlip.app
+          codesign --display --requirements - build/DockFlip.app
+          lipo -archs build/DockFlip.app/Contents/MacOS/DockFlip
+
+      - name: Disk image
+        run: |
+          mkdir dmg
+          ditto build/DockFlip.app dmg/DockFlip.app
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname DockFlip -srcfolder dmg -fs HFS+ -format UDZO -ov "DockFlip-$VERSION.dmg"
+          codesign --force --timestamp=none --keychain "$KEYCHAIN" --sign "$SIGN_HASH" "DockFlip-$VERSION.dmg"
+          shasum -a 256 "DockFlip-$VERSION.dmg" | tee "DockFlip-$VERSION.dmg.sha256"
+
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: DockFlip-${{ env.VERSION }}.dmg
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sed "s/VERSION/$VERSION/g" .github/release-notes.md > notes.md
+          FILES="DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" $FILES --clobber
+          else
+            gh release create "$TAG" $FILES --title "DockFlip $VERSION" --notes-file notes.md --generate-notes --verify-tag
+          fi
+
+      - name: Remove keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" 2>/dev/null || true
