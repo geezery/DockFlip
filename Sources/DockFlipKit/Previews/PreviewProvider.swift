@@ -42,15 +42,23 @@ final class PreviewProvider {
     /// The window list from ScreenCaptureKit, reused for a moment so one ⌘Tab does not ask for it 20 times.
     private var content: (value: SCShareableContent, time: Date)?
     /// The window list being fetched; captures that start together share it.
-    private var contentTask: Task<SCShareableContent, Error>?
+    private var contentTask: Task<ContentBox, Error>?
+
+    /// Carries the window list out of its fetch task.
+    private final class ContentBox: @unchecked Sendable {
+        let value: SCShareableContent
+        init(_ value: SCShareableContent) { self.value = value }
+    }
 
     private func shareableContent() async throws -> SCShareableContent {
         if let content, Date().timeIntervalSince(content.time) < 1 { return content.value }
-        if let contentTask { return try await contentTask.value }
-        let task = Task { try await SCShareableContent.excludingDesktopWindows(true, onScreenWindowsOnly: true) }
+        if let contentTask { return try await contentTask.value.value }
+        let task = Task {
+            ContentBox(try await SCShareableContent.excludingDesktopWindows(true, onScreenWindowsOnly: true))
+        }
         contentTask = task
         defer { contentTask = nil }
-        let fresh = try await task.value
+        let fresh = try await task.value.value
         content = (fresh, Date())
         return fresh
     }

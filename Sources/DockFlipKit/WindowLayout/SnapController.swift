@@ -177,7 +177,7 @@ final class SnapController {
     /// Topmost normal window under the mouse that DockFlip tracks.
     private func windowID(under cocoaPoint: NSPoint) -> CGWindowID? {
         let point = CGPoint(x: cocoaPoint.x, y: DisplayLayout.primaryHeight - cocoaPoint.y)
-        guard let top = WindowServer.windows(onScreenOnly: true).first(where: { $0.bounds.contains(point) }) else { return nil }
+        guard let top = WindowServer.windows(onScreenOnly: true, visibleOnly: true).first(where: { $0.bounds.contains(point) }) else { return nil }
         return registry.window(top.id) != nil ? top.id : nil
     }
 

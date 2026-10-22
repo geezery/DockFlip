@@ -134,7 +134,7 @@ final class CleanupController {
             )
         }
 
-        let withWindows = Set(WindowServer.inventory().keys)
+        let withWindows = Set(WindowServer.inventory(visibleOnly: true).keys)
         let frontmost = NSWorkspace.shared.frontmostApplication?.processIdentifier
         let own = ProcessInfo.processInfo.processIdentifier
         let running = NSWorkspace.shared.runningApplications.filter {

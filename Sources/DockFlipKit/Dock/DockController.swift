@@ -40,6 +40,12 @@ final class DockController: WindowListSource {
     private var clickTap: CFMachPort?
     /// The mouse-down was taken over, so its mouse-up is too.
     private var swallowNextUp = false
+    /// The Dock's icon list in AX coordinates, kept so a click anywhere on the
+    /// screen is checked without asking the Dock (the tap must stay fast).
+    private var dockListAXFrame: CGRect?
+    /// The window an icon click minimized, restored by the next click on that icon.
+    private var minimizedByClick: (bundleID: String, windowID: CGWindowID)?
+    private(set) var dockEdge: DockEdge = .bottom
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -97,6 +103,9 @@ final class DockController: WindowListSource {
         observer = newObserver
         dockApp = app
         dockList = list
+        dockListAXFrame = list.frame
+        let orientation = CFPreferencesCopyAppValue("orientation" as CFString, "com.apple.dock" as CFString) as? String
+        dockEdge = orientation == "left" ? .left : orientation == "right" ? .right : .bottom
         Log.app.notice("Attached to the Dock")
     }
 
@@ -120,6 +129,7 @@ final class DockController: WindowListSource {
         }
         popup.itemEntered(icon.bundleID)
         if let frame = list.frame {
+            dockListAXFrame = frame
             dockFrame = Geometry.cocoaRect(fromAX: frame, primaryHeight: DisplayLayout.primaryHeight)
         }
         watchMouse()
@@ -157,7 +167,10 @@ final class DockController: WindowListSource {
         let mouse = NSEvent.mouseLocation
         let onPopup = popup.visibleFrame?.insetBy(dx: -6, dy: -6).contains(mouse) ?? false
         if let hovered {
-            if !Self.zone(of: hovered).contains(mouse), !onPopup {
+            if Self.zone(of: hovered, edge: dockEdge).contains(mouse) {
+                // Back on the icon from the list: the list's own exit must not close it.
+                popup.cancelHide()
+            } else if !onPopup {
                 lastHovered = hovered
                 self.hovered = nil
                 popup.itemExited()
@@ -174,11 +187,16 @@ final class DockController: WindowListSource {
         }
     }
 
-    /// The icon, reaching up to the list so the way there counts as on the icon.
-    private static func zone(of icon: HoveredIcon) -> NSRect {
-        icon.anchor.insetBy(dx: -4, dy: -4).union(
-            NSRect(x: icon.anchor.minX, y: icon.anchor.maxY, width: icon.anchor.width, height: 14)
-        )
+    /// The icon, reaching towards the list so the way there counts as on the icon.
+    private static func zone(of icon: HoveredIcon, edge: DockEdge) -> NSRect {
+        let a = icon.anchor
+        let bridge: NSRect
+        switch edge {
+        case .bottom: bridge = NSRect(x: a.minX, y: a.maxY, width: a.width, height: 14)
+        case .left: bridge = NSRect(x: a.maxX, y: a.minY, width: 14, height: a.height)
+        case .right: bridge = NSRect(x: a.minX - 14, y: a.minY, width: 14, height: a.height)
+        }
+        return a.insetBy(dx: -4, dy: -4).union(bridge)
     }
 
     // MARK: - WindowListSource
@@ -225,7 +243,8 @@ final class DockController: WindowListSource {
     }
 
     /// Returns true when the click is taken over (and must not reach the Dock).
-    fileprivate func click(type: CGEventType, location: CGPoint) -> Bool {
+    /// Clicks with ⌘, ⌥, ⌃ or ⇧ always go to the Dock (Show in Finder, Hide Others …).
+    fileprivate func click(type: CGEventType, location: CGPoint, flags: CGEventFlags) -> Bool {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
             if let clickTap { CGEvent.tapEnable(tap: clickTap, enable: true) }
@@ -234,8 +253,9 @@ final class DockController: WindowListSource {
             defer { swallowNextUp = false }
             return swallowNextUp
         case .leftMouseDown:
-            // Cheap check first: clicks outside the Dock pass straight through.
-            guard let list = dockList, let listFrame = list.frame, listFrame.contains(location) else { return false }
+            // Cheap checks first: clicks outside the Dock pass straight through.
+            guard let listFrame = dockListAXFrame, listFrame.contains(location),
+                  flags.isDisjoint(with: [.maskCommand, .maskAlternate, .maskControl, .maskShift]) else { return false }
             let handled = Perf.shared.measure("dock.click") { handleIconClick(at: location) }
             swallowNextUp = handled
             return handled
@@ -255,12 +275,19 @@ final class DockController: WindowListSource {
         return true
     }
 
-    /// The Windows taskbar click: the front app's active window minimizes;
-    /// otherwise the app's most recent window comes forward (restored if minimized).
+    /// The Windows taskbar click: the front app's active window minimizes, and
+    /// the next click brings that same window back; otherwise the app's most
+    /// recent window comes forward (restored if minimized).
     private func activate(_ item: WindowListItem) {
-        if let active = registry.activeWindowID(), item.windows.contains(where: { $0.id == active }) {
+        if let last = minimizedByClick, last.bundleID == item.bundleID,
+           let window = item.windows.first(where: { $0.id == last.windowID }), window.isMinimized {
+            minimizedByClick = nil
+            registry.focus(window.id)
+        } else if let active = registry.activeWindowID(), item.windows.contains(where: { $0.id == active }) {
             registry.minimize(active)
+            minimizedByClick = (item.bundleID, active)
         } else if let first = item.windows.first {
+            minimizedByClick = nil
             registry.focus(first.id)
         }
     }
@@ -291,6 +318,7 @@ private func dockClickCallback(_ proxy: CGEventTapProxy, _ type: CGEventType, _ 
     guard let refcon else { return Unmanaged.passUnretained(event) }
     let controller = Unmanaged<DockController>.fromOpaque(refcon).takeUnretainedValue()
     let location = event.location
-    let swallow: Bool = MainActor.assumeIsolated { controller.click(type: type, location: location) }
+    let flags = event.flags
+    let swallow: Bool = MainActor.assumeIsolated { controller.click(type: type, location: location, flags: flags) }
     return swallow ? nil : Unmanaged.passUnretained(event)
 }

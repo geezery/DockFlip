@@ -7,7 +7,8 @@ import SwiftUI
 // Three layouts, picked by `WindowListLayout`:
 // - a list of windows (title, mini-map, state), tabs hanging under browser windows;
 // - with previews on: a row of picture cards;
-// - with previews on and tabs: the list, with one big picture underneath (`PeekPane`).
+// - with previews on and tabs, or more than five windows: the list, with one
+//   big picture underneath (`PeekPane`).
 
 /// The whole popup: the app's name, then the windows.
 struct WindowListView: View {
@@ -24,9 +25,9 @@ struct WindowListView: View {
                 .frame(height: model.rows.isEmpty ? 44 : 36, alignment: .center)
 
             if !model.rows.isEmpty {
-                if model.showsPreviews && !model.hasTabs {
+                if model.usesCards {
                     HStack(spacing: 4) {
-                        ForEach(model.rows.prefix(5)) { row in
+                        ForEach(model.rows) { row in
                             WindowCardView(row: row, thumbnail: model.thumbnails[row.id], model: model, popup: popup)
                         }
                     }

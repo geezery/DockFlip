@@ -15,9 +15,11 @@ enum WindowServer {
         let bounds: CGRect
     }
 
-    /// Normal-layer windows, front to back. `onScreenOnly`: only those on the
-    /// current Space and not minimized.
-    static func windows(onScreenOnly: Bool) -> [Entry] {
+    /// Normal-layer windows, front to back.
+    /// - onScreenOnly: only those on the current Space and not minimized.
+    /// - visibleOnly: leave out fully transparent windows. Off for bookkeeping —
+    ///   a window fading in or out still exists.
+    static func windows(onScreenOnly: Bool, visibleOnly: Bool = false) -> [Entry] {
         let options: CGWindowListOption = onScreenOnly ? [.optionOnScreenOnly, .excludeDesktopElements] : [.optionAll, .excludeDesktopElements]
         guard let list = CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]] else { return [] }
         return list.compactMap { info in
@@ -26,7 +28,7 @@ enum WindowServer {
                   let owner = info[kCGWindowOwnerPID as String] as? NSNumber,
                   let boundsInfo = info[kCGWindowBounds as String] as? NSDictionary,
                   let bounds = CGRect(dictionaryRepresentation: boundsInfo as CFDictionary) else { return nil }
-            if let alpha = info[kCGWindowAlpha as String] as? Double, alpha <= 0 { return nil }
+            if visibleOnly, let alpha = info[kCGWindowAlpha as String] as? Double, alpha <= 0 { return nil }
             return Entry(id: CGWindowID(number.uint32Value), pid: pid_t(owner.int32Value), bounds: bounds)
         }
     }
@@ -38,9 +40,9 @@ enum WindowServer {
 
     /// Real windows (not tiny helper windows) of every app on every Space,
     /// minimized ones included, by owner.
-    static func inventory() -> [pid_t: Set<CGWindowID>] {
+    static func inventory(visibleOnly: Bool = false) -> [pid_t: Set<CGWindowID>] {
         var result: [pid_t: Set<CGWindowID>] = [:]
-        for entry in windows(onScreenOnly: false) where entry.bounds.width >= 100 && entry.bounds.height >= 60 {
+        for entry in windows(onScreenOnly: false, visibleOnly: visibleOnly) where entry.bounds.width >= 100 && entry.bounds.height >= 60 {
             result[entry.pid, default: []].insert(entry.id)
         }
         return result

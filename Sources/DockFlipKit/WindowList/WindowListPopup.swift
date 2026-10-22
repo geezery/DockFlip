@@ -11,6 +11,11 @@ struct WindowListItem {
     let isNotResponding: Bool
 }
 
+/// The screen edge the Dock sits on; the list opens away from it.
+enum DockEdge {
+    case bottom, left, right
+}
+
 /// Where the window list gets its content and its position.
 @MainActor
 protocol WindowListSource: AnyObject {
@@ -18,6 +23,7 @@ protocol WindowListSource: AnyObject {
     func windowListItem(for key: String) -> WindowListItem?
     /// The icon the list belongs to, in screen (Cocoa) coordinates.
     func anchor(for key: String) -> NSRect?
+    var dockEdge: DockEdge { get }
 }
 
 /// One window in the list, ready to draw.
@@ -51,6 +57,7 @@ final class WindowListModel: ObservableObject {
     @Published var expanded = Set<CGWindowID>()
 
     var hasTabs: Bool { rows.contains { $0.tabs.count > 1 } }
+    var usesCards: Bool { WindowListLayout.usesCards(rows: rows, previews: showsPreviews) }
 
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
         if inside {
@@ -100,13 +107,21 @@ enum WindowListLayout {
         return (shown, row.tabs.count - shown.count)
     }
 
+    /// Picture cards side by side, while they fit (five); otherwise the list,
+    /// with one picture underneath.
+    static let maxCards = 5
+
+    static func usesCards(rows: [WindowListRow], previews: Bool) -> Bool {
+        previews && rows.count <= maxCards && !rows.contains { $0.tabs.count > 1 }
+    }
+
     static func size(rows: [WindowListRow], expanded: Set<CGWindowID>, previews: Bool) -> NSSize {
         if rows.isEmpty {
             return NSSize(width: 220, height: 44)
         }
         let hasTabs = rows.contains { $0.tabs.count > 1 }
-        if previews && !hasTabs {
-            let columns = min(rows.count, 5)
+        if usesCards(rows: rows, previews: previews) {
+            let columns = rows.count
             return NSSize(width: CGFloat(columns) * cardWidth + 16, height: 36 + cardHeight + 12)
         }
         var height: CGFloat = 36 + 10
@@ -177,6 +192,11 @@ final class WindowListPopup {
     func itemExited() {
         showTask?.cancel()
         scheduleHide()
+    }
+
+    /// The mouse came back onto the icon from the list: keep the list.
+    func cancelHide() {
+        hideTask?.cancel()
     }
 
     /// From the hosting view's tracking area.
@@ -276,16 +296,29 @@ final class WindowListPopup {
         let previews = PreviewProvider.shared.isAvailable
         model.showsPreviews = previews
 
-        showPanel(size: WindowListLayout.size(rows: rows, expanded: model.expanded, previews: previews), above: anchor)
+        showPanel(size: WindowListLayout.size(rows: rows, expanded: model.expanded, previews: previews), at: anchor, edge: source.dockEdge)
         if previews { loadPreviews(for: Array(item.windows.prefix(8))) }
     }
 
-    /// Centred above the icon, kept inside the icon's screen.
-    private func showPanel(size: NSSize, above anchor: NSRect) {
+    /// Next to the icon on the side away from the Dock's edge (above a bottom
+    /// Dock, beside a side Dock), centred on the icon, kept inside its screen.
+    private func showPanel(size: NSSize, at anchor: NSRect, edge: DockEdge) {
         let center = NSPoint(x: anchor.midX, y: anchor.midY)
-        let screenFrame = NSScreen.screens.first { NSMouseInRect(center, $0.frame, false) }?.frame ?? anchor
-        let x = min(max(anchor.midX - size.width / 2, screenFrame.minX + 8), screenFrame.maxX - size.width - 8)
-        let frame = NSRect(x: x.rounded(), y: (anchor.maxY + 6).rounded(), width: size.width, height: size.height)
+        let screen = NSScreen.screens.first { NSMouseInRect(center, $0.frame, false) }?.frame ?? anchor
+        func clamp(_ value: CGFloat, _ low: CGFloat, _ high: CGFloat) -> CGFloat { min(max(value, low), max(low, high)) }
+        let origin: NSPoint
+        switch edge {
+        case .bottom:
+            origin = NSPoint(x: clamp(anchor.midX - size.width / 2, screen.minX + 8, screen.maxX - size.width - 8),
+                             y: anchor.maxY + 6)
+        case .left:
+            origin = NSPoint(x: anchor.maxX + 6,
+                             y: clamp(anchor.midY - size.height / 2, screen.minY + 8, screen.maxY - size.height - 8))
+        case .right:
+            origin = NSPoint(x: anchor.minX - 6 - size.width,
+                             y: clamp(anchor.midY - size.height / 2, screen.minY + 8, screen.maxY - size.height - 8))
+        }
+        let frame = NSRect(x: origin.x.rounded(), y: origin.y.rounded(), width: size.width, height: size.height)
         let panel = self.panel ?? makePanel()
         self.panel = panel
         panel.setFrame(frame, display: true)

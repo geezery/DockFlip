@@ -200,8 +200,14 @@ final class TabStore {
             for job in jobs {
                 let read = BrowserTabs.read(window: job.element.element, windowID: job.id)
                 if read.tabs.isEmpty {
+                    // A window with one tab has no tab bar (common, kept out of the log
+                    // unless debug logging is on); a tab bar without tabs is worth a look.
                     let summary = read.stats.summary
-                    Log.registry.notice("No tabs found in window \(job.id, privacy: .public): \(summary, privacy: .public)")
+                    if read.stats.tabGroups > 0 {
+                        Log.registry.notice("No tabs found in window \(job.id, privacy: .public): \(summary, privacy: .public)")
+                    } else {
+                        Log.registry.debug("No tab bar in window \(job.id, privacy: .public): \(summary, privacy: .public)")
+                    }
                 }
                 results.append((job.id, read.tabs))
             }

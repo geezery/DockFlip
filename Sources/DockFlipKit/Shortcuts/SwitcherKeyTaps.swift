@@ -81,6 +81,8 @@ final class SwitcherKeyTaps {
         let code = event.getIntegerValueField(.keyboardEventKeycode)
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
+            // macOS switched the tap off (it was slow): back on while switching.
+            if let keysTap { CGEvent.tapEnable(tap: keysTap, enable: true) }
             return false
         case .keyDown:
             let keyCode = UInt32(truncatingIfNeeded: code)
