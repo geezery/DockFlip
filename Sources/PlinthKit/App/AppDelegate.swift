@@ -11,29 +11,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var registry: WindowRegistry?
     private var switcher: SwitcherController?
     private var snapper: SnapController?
+    /// Dock mode (the default).
+    private var dock: DockController?
+    /// Plinth's own taskbar, when the user picked it instead of the Dock.
     private var taskbar: TaskbarController?
     private var usage: UsageTracker?
     private var cleanup: CleanupController?
     private var placement: PlacementMemory?
-    private var hotkeys: HotkeyTap?
-    private var hotkeysRunning = false
+    private var hotKeys: GlobalHotKeys?
+    private var hotkeyTap: HotkeyTap?
+    /// The modifier tap that notices ⌘ being released. Needs Accessibility, and
+    /// right after it is granted macOS sometimes refuses it until a restart.
+    private var tapsRunning = false
     private var isRelaunching = false
-    private var settingsSubscription: AnyCancellable?
-    /// True while some app (Terminal's Secure Keyboard Entry, a password field)
-    /// holds secure keyboard input. macOS then hides all key presses from Plinth.
-    private var secureInputActive = false
-    private var activationToken: NSObjectProtocol?
-    private var nativeCommandTabOn: Bool?
+    private var subscriptions: [AnyCancellable] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = Perf.shared // starts the clock: the debug log covers everything from launch
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-        Log.app.notice("Plinth \(version, privacy: .public) starting, macOS \(ProcessInfo.processInfo.operatingSystemVersionString, privacy: .public)")
+        let mode = Settings.shared.useDock ? "dock" : "taskbar"
+        Log.app.notice("Plinth \(version, privacy: .public) starting, macOS \(ProcessInfo.processInfo.operatingSystemVersionString, privacy: .public), mode \(mode, privacy: .public)")
         setUpStatusItem()
         Diagnostics.stateProvider = { [weak self] in
             guard let self else { return [] }
             var lines = self.registry?.debugSummary() ?? ["services not started"]
-            lines.append("eventTap=\(self.hotkeysRunning) cleanupSuggestions=\(self.cleanup?.candidateCount() ?? 0)")
+            lines.append("hotKeys=\(self.hotKeys?.registeredCount ?? 0) modifierTap=\(self.tapsRunning) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(self.cleanup?.candidateCount() ?? 0)")
             return lines
         }
         settingsWindow.onShowSetup = { [weak self] in self?.showOnboarding() }
@@ -45,19 +47,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             showOnboarding()
         }
 
-        // ⌘Tab belongs to Plinth only while its shortcuts are on.
-        settingsSubscription = Settings.shared.$shortcutsEnabled.sink { [weak self] _ in
-            Task { @MainActor in self?.updateNativeCommandTab() }
-        }
-        activationToken = NSWorkspace.shared.notificationCenter.addObserver(
-            forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main
-        ) { [weak self] _ in
-            // Apps turn secure input on as they become active; look a moment later.
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(300))
-                self?.updateNativeCommandTab()
-            }
-        }
+        subscriptions.append(Settings.shared.$shortcutsEnabled.dropFirst().sink { [weak self] _ in
+            Task { @MainActor in self?.applyShortcutSetting() }
+        })
+        // Dock mode and the taskbar are set up at launch; switching restarts Plinth.
+        subscriptions.append(Settings.shared.$useDock.dropFirst().removeDuplicates().sink { [weak self] _ in
+            Task { @MainActor in self?.relaunch() }
+        })
     }
 
     /// Opening Plinth again (Finder, Spotlight, Launchpad, the Dock) brings up
@@ -76,41 +72,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if !isRelaunching {
             NativeCommandTab.setEnabled(true)
         }
+        hotKeys?.unregisterAll()
         usage?.saveNow()
         Log.app.notice("Plinth quitting")
     }
 
     // MARK: - Services
-
-    /// ⌘Tab belongs to Plinth while its shortcuts are on — except while another app
-    /// holds secure keyboard input: Plinth cannot see keys then, so macOS's own ⌘Tab
-    /// comes back for that time and the key never goes dead.
-    private func updateNativeCommandTab() {
-        let secure = IsSecureEventInputEnabled()
-        if secure != secureInputActive {
-            secureInputActive = secure
-            let holder = Self.secureInputHolderName() ?? "?"
-            if secure {
-                Log.keys.notice("Secure keyboard input is on (held by \(holder, privacy: .public)); macOS's ⌘Tab is used meanwhile")
-            } else {
-                Log.keys.notice("Secure keyboard input is off; Plinth's ⌘Tab is back")
-            }
-        }
-        guard hotkeysRunning else { return }
-        let nativeOn = !Settings.shared.shortcutsEnabled || secure
-        if nativeOn != nativeCommandTabOn {
-            nativeCommandTabOn = nativeOn
-            NativeCommandTab.setEnabled(nativeOn)
-        }
-    }
-
-    /// Name of the app holding secure keyboard input, from the window server session.
-    static func secureInputHolderName() -> String? {
-        guard let session = CGSessionCopyCurrentDictionary() as? [String: Any],
-              let pid = session["kCGSSessionSecureInputPID"] as? NSNumber,
-              pid.int32Value > 0 else { return nil }
-        return NSRunningApplication(processIdentifier: pid_t(pid.int32Value))?.localizedName
-    }
 
     private func startServices() {
         guard registry == nil else { return }
@@ -121,55 +88,79 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let switcher = SwitcherController(registry: registry)
         let snapper = SnapController(registry: registry)
         snapper.start()
-        let taskbar = TaskbarController(registry: registry)
-        taskbar.start()
+        if Settings.shared.useDock {
+            let dock = DockController(registry: registry)
+            dock.start()
+            self.dock = dock
+        } else {
+            let taskbar = TaskbarController(registry: registry)
+            taskbar.start()
+            self.taskbar = taskbar
+        }
         let usage = UsageTracker(registry: registry)
         usage.start()
         let placement = PlacementMemory(registry: registry)
         placement.start()
         let cleanup = CleanupController(registry: registry, usage: usage)
 
-        let hotkeys = HotkeyTap()
-        hotkeys.isEnabled = { Settings.shared.shortcutsEnabled }
-        hotkeys.isSwitcherActive = { [weak switcher] in switcher?.isActive ?? false }
-        hotkeys.handler = { [weak switcher, weak snapper, weak taskbar] command in
-            switch command {
-            case .switcher(let input):
-                return switcher?.handle(input) ?? false
-            case .snap(let key):
-                return snapper?.handle(key) ?? false
-            case .moveToDisplay(let key):
-                return snapper?.moveToDisplay(key) ?? false
-            case .taskbarItem(let index):
-                return taskbar?.activateItem(at: index) ?? false
-            case .showDesktop:
-                taskbar?.showDesktop()
-                return true
-            case .newFinderWindow:
-                NSWorkspace.shared.open(URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true))
-                return true
-            }
-        }
-        hotkeysRunning = hotkeys.start()
-        if hotkeysRunning {
-            updateNativeCommandTab()
-            registry.addObserver { [weak self] in self?.updateNativeCommandTab() }
-        } else {
-            // Right after Accessibility is granted, macOS sometimes refuses the
-            // event tap until the app is restarted.
-            Log.keys.error("Could not create the keyboard event tap")
+        // Shortcuts: Carbon hot keys start everything (they work even while an app
+        // holds secure keyboard input); two event taps follow the ⌘Tab session.
+        let hotKeys = GlobalHotKeys()
+        hotKeys.handler = { [weak self] command in self?.perform(command) }
+        let hotkeyTap = HotkeyTap()
+        hotkeyTap.onCommandReleased = { [weak switcher] in _ = switcher?.handle(.commandReleased) }
+        hotkeyTap.onSwitcherKey = { [weak switcher] input in switcher?.handle(input) ?? false }
+        switcher.onActiveChanged = { [weak hotkeyTap] active in hotkeyTap?.setSwitcherKeysEnabled(active) }
+        tapsRunning = hotkeyTap.start()
+        if !tapsRunning {
+            Log.keys.error("Could not create the modifier event tap")
         }
 
         self.registry = registry
         self.switcher = switcher
         self.snapper = snapper
-        self.taskbar = taskbar
         self.usage = usage
         self.placement = placement
         self.cleanup = cleanup
-        self.hotkeys = hotkeys
-        let tapState = hotkeysRunning ? "on" : "OFF"
-        Log.app.notice("Services started, event tap \(tapState, privacy: .public)")
+        self.hotKeys = hotKeys
+        self.hotkeyTap = hotkeyTap
+        applyShortcutSetting()
+        let tapState = tapsRunning ? "on" : "OFF"
+        Log.app.notice("Services started, modifier tap \(tapState, privacy: .public)")
+    }
+
+    /// ⌘Tab and the ⌃⌥ shortcuts belong to Plinth while the setting is on;
+    /// otherwise macOS gets ⌘Tab back.
+    private func applyShortcutSetting() {
+        guard let hotKeys else { return }
+        if Settings.shared.shortcutsEnabled {
+            NativeCommandTab.setEnabled(false)
+            hotKeys.registerAll()
+        } else {
+            hotKeys.unregisterAll()
+            NativeCommandTab.setEnabled(true)
+        }
+    }
+
+    private func perform(_ command: HotkeyCommand) {
+        switch command {
+        case .switcher(let input):
+            _ = switcher?.handle(input)
+        case .snap(let key):
+            _ = snapper?.handle(key)
+        case .moveToDisplay(let key):
+            _ = snapper?.moveToDisplay(key)
+        case .taskbarItem(let index):
+            if let dock {
+                _ = dock.activateItem(at: index)
+            } else {
+                _ = taskbar?.activateItem(at: index)
+            }
+        case .showDesktop:
+            if let taskbar { taskbar.showDesktop() } else { ShowDesktop.toggle() }
+        case .newFinderWindow:
+            NSWorkspace.shared.open(URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true))
+        }
     }
 
     private func showOnboarding() {
@@ -181,7 +172,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             guard let self else { return }
             self.onboarding = nil
             self.startServices()
-            if !self.hotkeysRunning { self.relaunch() }
+            if !self.tapsRunning { self.relaunch() }
         }
         onboarding = controller
         controller.show()
@@ -219,16 +210,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if !Settings.shared.onboardingCompleted {
             menu.addItem(ClosureMenuItem(L("Continue Setup…")) { [weak self] in self?.showOnboarding() })
         }
-        updateNativeCommandTab()
         if registry != nil {
-            if secureInputActive {
-                let holder = Self.secureInputHolderName() ?? L("another app")
-                addStatus(String(format: L("⌘Tab: paused — secure input in %@"), holder), to: menu)
-            } else {
-                addStatus(hotkeysRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
-            }
+            let shortcutsOn = Settings.shared.shortcutsEnabled && (hotKeys?.registeredCount ?? 0) > 0
+            addStatus(shortcutsOn && tapsRunning ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), registry?.trackedWindowCount ?? 0), to: menu)
-            if !hotkeysRunning {
+            if !tapsRunning {
                 menu.addItem(ClosureMenuItem(L("Restart Plinth")) { [weak self] in self?.relaunch() })
             }
         }

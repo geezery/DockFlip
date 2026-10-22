@@ -29,8 +29,8 @@ make run
 - UI state on the main actor; C callbacks hop in with `MainActor.assumeIsolated`.
 - Pure logic (ordering, geometry, selection) lives in small value types with
   unit tests.
-- User-facing strings use the English text as the key; add the Finnish
-  translation to `Resources/fi.lproj/Localizable.strings`.
+- User-facing strings are English and use the English text as the key
+  (`L("…")`), so translations can be added later.
 
 ## License
 

@@ -9,7 +9,7 @@
 
 APP_NAME  := Plinth
 BUNDLE_ID ?= io.github.plinth.Plinth
-VERSION   ?= 0.2.0
+VERSION   ?= 0.3.0
 BUILD_NUM ?= 1
 CONFIG    ?= release
 SIGN_ID   ?= Plinth Signing
@@ -35,7 +35,7 @@ app: build
 	     -e 's/__BUILD__/$(BUILD_NUM)/' \
 	     -e 's/__BUNDLE_ID__/$(BUNDLE_ID)/' \
 	     Resources/Info.plist > "$(APP)/Contents/Info.plist"
-	@cp -R Resources/en.lproj Resources/fi.lproj "$(APP)/Contents/Resources/"
+	@cp -R Resources/en.lproj "$(APP)/Contents/Resources/"
 	@cp Resources/AppIcon.icns "$(APP)/Contents/Resources/AppIcon.icns"
 	@$(MAKE) --no-print-directory sign
 	@echo "Built $(APP)"

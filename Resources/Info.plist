@@ -7,7 +7,6 @@
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
-		<string>fi</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Plinth</string>

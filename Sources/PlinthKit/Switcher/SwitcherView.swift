@@ -9,6 +9,14 @@ struct SwitcherItem: Identifiable {
     /// Window outline as fractions of its screen (top-left origin), for the mini-map.
     let minimap: CGRect?
     let isMinimized: Bool
+    /// Document file name, when the app reports one.
+    let document: String?
+    /// Name of the display the window is on, e.g. "Built-in Retina Display".
+    let screenName: String?
+    /// "1440 × 900"
+    let sizeText: String
+    /// The app's colour, taken from its icon; tints the card's title bar.
+    let tint: Color
 }
 
 @MainActor
@@ -17,96 +25,189 @@ final class SwitcherModel: ObservableObject {
     @Published var selection = 0
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
     var onPick: ((Int) -> Void)?
-}
+    var onCancel: (() -> Void)?
 
-enum SwitcherLayout {
-    static let tileWidth: CGFloat = 148
-    static let tileHeight: CGFloat = 156
-    static let spacing: CGFloat = 10
-    static let padding: CGFloat = 16
-    static let maxColumns = 7
-    static let cornerRadius: CGFloat = 20
-
-    static func columns(for count: Int) -> Int {
-        max(1, min(count, maxColumns))
-    }
-
-    static func panelSize(itemCount: Int) -> NSSize {
-        let columns = Self.columns(for: itemCount)
-        let rows = max(1, Int((Double(itemCount) / Double(maxColumns)).rounded(.up)))
-        let width = CGFloat(columns) * tileWidth + CGFloat(columns - 1) * spacing + padding * 2
-        let height = CGFloat(rows) * tileHeight + CGFloat(rows - 1) * spacing + padding * 2
-        return NSSize(width: width, height: height)
+    /// 0 for the card in front, 1 for the one behind it, and so on (wrapping).
+    func depth(of index: Int) -> Int {
+        guard !items.isEmpty else { return 0 }
+        return ((index - selection) % items.count + items.count) % items.count
     }
 }
 
+/// The ⌘Tab switcher, in the style of Windows 7 Flip 3D: windows stand in a
+/// slanted stack, the selected one in front at the lower right, the others
+/// receding to the upper left in perspective. Each ⌘Tab throws the front window
+/// to the back of the stack; releasing ⌘ opens the window in front.
 struct SwitcherView: View {
     @ObservedObject var model: SwitcherModel
 
+    /// Cards further back than this fade out.
+    private let visibleDepth = 7
+
     var body: some View {
-        let columns = Array(
-            repeating: GridItem(.fixed(SwitcherLayout.tileWidth), spacing: SwitcherLayout.spacing),
-            count: SwitcherLayout.columns(for: model.items.count)
-        )
-        LazyVGrid(columns: columns, alignment: .leading, spacing: SwitcherLayout.spacing) {
-            ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
-                SwitcherTile(item: item, thumbnail: model.thumbnails[item.id], isSelected: index == model.selection)
-                    .onTapGesture { model.onPick?(index) }
+        GeometryReader { geo in
+            let cardWidth = min(geo.size.width * 0.42, 760)
+            let cardHeight = cardWidth * 0.62
+
+            ZStack {
+                // The desktop stays visible behind the stack, slightly dimmed.
+                Color.black.opacity(0.28)
+                    .contentShape(Rectangle())
+                    .onTapGesture { model.onCancel?() }
+
+                ZStack {
+                    ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
+                        let depth = model.depth(of: index)
+                        FanCard(item: item, thumbnail: model.thumbnails[item.id], isFront: depth == 0)
+                            .frame(width: cardWidth, height: cardHeight)
+                            // Every window turned the same way: its left edge further away.
+                            .rotation3DEffect(
+                                .degrees(-24),
+                                axis: (x: 0, y: 1, z: 0),
+                                anchor: .center,
+                                perspective: 0.5
+                            )
+                            .scaleEffect(max(0.5, 1 - Double(depth) * 0.06))
+                            // Receding up and to the left.
+                            .offset(x: CGFloat(depth) * -cardWidth * 0.17, y: CGFloat(depth) * -cardHeight * 0.11)
+                            .opacity(depth > visibleDepth ? 0 : 1 - Double(depth) * 0.06)
+                            .zIndex(Double(1000 - depth))
+                            .onTapGesture { model.onPick?(index) }
+                    }
+                }
+                // The front window sits right of and below the centre.
+                .offset(x: cardWidth * 0.32, y: cardHeight * 0.22)
+                .animation(.spring(response: 0.42, dampingFraction: 0.80), value: model.selection)
+
+                VStack {
+                    Spacer()
+                    if model.items.indices.contains(model.selection) {
+                        let front = model.items[model.selection]
+                        HStack(spacing: 12) {
+                            AppIconView(icon: front.icon, size: 30)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(verbatim: front.title)
+                                    .font(.system(size: 17, weight: .semibold))
+                                    .lineLimit(1)
+                                Text(verbatim: front.isMinimized ? "\(front.appName) · \(L("Minimized"))" : front.appName)
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 12)
+                        .background(.regularMaterial, in: Capsule())
+                        .animation(nil, value: model.selection)
+                    }
+                }
+                .padding(.bottom, geo.size.height * 0.08)
             }
         }
-        .padding(SwitcherLayout.padding)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
-struct SwitcherTile: View {
+/// One window in the stack: its live thumbnail when previews are on. Without
+/// previews, a card that still tells windows apart: the title in a title bar
+/// tinted with the app's colour, the document name, the display, the size, and a
+/// mini-map of where the window sits on screen.
+struct FanCard: View {
     let item: SwitcherItem
     let thumbnail: NSImage?
-    let isSelected: Bool
+    let isFront: Bool
 
     var body: some View {
-        VStack(spacing: 8) {
-            if let thumbnail {
-                Image(nsImage: thumbnail)
-                    .resizable()
-                    .interpolation(.high)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 124, height: 78)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                    .overlay(alignment: .bottomTrailing) {
-                        AppIconView(icon: item.icon, size: 26).offset(x: 6, y: 6)
-                    }
-                    .frame(height: 101)
-            } else {
-                AppIconView(icon: item.icon, size: 48)
-                Minimap(rect: item.minimap, isMinimized: item.isMinimized)
-                    .frame(width: 72, height: 45)
-            }
-
-            VStack(spacing: 2) {
+        VStack(spacing: 0) {
+            HStack(spacing: 7) {
+                Circle().fill(Color(red: 1, green: 0.37, blue: 0.34)).frame(width: 11, height: 11)
+                Circle().fill(Color(red: 1, green: 0.74, blue: 0.18)).frame(width: 11, height: 11)
+                Circle().fill(Color(red: 0.16, green: 0.78, blue: 0.25)).frame(width: 11, height: 11)
                 Text(verbatim: item.title)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .lineLimit(1)
-                    .truncationMode(.tail)
-                Text(verbatim: item.isMinimized ? L("Minimized") : item.appName)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .frame(maxWidth: .infinity)
+                    .padding(.trailing, 44)
+            }
+            .padding(.horizontal, 14)
+            .frame(height: 36)
+            .background(item.tint.opacity(0.22))
+            .overlay(alignment: .bottom) { Rectangle().fill(Color.primary.opacity(0.1)).frame(height: 1) }
+
+            ZStack {
+                Color(nsColor: .windowBackgroundColor)
+                if let thumbnail {
+                    Image(nsImage: thumbnail)
+                        .resizable()
+                        .interpolation(.high)
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    details
+                }
             }
         }
-        .padding(10)
-        .frame(width: SwitcherLayout.tileWidth, height: SwitcherLayout.tileHeight)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.16) : Color.clear)
-        )
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(isFront ? Color.accentColor : Color.white.opacity(0.22), lineWidth: isFront ? 3 : 1)
         )
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
+        .shadow(color: .black.opacity(0.45), radius: 26, y: 14)
+        .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "\(item.appName): \(item.title)"))
+        .accessibilityAddTraits(isFront ? [.isButton, .isSelected] : [.isButton])
+    }
+
+    private var details: some View {
+        HStack(alignment: .center, spacing: 28) {
+            AppIconView(icon: item.icon, size: 116)
+                .opacity(item.isMinimized ? 0.6 : 1)
+            VStack(alignment: .leading, spacing: 10) {
+                Text(verbatim: item.title)
+                    .font(.system(size: 22, weight: .semibold))
+                    .lineLimit(3)
+                if let document = item.document, document != item.title {
+                    Label {
+                        Text(verbatim: document).lineLimit(1)
+                    } icon: {
+                        Image(systemName: "doc")
+                    }
+                    .font(.system(size: 14))
+                }
+                Text(verbatim: item.isMinimized ? "\(item.appName) · \(L("Minimized"))" : item.appName)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 14) {
+                    Minimap(rect: item.minimap, isMinimized: item.isMinimized)
+                        .frame(width: 144, height: 90)
+                    VStack(alignment: .leading, spacing: 4) {
+                        if let screen = item.screenName {
+                            Text(verbatim: screen).lineLimit(2)
+                        }
+                        Text(verbatim: item.sizeText)
+                    }
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                }
+                .padding(.top, 6)
+            }
+        }
+        .padding(28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+}
+
+struct AppIconView: View {
+    let icon: NSImage?
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let icon {
+                Image(nsImage: icon).resizable().interpolation(.high)
+            } else {
+                RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(Color.secondary.opacity(0.3))
+            }
+        }
+        .frame(width: size, height: size)
     }
 }
 
@@ -139,21 +240,5 @@ struct Minimap: View {
             }
         }
         .accessibilityHidden(true)
-    }
-}
-
-struct AppIconView: View {
-    let icon: NSImage?
-    let size: CGFloat
-
-    var body: some View {
-        Group {
-            if let icon {
-                Image(nsImage: icon).resizable().interpolation(.high)
-            } else {
-                RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(Color.secondary.opacity(0.3))
-            }
-        }
-        .frame(width: size, height: size)
     }
 }

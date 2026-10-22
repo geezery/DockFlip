@@ -16,7 +16,7 @@ import ScreenCaptureKit
 final class PreviewProvider {
     static let shared = PreviewProvider()
 
-    static let maxPixelWidth: CGFloat = 400
+    static let maxPixelWidth: CGFloat = 760
     private static let cacheLifetime: TimeInterval = 3
 
     private static let neverCapture: Set<String> = [

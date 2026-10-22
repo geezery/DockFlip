@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// The settings window: the five settings from SCOPE.md and nothing more.
+/// The settings window: the settings from SCOPE.md and nothing more.
 @MainActor
 final class SettingsWindowController {
     private var window: NSWindow?
@@ -50,11 +50,20 @@ struct SettingsView: View {
                     }
                 }
                 Section {
-                    Picker("Combine taskbar buttons", selection: $settings.combineButtons) {
-                        Text("Always").tag(true)
-                        Text("Never").tag(false)
+                    Picker(selection: $settings.useDock) {
+                        Text("macOS Dock").tag(true)
+                        Text("Plinth taskbar").tag(false)
+                    } label: {
+                        Text("Taskbar")
+                        Text("Changing this restarts Plinth.")
                     }
-                    Toggle("Show taskbar on all displays", isOn: $settings.taskbarOnAllDisplays)
+                    if !settings.useDock {
+                        Picker("Combine taskbar buttons", selection: $settings.combineButtons) {
+                            Text("Always").tag(true)
+                            Text("Never").tag(false)
+                        }
+                        Toggle("Show taskbar on all displays", isOn: $settings.taskbarOnAllDisplays)
+                    }
                     Toggle(isOn: $settings.shortcutsEnabled) {
                         Text("Keyboard shortcuts")
                         Text("⌘Tab and the ⌃⌥ snapping shortcuts")

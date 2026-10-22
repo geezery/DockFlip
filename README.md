@@ -3,12 +3,22 @@
 The Windows 11 taskbar, Alt-Tab and window snapping for macOS — in one small,
 free, open-source app that works with default settings.
 
-> **Status:** v0.2 preview — all v1 features in, now being tested.
+> **Status:** v0.3 preview — all v1 features in, now being tested.
 > See [SCOPE.md](SCOPE.md) and [ROADMAP.md](ROADMAP.md).
 
 ## Features
 
-**Taskbar** — one per display, on the space the Dock reserves.
+**Dock mode** (default) — your Dock stays exactly as it is and behaves like the
+Windows 11 taskbar:
+- Rest the mouse on an app's icon: its windows open as a list (title + mini-map
+  of where each window is), or as thumbnails if you turned previews on. Click
+  to switch, × to close.
+- Click the icon of the app in front to minimize its window, click again to
+  restore it; clicking another app brings its most recent window forward.
+- Folders, the Trash, badges, drag and drop and Dock settings are untouched.
+
+**Plinth taskbar** (Settings → Taskbar) — Plinth's own taskbar instead, one per
+display, on the space the Dock reserves.
 - Buttons combined per app (Windows 11 default) or one per window.
 - Click to focus, click the active button to minimize, middle-click to close.
 - Hover a button: the app's windows open as a list (title + mini-map of where
@@ -21,9 +31,15 @@ free, open-source app that works with default settings.
   open, drop files on the Trash to delete them.
 - Clock with a calendar, and a "show desktop" strip at the far right.
 
-**⌘Tab** — every window on the current Space in most-recently-used order,
-including minimized ones. Hold ⌘ and press Tab, ⇧ to go back, Esc to cancel,
-release ⌘ to switch. ← → and Return work too; you can also click.
+**⌘Tab** — Windows 7 style Flip 3D: every window on the current Space stands in a
+slanted 3D stack, most recently used in front, minimized ones included. Hold ⌘
+and press Tab to flip the front window to the back, ⇧ to go back, Esc to
+cancel, release ⌘ to switch. ← → and Return work too; you can also click a
+window. While the stack is open, Plinth holds the keyboard, so the app you came
+from (Terminal, say) receives nothing. Without thumbnails, each window is a card
+with the title in a bar tinted in the app's colour, the app icon, the open
+document's file name, the display it is on, its size and a mini-map of its
+position.
 
 **Snapping** — ⌃⌥ is the Win key.
 
@@ -33,7 +49,7 @@ release ⌘ to switch. ← → and Return work too; you can also click.
 | ⌃⌥ ↑ | Maximize; from a half, the top quarter |
 | ⌃⌥ ↓ | Restore, then minimize; from a half, the bottom quarter |
 | ⌃⌥⇧ ← / → | Move the window to the next display |
-| ⌃⌥ 1…9 | Activate the n-th taskbar button |
+| ⌃⌥ 1…9 | Activate the n-th app in the Dock (or taskbar button) |
 | ⌃⌥ D | Show desktop |
 | ⌃⌥ E | New Finder window |
 
@@ -121,7 +137,8 @@ an older signature. Press **Reset Permission** in Plinth's setup, or run
 Sources/Plinth/          executable entry point
 Sources/PlinthKit/App/       app delegate, onboarding, permissions
 Sources/PlinthKit/Core/      window registry (Accessibility + window server), geometry
-Sources/PlinthKit/Switcher/  ⌘Tab: event tap, selection, panel and view
+Sources/PlinthKit/Dock/      Dock mode: hover window lists, click to minimize
+Sources/PlinthKit/Switcher/  ⌘Tab: Carbon hot keys, modifier tap, Flip 3D panel
 Sources/PlinthKit/Taskbar/   taskbar panels, hover popup, calendar, badges
 Sources/PlinthKit/Snap/      snapping state machine, keyboard and drag snapping
 Sources/PlinthKit/Previews/  opt-in thumbnails and their safety rules

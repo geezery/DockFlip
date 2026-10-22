@@ -48,9 +48,17 @@ single and dual displays.
 - "Not responding" indicator.
 - Debug logging, timing statistics and debug log export.
 
+## M3.6 — Dock mode and Flip 3D (v0.3)
+- Dock mode as the default: hover window lists and click-to-minimize on the real Dock.
+- Plinth's own taskbar becomes the alternative in Settings.
+- ⌘Tab as Windows 7 Flip 3D; Plinth holds the keyboard while it is open.
+- Carbon hot keys for all shortcuts (work under secure keyboard input).
+- Window cards that tell windows apart without thumbnails.
+- English-only UI.
+
 ## M4 — Previews and polish
 - Opt-in previews with ScreenCaptureKit; capture on demand, memory only.
-- Finnish localization.
+- English UI; translations welcome later (strings use English keys).
 - Performance budgets verified.
 
 ## M5 — Release (v1.0) — no Apple account, no fees

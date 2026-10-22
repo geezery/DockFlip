@@ -2,7 +2,7 @@ import AppKit
 import Combine
 import ServiceManagement
 
-/// The five user settings (see SCOPE.md), plus internal state such as pinned apps.
+/// The user settings (see SCOPE.md), plus internal state such as pinned apps.
 /// Everything is stored in UserDefaults; nothing leaves the Mac.
 @MainActor
 final class Settings: ObservableObject {
@@ -18,6 +18,7 @@ final class Settings: ObservableObject {
         static let onboarded = "onboardingCompleted"
         static let schema = "settingsSchema"
         static let debug = "debugLogging"
+        static let useDock = "useDock"
     }
 
     private let defaults = UserDefaults.standard
@@ -48,6 +49,11 @@ final class Settings: ObservableObject {
     @Published var debugLogging: Bool {
         didSet { defaults.set(debugLogging, forKey: Key.debug) }
     }
+    /// Dock mode (default): Plinth adds window lists and minimize-on-click to the
+    /// macOS Dock. Off: Plinth's own Windows-style taskbar. Takes effect on relaunch.
+    @Published var useDock: Bool {
+        didSet { defaults.set(useDock, forKey: Key.useDock) }
+    }
 
     private init() {
         // A local copy: `self.defaults` cannot be used before every property is set.
@@ -59,6 +65,7 @@ final class Settings: ObservableObject {
             Key.shortcuts: true,
             Key.onboarded: false,
             Key.debug: false,
+            Key.useDock: true,
             Key.schema: 1
         ])
         previewsEnabled = defaults.bool(forKey: Key.previews)
@@ -67,6 +74,7 @@ final class Settings: ObservableObject {
         shortcutsEnabled = defaults.bool(forKey: Key.shortcuts)
         onboardingCompleted = defaults.bool(forKey: Key.onboarded)
         debugLogging = defaults.bool(forKey: Key.debug)
+        useDock = defaults.bool(forKey: Key.useDock)
         // First launch: start from what the user already has in the Dock.
         // (Locals: properties cannot be read before every one of them is set.)
         let folders = defaults.stringArray(forKey: Key.folders) ?? SystemTweaks.dockFolderPaths()

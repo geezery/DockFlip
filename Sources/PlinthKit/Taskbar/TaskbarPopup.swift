@@ -49,11 +49,19 @@ enum PopupLayout {
     }
 }
 
+/// What the hover popup shows windows for: Plinth's own taskbar, or the real Dock.
+@MainActor
+protocol PopupSource: AnyObject {
+    func item(_ itemID: String, on displayID: CGDirectDisplayID) -> TaskbarItem?
+    /// The button (or Dock icon) in screen coordinates.
+    func anchorRect(for itemID: String, on displayID: CGDirectDisplayID) -> NSRect?
+}
+
 /// The window list (or thumbnails) that opens when the mouse rests on a taskbar button.
 @MainActor
 final class TaskbarPopup {
     private let registry: WindowRegistry
-    weak var controller: TaskbarController?
+    weak var source: PopupSource?
 
     private let model = PopupModel()
     private var panel: NSPanel?
@@ -108,7 +116,7 @@ final class TaskbarPopup {
 
     func refreshIfVisible() {
         guard isVisible, let current else { return }
-        if controller?.item(current.itemID, on: current.displayID) == nil {
+        if source?.item(current.itemID, on: current.displayID) == nil {
             hideNow()
         } else {
             present(current.itemID, on: current.displayID)
@@ -131,8 +139,8 @@ final class TaskbarPopup {
     }
 
     private func presentUnmeasured(_ itemID: String, on displayID: CGDirectDisplayID) {
-        guard let controller, let item = controller.item(itemID, on: displayID),
-              let anchor = controller.anchorRect(for: itemID, on: displayID) else { return }
+        guard let source, let item = source.item(itemID, on: displayID),
+              let anchor = source.anchorRect(for: itemID, on: displayID) else { return }
         let changedItem = current?.itemID != itemID
         current = (itemID, displayID)
 

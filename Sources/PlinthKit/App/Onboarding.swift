@@ -426,20 +426,25 @@ private struct FinishStep: View {
             StepHeader(
                 symbol: "checkmark.seal",
                 title: "Almost done",
-                subtitle: "Two quick adjustments make Plinth work like Windows. Each one is a single click."
+                subtitle: LocalizedStringKey(Settings.shared.useDock
+                    ? "One quick adjustment makes Plinth work like Windows. It is a single click."
+                    : "Two quick adjustments make Plinth work like Windows. Each one is a single click.")
             )
 
             VStack(spacing: 0) {
-                SetupRow(
-                    done: model.dockFitted,
-                    title: "Fit the Dock under the taskbar",
-                    text: "Keeps the Dock at the bottom, always visible and small, so maximized windows stop at the taskbar.",
-                    actionTitle: "Fit"
-                ) {
-                    SystemTweaks.fitDock()
-                    withAnimation(.snappy) { model.dockFitted = true }
+                // Only the Plinth taskbar sits on top of the Dock; Dock mode leaves the Dock alone.
+                if !Settings.shared.useDock {
+                    SetupRow(
+                        done: model.dockFitted,
+                        title: "Fit the Dock under the taskbar",
+                        text: "Keeps the Dock at the bottom, always visible and small, so maximized windows stop at the taskbar.",
+                        actionTitle: "Fit"
+                    ) {
+                        SystemTweaks.fitDock()
+                        withAnimation(.snappy) { model.dockFitted = true }
+                    }
+                    Divider().padding(.leading, 52)
                 }
-                Divider().padding(.leading, 52)
                 SetupRow(
                     done: !model.nativeTilingOn,
                     title: "Turn off macOS edge tiling",

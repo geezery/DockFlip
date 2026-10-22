@@ -12,6 +12,8 @@ public struct WindowSnapshot: Identifiable {
     public var frame: CGRect
     public var isMinimized: Bool
     public var isAppHidden: Bool
+    /// File name of the document shown in the window, when the app reports one.
+    public var document: String?
 }
 
 /// Per-application Accessibility state.
@@ -354,7 +356,8 @@ public final class WindowRegistry {
             title: element.string(kAXTitleAttribute) ?? existing?.title ?? "",
             frame: element.frame ?? existing?.frame ?? .zero,
             isMinimized: element.bool(kAXMinimizedAttribute) ?? existing?.isMinimized ?? false,
-            isAppHidden: tracked.app.isHidden
+            isAppHidden: tracked.app.isHidden,
+            document: element.string(kAXDocumentAttribute).flatMap { Self.documentName($0) } ?? existing?.document
         )
     }
 
@@ -465,6 +468,13 @@ public final class WindowRegistry {
                 self?.refreshAll()
             }
         })
+    }
+
+    /// "file:///Users/x/Budget%202026.xlsx" → "Budget 2026.xlsx"
+    private nonisolated static func documentName(_ value: String) -> String? {
+        let url = URL(string: value) ?? URL(fileURLWithPath: value)
+        let name = url.lastPathComponent
+        return name.isEmpty || name == "/" ? nil : name
     }
 
     private nonisolated static func runningApp(from note: Notification) -> NSRunningApplication? {

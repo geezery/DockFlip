@@ -39,7 +39,16 @@ settings.
 
 ## In scope (v1)
 
-### Taskbar
+### Dock mode (default)
+- The macOS Dock stays as it is: folders, Trash, badges, drag and drop, settings.
+- Hover an app icon: list of the app's windows (titles), or previews if enabled.
+- Click the front app's icon: minimize its window; click again: restore.
+  Click another app's icon: its most recent window comes forward.
+- Apps without windows on the current Space: the Dock's own behaviour (launch, reopen).
+- How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
+  takes over clicks only on icons of apps that have windows (DockDoor's approach).
+
+### Plinth taskbar (alternative, Settings → Taskbar)
 - One taskbar per display, showing the windows on that display.
 - Default: buttons combined per app, icons only (Windows 11 default).
   Single alternative: never combine, titles shown.
@@ -56,8 +65,15 @@ settings.
 
 ### Window switcher (⌘Tab)
 - All windows on the current Space, most-recently-used order.
-- Hold ⌥, press Tab to advance; ⇧ reverses; Esc cancels; release ⌥ to switch.
-- Shows icon and title; previews if enabled.
+- Hold ⌘, press Tab to advance; ⇧ reverses; Esc cancels; release ⌘ to switch.
+- Windows 7 Flip 3D look: windows in a slanted, receding 3D stack; the selected
+  window in front.
+- Previews if enabled; otherwise a card per window: title bar tinted with the
+  app's colour, app icon, document file name, display name, size, mini-map.
+- While open, Plinth is the active app and holds the keyboard; the previous app
+  gets no key presses. Esc returns to it.
+- Triggered by Carbon `RegisterEventHotKey` (works while another app holds secure
+  keyboard input); ⌘ release is seen by a listen-only modifier tap (AltTab's approach).
 - Replaces the native ⌘Tab app switcher while Plinth runs (⌘` stays native). ⌘Tab sits where Alt+Tab sits on a PC keyboard, and apps never receive ⌘Tab, so nothing conflicts. Quitting Plinth restores the native switcher.
 
 ### Window management (Windows parity only)
@@ -78,7 +94,7 @@ settings.
   reminders in the taskbar.
 
 ### Localization
-- English and Finnish in v1.
+- English only in v1 (strings are ready for translation).
 
 ## Keyboard map
 

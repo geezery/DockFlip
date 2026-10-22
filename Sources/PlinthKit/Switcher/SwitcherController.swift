@@ -1,8 +1,10 @@
 import AppKit
 import SwiftUI
 
-/// Drives the ⌘Tab switcher: takes a snapshot of windows when ⌘Tab is first
-/// pressed, moves the selection, and focuses the chosen window on release.
+/// Drives the ⌘Tab switcher. While it is open, Plinth is the active app and its
+/// full-screen panel has the keyboard: the app you came from (say, Terminal) gets
+/// no key presses, and its secure keyboard input is released. Releasing ⌘ opens
+/// the window in front; Esc or a click outside goes back to where you were.
 @MainActor
 final class SwitcherController {
     private let registry: WindowRegistry
@@ -11,17 +13,22 @@ final class SwitcherController {
     private var selection: SwitcherSelection?
     private var windowIDs: [CGWindowID] = []
     private var previewTask: Task<Void, Never>?
+    private var previousApp: NSRunningApplication?
+    private var localMonitor: Any?
+
+    /// Called with true when the switcher opens and false when it closes.
+    var onActiveChanged: ((Bool) -> Void)?
 
     var isActive: Bool { selection != nil }
 
     init(registry: WindowRegistry) {
         self.registry = registry
-        model.onPick = { [weak self] index in
-            self?.commit(at: index)
-        }
+        model.onPick = { [weak self] index in self?.commit(at: index) }
+        model.onCancel = { [weak self] in self?.cancel() }
     }
 
     /// Returns true when the input was consumed.
+    @discardableResult
     func handle(_ input: SwitcherInput) -> Bool {
         switch input {
         case .commandTab(let shift):
@@ -44,7 +51,7 @@ final class SwitcherController {
             return true
         case .escape:
             guard isActive else { return false }
-            hide()
+            cancel()
             return true
         case .commandReleased:
             if let selection { commit(at: selection.index) }
@@ -67,6 +74,7 @@ final class SwitcherController {
         let axScreens = screens.map { Geometry.axRect(fromCocoa: $0.frame, primaryHeight: primaryHeight) }
 
         windowIDs = windows.map(\.id)
+        model.thumbnails = [:]
         model.items = windows.map { window in
             let screenIndex = Geometry.bestScreenIndex(for: window.frame, screens: axScreens)
             return SwitcherItem(
@@ -75,15 +83,23 @@ final class SwitcherController {
                 appName: window.appName,
                 icon: window.icon,
                 minimap: screenIndex.map { Geometry.normalized(window.frame, in: axScreens[$0]) },
-                isMinimized: window.isMinimized
+                isMinimized: window.isMinimized,
+                document: window.document,
+                screenName: screenIndex.map { screens[$0].localizedName },
+                sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
+                tint: IconTint.color(for: window.icon, key: window.bundleID ?? window.appName)
             )
         }
 
         let selection = SwitcherSelection(count: windows.count, reverse: reverse)
+        // Open without animating from the previous session's state.
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { model.selection = selection.index }
         self.selection = selection
-        model.selection = selection.index
-        model.thumbnails = [:]
+
         show()
+        onActiveChanged?(true)
         loadPreviews(for: windows)
         return true
     }
@@ -102,11 +118,31 @@ final class SwitcherController {
         registry.focus(id)
     }
 
+    private func cancel() {
+        guard isActive else { return }
+        let previous = previousApp
+        hide()
+        _ = previous?.activate(from: NSRunningApplication.current, options: [])
+    }
+
+    private func hide() {
+        previewTask?.cancel()
+        previewTask = nil
+        if let localMonitor { NSEvent.removeMonitor(localMonitor) }
+        localMonitor = nil
+        panel?.orderOut(nil)
+        selection = nil
+        windowIDs = []
+        model.thumbnails = [:]
+        previousApp = nil
+        onActiveChanged?(false)
+    }
+
     private func loadPreviews(for windows: [WindowSnapshot]) {
         previewTask?.cancel()
         guard PreviewProvider.shared.isAvailable else { return }
         previewTask = Task { @MainActor [weak self] in
-            for window in windows.prefix(21) {
+            for window in windows.prefix(12) {
                 guard !Task.isCancelled else { return }
                 let image = await PreviewProvider.shared.thumbnail(for: window)
                 // The switcher may have closed while capturing: drop the image then.
@@ -116,36 +152,53 @@ final class SwitcherController {
         }
     }
 
-    private func hide() {
-        previewTask?.cancel()
-        previewTask = nil
-        model.thumbnails = [:]
-        panel?.orderOut(nil)
-        selection = nil
-        windowIDs = []
-    }
-
     // MARK: - Panel
 
     private func show() {
         let panel = self.panel ?? makePanel()
         self.panel = panel
+        guard let screen = DisplayLayout.screen(containingMouse: NSEvent.mouseLocation) else { return }
+        panel.setFrame(screen.frame, display: true)
 
-        let size = SwitcherLayout.panelSize(itemCount: model.items.count)
-        let mouse = NSEvent.mouseLocation
-        let screen = NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) } ?? NSScreen.main
-        guard let visible = screen?.visibleFrame else { return }
-
-        let origin = NSPoint(
-            x: (visible.midX - size.width / 2).rounded(),
-            y: (visible.midY - size.height / 2 + visible.height * 0.08).rounded()
-        )
-        panel.setFrame(NSRect(origin: origin, size: size), display: true)
+        // Take the keyboard while switching (see the type comment).
+        let own = ProcessInfo.processInfo.processIdentifier
+        if let front = NSWorkspace.shared.frontmostApplication, front.processIdentifier != own {
+            previousApp = front
+        }
+        NSApp.activate()
+        panel.makeKeyAndOrderFront(nil)
         panel.orderFrontRegardless()
+        installLocalMonitor()
+    }
+
+    /// While Plinth is active, keys arrive as ordinary app events.
+    private func installLocalMonitor() {
+        guard localMonitor == nil else { return }
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
+            let swallow: Bool = MainActor.assumeIsolated { self?.handleLocal(event) ?? false }
+            return swallow ? nil : event
+        }
+    }
+
+    /// Returns true when the event must not reach anything else.
+    private func handleLocal(_ event: NSEvent) -> Bool {
+        guard isActive else { return false }
+        if event.type == .flagsChanged {
+            if !event.modifierFlags.contains(.command) { handle(.commandReleased) }
+            return false
+        }
+        switch event.keyCode {
+        case 53: handle(.escape)
+        case 123: handle(.left)
+        case 124: handle(.right)
+        case 36, 76: handle(.enter)
+        default: break
+        }
+        return true // nothing else reaches any app while switching
     }
 
     private func makePanel() -> NSPanel {
-        let panel = NSPanel(
+        let panel = KeyablePanel(
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
@@ -155,41 +208,13 @@ final class SwitcherController {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle]
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.hasShadow = true
+        panel.hasShadow = false
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
-        panel.becomesKeyOnlyIfNeeded = true
 
-        let effect = NSVisualEffectView()
-        effect.material = .popover
-        effect.blendingMode = .behindWindow
-        effect.state = .active
-        effect.maskImage = Self.roundedMask(radius: SwitcherLayout.cornerRadius)
-
-        let hosting = NSHostingView(rootView: SwitcherView(model: model))
+        let hosting = FirstMouseHostingView(rootView: SwitcherView(model: model))
         hosting.sizingOptions = []
-        hosting.translatesAutoresizingMaskIntoConstraints = false
-        effect.addSubview(hosting)
-        NSLayoutConstraint.activate([
-            hosting.leadingAnchor.constraint(equalTo: effect.leadingAnchor),
-            hosting.trailingAnchor.constraint(equalTo: effect.trailingAnchor),
-            hosting.topAnchor.constraint(equalTo: effect.topAnchor),
-            hosting.bottomAnchor.constraint(equalTo: effect.bottomAnchor)
-        ])
-
-        panel.contentView = effect
+        panel.contentView = hosting
         return panel
-    }
-
-    private static func roundedMask(radius: CGFloat) -> NSImage {
-        let edge = radius * 2 + 1
-        let image = NSImage(size: NSSize(width: edge, height: edge), flipped: false) { rect in
-            NSColor.black.setFill()
-            NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius).fill()
-            return true
-        }
-        image.capInsets = NSEdgeInsets(top: radius, left: radius, bottom: radius, right: radius)
-        image.resizingMode = .stretch
-        return image
     }
 }

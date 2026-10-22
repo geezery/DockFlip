@@ -4,7 +4,7 @@ import SwiftUI
 
 /// One taskbar per display, drawn over the space the Dock reserves.
 @MainActor
-final class TaskbarController {
+final class TaskbarController: PopupSource {
     private struct Bar {
         let panel: NSPanel
         let model: TaskbarModel
@@ -27,7 +27,7 @@ final class TaskbarController {
     init(registry: WindowRegistry) {
         self.registry = registry
         self.popup = TaskbarPopup(registry: registry)
-        popup.controller = self
+        popup.source = self
     }
 
     func start() {
