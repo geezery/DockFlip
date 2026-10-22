@@ -59,6 +59,10 @@ make run
 - [ARCHITECTURE.md](ARCHITECTURE.md) shows where things live. New code goes into
   the folder of the feature it belongs to; shared views go to `UI/`.
 
+## Releases
+
+Maintainers: see [RELEASING.md](RELEASING.md). In short, push a `v*` tag.
+
 ## Translations
 
 Native speakers are very welcome to improve any of the 15 languages. Edit
