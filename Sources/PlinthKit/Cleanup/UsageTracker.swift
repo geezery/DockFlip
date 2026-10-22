@@ -105,7 +105,7 @@ final class UsageTracker {
             appLastUsed = apps.mapValues { Date(timeIntervalSince1970: $0) }
         }
         // Window ids are reused after a restart; only trust them from this boot.
-        guard abs(defaults.double(forKey: Key.boot) - Self.bootTime()) < 2,
+        guard abs(defaults.double(forKey: Key.boot) - Self.bootTime()) < 60,
               let stored = defaults.dictionary(forKey: Key.windows) as? [String: Double] else { return }
         for (key, value) in stored {
             if let id = UInt32(key) { windowLastUsed[CGWindowID(id)] = Date(timeIntervalSince1970: value) }

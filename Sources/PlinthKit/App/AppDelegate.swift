@@ -20,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var settingsSubscription: AnyCancellable?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        _ = Perf.shared // starts the clock: the debug log covers everything from launch
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
         Log.app.notice("Plinth \(version, privacy: .public) starting, macOS \(ProcessInfo.processInfo.operatingSystemVersionString, privacy: .public)")
         setUpStatusItem()
