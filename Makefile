@@ -12,7 +12,9 @@ BUNDLE_ID ?= io.github.plinth.Plinth
 VERSION   ?= 0.2.0
 BUILD_NUM ?= 1
 CONFIG    ?= release
-SIGN_ID   ?= Plinth Local Signing
+SIGN_ID   ?= Plinth Signing
+SIGN_KEYCHAIN := $(HOME)/Library/Keychains/plinth-signing.keychain-db
+SIGN_PASSFILE := $(HOME)/Library/Application Support/Plinth/signing-keychain-password
 
 BUILD_DIR := build
 APP       := $(BUILD_DIR)/$(APP_NAME).app
@@ -38,11 +40,14 @@ app: build
 	@$(MAKE) --no-print-directory sign
 	@echo "Built $(APP)"
 
-# Signs with the local self-signed certificate when it exists, so macOS keeps
-# the Accessibility permission across rebuilds. Falls back to ad-hoc signing.
+# Signs with the local self-signed identity when it exists, so macOS keeps the
+# Accessibility permission across rebuilds. Falls back to ad-hoc signing.
+# The identity lives in its own keychain (see scripts/create-signing-cert.sh).
 sign:
-	@if security find-identity -v -p codesigning | grep -q "\"$(SIGN_ID)\""; then \
-		codesign --force --timestamp=none --sign "$(SIGN_ID)" "$(APP)"; \
+	@if [ -f "$(SIGN_KEYCHAIN)" ] && [ -f "$(SIGN_PASSFILE)" ] \
+	   && security unlock-keychain -p "$$(cat "$(SIGN_PASSFILE)")" "$(SIGN_KEYCHAIN)" 2>/dev/null \
+	   && security find-identity -v -p codesigning "$(SIGN_KEYCHAIN)" | grep -q "\"$(SIGN_ID)\""; then \
+		codesign --force --timestamp=none --keychain "$(SIGN_KEYCHAIN)" --sign "$(SIGN_ID)" "$(APP)"; \
 		echo "Signed with \"$(SIGN_ID)\""; \
 	else \
 		codesign --force --sign - "$(APP)"; \

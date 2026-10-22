@@ -71,10 +71,12 @@ make install
 
 `make install` does three things:
 
-1. **Creates a local code-signing certificate** ("Plinth Local Signing") in your
-   login keychain — first time only. macOS asks for your login password once.
-   This keeps the Accessibility permission valid across rebuilds; without it,
-   macOS would forget the permission every time the app changes.
+1. **Creates a local code-signing identity** ("Plinth Signing") — first time only —
+   in its own keychain (`~/Library/Keychains/plinth-signing.keychain-db`) with a
+   random password kept in `~/Library/Application Support/Plinth/`. macOS asks for
+   your login password once, to trust the certificate. A stable signature keeps the
+   Accessibility permission valid across rebuilds. The login keychain is not used,
+   so codesign never asks for a keychain password.
 2. Builds `build/Plinth.app` and signs it with that certificate.
 3. Copies it to `/Applications` and starts it.
 
@@ -92,8 +94,9 @@ back, start and quit Plinth once, or log out and in.
 
 ### If ⌘Tab does nothing after a rebuild
 
-macOS can keep a stale Accessibility entry. Remove Plinth from the Accessibility
-list with the – button, start Plinth again and allow it once more.
+macOS can keep a stale Accessibility entry: the switch shows "on" but belongs to
+an older signature. Press **Reset Permission** in Plinth's setup, or run
+`tccutil reset Accessibility io.github.plinth.Plinth`, then allow Plinth again.
 
 ## Privacy
 
