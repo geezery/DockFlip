@@ -74,6 +74,8 @@ final class TaskbarController {
             bar.panel.orderFrontRegardless()
         }
         DisplayLayout.taskbarDisplays = wanted
+        let places = buildPlaces()
+        for bar in bars.values { bar.model.places = places }
         refresh()
     }
 
@@ -260,6 +262,11 @@ final class TaskbarController {
                 model.hoveredID = nil
             }
         }
+        // Folders and the Trash have no window list.
+        if itemID.hasPrefix("place:") {
+            popup.itemExited()
+            return
+        }
         if inside {
             // Pointing at an app is when it matters whether it still responds.
             if let pid = item(itemID, on: displayID)?.pid { registry.probe(pid: pid) }
@@ -290,6 +297,46 @@ final class TaskbarController {
         guard let bar = bars[displayID] else { return }
         let frame = bar.panel.frame
         calendar.toggle(anchor: NSRect(x: frame.maxX - 12, y: frame.minY, width: 1, height: frame.height))
+    }
+
+    // MARK: - Folders and Trash
+
+    private func buildPlaces() -> [PlaceItem] {
+        var places: [PlaceItem] = Settings.shared.pinnedFolderPaths.compactMap { path in
+            guard FileManager.default.fileExists(atPath: path) else { return nil }
+            return PlaceItem(
+                id: "place:\(path)",
+                name: FileManager.default.displayName(atPath: path),
+                icon: NSWorkspace.shared.icon(forFile: path),
+                url: URL(fileURLWithPath: path, isDirectory: true),
+                isTrash: false
+            )
+        }
+        let trash = FileManager.default.urls(for: .trashDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".Trash")
+        let trashIcon = NSImage(named: NSImage.trashEmptyName) ?? NSWorkspace.shared.icon(forFile: trash.path)
+        places.append(PlaceItem(id: "place:trash", name: L("Trash"), icon: trashIcon, url: trash, isTrash: true))
+        return places
+    }
+
+    func openPlace(_ place: PlaceItem) {
+        calendar.close()
+        popup.hideNow()
+        NSWorkspace.shared.open(place.url)
+    }
+
+    /// Dropping files on the Trash button moves them to the Trash, as on Windows.
+    func moveToTrash(_ providers: [NSItemProvider]) {
+        for provider in providers {
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                guard let url else { return }
+                do {
+                    try FileManager.default.trashItem(at: url, resultingItemURL: nil)
+                } catch {
+                    Log.taskbar.error("Moving to Trash failed: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        }
     }
 
     func showDesktop() {

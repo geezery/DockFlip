@@ -21,10 +21,20 @@ struct TaskbarItem: Identifiable {
     let isNotResponding: Bool
 }
 
+/// A folder or the Trash at the right end of the taskbar.
+struct PlaceItem: Identifiable {
+    let id: String
+    let name: String
+    let icon: NSImage
+    let url: URL
+    let isTrash: Bool
+}
+
 @MainActor
 final class TaskbarModel: ObservableObject {
     let displayID: CGDirectDisplayID
     @Published var items: [TaskbarItem] = []
+    @Published var places: [PlaceItem] = []
     @Published var hoveredID: String?
     @Published var barHeight: CGFloat = 48
     /// Hover state of the clock and the show-desktop strip (no @State: it is a
@@ -82,6 +92,27 @@ struct TaskbarView: View {
 
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
+                ForEach(model.places) { place in
+                    PlaceButton(place: place, isHovered: model.hoveredID == place.id, barHeight: model.barHeight)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear.preference(
+                                    key: ItemFramesKey.self,
+                                    value: [place.id: geo.frame(in: .named("taskbar"))]
+                                )
+                            }
+                        )
+                        .onTapGesture { controller.openPlace(place) }
+                        .onDrop(of: [UTType.fileURL], isTargeted: nil) { providers in
+                            guard place.isTrash else { return false }
+                            controller.moveToTrash(providers)
+                            return true
+                        }
+                }
+                if !model.places.isEmpty {
+                    Rectangle().fill(Color.primary.opacity(0.12)).frame(width: 1, height: model.barHeight * 0.45)
+                        .padding(.horizontal, 6)
+                }
                 ClockButton(isHovered: model.clockHovered, onHover: { model.clockHovered = $0 }) {
                     controller.toggleCalendar(on: model.displayID)
                 }
@@ -156,6 +187,30 @@ struct TaskbarButton: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: (item.label ?? item.name) + (item.isNotResponding ? ", " + L("Not responding") : "")))
         .accessibilityAddTraits(.isButton)
+    }
+}
+
+struct PlaceButton: View {
+    let place: PlaceItem
+    let isHovered: Bool
+    let barHeight: CGFloat
+
+    var body: some View {
+        Image(nsImage: place.icon)
+            .resizable()
+            .interpolation(.high)
+            .frame(width: TaskbarStyle.iconSize(forBarHeight: barHeight) * 0.9,
+                   height: TaskbarStyle.iconSize(forBarHeight: barHeight) * 0.9)
+            .padding(.horizontal, 6)
+            .frame(maxHeight: max(36, barHeight - 6))
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color.primary.opacity(isHovered ? 0.06 : 0))
+            )
+            .contentShape(Rectangle())
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: place.name))
+            .accessibilityAddTraits(.isButton)
     }
 }
 

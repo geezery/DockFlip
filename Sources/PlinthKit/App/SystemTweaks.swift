@@ -24,6 +24,24 @@ enum SystemTweaks {
         return ids
     }
 
+    /// Folders kept on the right side of the Dock (Downloads, Documents …), as paths.
+    static func dockFolderPaths() -> [String] {
+        let tiles = CFPreferencesCopyAppValue("persistent-others" as CFString, dock) as? [[String: Any]] ?? []
+        var paths: [String] = []
+        for tile in tiles {
+            guard let data = tile["tile-data"] as? [String: Any],
+                  let file = data["file-data"] as? [String: Any],
+                  let urlString = file["_CFURLString"] as? String else { continue }
+            let url = URL(string: urlString) ?? URL(fileURLWithPath: urlString)
+            var isDirectory: ObjCBool = false
+            if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue,
+               !paths.contains(url.path) {
+                paths.append(url.path)
+            }
+        }
+        return paths
+    }
+
     /// True when the Dock is at the bottom, always visible and not magnifying,
     /// so the taskbar can cover exactly the space the Dock reserves.
     static var isDockFitted: Bool {

@@ -17,6 +17,8 @@ free, open-source app that works with default settings.
 - Right-click: the app's windows, New Window, Pin/Unpin, Close, Quit.
 - Pinned apps (imported from your Dock on first launch), unread badges,
   drag a file over a button to bring that window forward.
+- Your Dock's folders (Downloads …) and the Trash next to the clock: click to
+  open, drop files on the Trash to delete them.
 - Clock with a calendar, and a "show desktop" strip at the far right.
 
 **⌘Tab** — every window on the current Space in most-recently-used order,

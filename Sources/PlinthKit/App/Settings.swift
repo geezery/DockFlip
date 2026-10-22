@@ -14,6 +14,7 @@ final class Settings: ObservableObject {
         static let allDisplays = "taskbarOnAllDisplays"
         static let shortcuts = "shortcutsEnabled"
         static let pinned = "pinnedBundleIDs"
+        static let folders = "pinnedFolderPaths"
         static let onboarded = "onboardingCompleted"
         static let schema = "settingsSchema"
         static let debug = "debugLogging"
@@ -35,6 +36,10 @@ final class Settings: ObservableObject {
     }
     @Published var pinnedBundleIDs: [String] {
         didSet { defaults.set(pinnedBundleIDs, forKey: Key.pinned) }
+    }
+    /// Folders shown next to the clock, like the right side of the Dock.
+    @Published var pinnedFolderPaths: [String] {
+        didSet { defaults.set(pinnedFolderPaths, forKey: Key.folders) }
     }
     @Published var onboardingCompleted: Bool {
         didSet { defaults.set(onboardingCompleted, forKey: Key.onboarded) }
@@ -62,6 +67,12 @@ final class Settings: ObservableObject {
         shortcutsEnabled = defaults.bool(forKey: Key.shortcuts)
         onboardingCompleted = defaults.bool(forKey: Key.onboarded)
         debugLogging = defaults.bool(forKey: Key.debug)
+        if let folders = defaults.stringArray(forKey: Key.folders) {
+            pinnedFolderPaths = folders
+        } else {
+            pinnedFolderPaths = SystemTweaks.dockFolderPaths()
+            defaults.set(pinnedFolderPaths, forKey: Key.folders)
+        }
         if let stored = defaults.stringArray(forKey: Key.pinned) {
             pinnedBundleIDs = stored
         } else {
