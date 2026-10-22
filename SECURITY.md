@@ -83,7 +83,7 @@ macOS shows a warning the first time you open DockFlip: "Apple could not verify
 skips the warning for apps from developers who pay 99 € a year for
 notarization, and DockFlip is free.
 
-☕ **That's what the coffee is for.** Once a handful of 2 € coffees cover the
+☕ **That's what the coffee is for.** Once a handful of $2 coffees (or a few bigger cups) cover the
 fee, DockFlip gets notarized: download, drag to Applications, open, done. No
 warning, no trip to System Settings, and updates that simply open.
 [Buy DockFlip a coffee](https://github.com/sponsors/geezery?frequency=one-time).
