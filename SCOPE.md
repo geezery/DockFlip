@@ -74,7 +74,8 @@ settings.
 - When on: captured only on hover and while ⌘Tab is visible, at thumbnail size,
   kept in memory, never written to disk.
 - When off: large app icon, window title, and a mini-map of the window's outline
-  on its display. A small "Enable previews" link appears in the hover panel.
+  on its display. Previews are switched on in onboarding or Settings only — no
+  reminders in the taskbar.
 
 ### Localization
 - English and Finnish in v1.

@@ -16,7 +16,6 @@ final class PopupModel: ObservableObject {
     @Published var rows: [PopupRow] = []
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
     @Published var showsPreviews = false
-    @Published var offersPreviews = false
     /// Row under the mouse. Kept here, not in @State: @State is a macro that the
     /// Command Line Tools cannot expand.
     @Published var hoveredRow: CGWindowID?
@@ -37,7 +36,7 @@ enum PopupLayout {
     static let cardWidth: CGFloat = 212
     static let cardHeight: CGFloat = 156
 
-    static func size(rows: Int, previews: Bool, offersPreviews: Bool) -> NSSize {
+    static func size(rows: Int, previews: Bool) -> NSSize {
         if rows == 0 {
             return NSSize(width: 220, height: 44)
         }
@@ -46,7 +45,7 @@ enum PopupLayout {
             return NSSize(width: CGFloat(columns) * cardWidth + 16, height: 36 + cardHeight + 12)
         }
         let visible = CGFloat(min(rows, maxVisibleRows))
-        return NSSize(width: listWidth, height: 36 + visible * rowHeight + (offersPreviews ? 32 : 0) + 10)
+        return NSSize(width: listWidth, height: 36 + visible * rowHeight + 10)
     }
 }
 
@@ -155,10 +154,9 @@ final class TaskbarPopup {
         }
         let previews = PreviewProvider.shared.isAvailable && !model.rows.isEmpty
         model.showsPreviews = previews
-        model.offersPreviews = !Settings.shared.previewsEnabled
         if changedItem { model.thumbnails = [:] }
 
-        let size = PopupLayout.size(rows: model.rows.count, previews: previews, offersPreviews: model.offersPreviews)
+        let size = PopupLayout.size(rows: model.rows.count, previews: previews)
         let screenFrame = screens.first { NSMouseInRect(NSPoint(x: anchor.midX, y: anchor.midY), $0.frame, false) }?.frame ?? anchor
         let x = min(max(anchor.midX - size.width / 2, screenFrame.minX + 8), screenFrame.maxX - size.width - 8)
         let frame = NSRect(x: x.rounded(), y: (anchor.maxY + 6).rounded(), width: size.width, height: size.height)
@@ -203,12 +201,6 @@ final class TaskbarPopup {
     func close(_ id: CGWindowID) {
         registry.close(id)
     }
-
-    func enablePreviews() {
-        hideNow()
-        Settings.shared.previewsEnabled = true
-        PreviewProvider.requestPermission()
-    }
 }
 
 struct PopupView: View {
@@ -242,16 +234,6 @@ struct PopupView: View {
                         .padding(.horizontal, 6)
                     }
                     .scrollIndicators(.never)
-                    if model.offersPreviews {
-                        HStack {
-                            Spacer()
-                            Button("Enable window previews") { popup.enablePreviews() }
-                                .buttonStyle(.link)
-                                .font(.system(size: 11))
-                        }
-                        .padding(.horizontal, 14)
-                        .frame(height: 32)
-                    }
                 }
             }
         }
