@@ -1,17 +1,101 @@
-/* Finnish */
-"Welcome to Plinth" = "Tervetuloa Plinthiin";
-"Plinth brings the Windows taskbar, Alt-Tab window switching and window snapping to your Mac. It needs one permission to work: Accessibility." = "Plinth tuo Windowsin tehtäväpalkin, ⌘Tab-ikkunanvaihdon ja ikkunoiden snäppäyksen Maciin. Se tarvitsee toimiakseen yhden luvan: Käyttöapu.";
-"Accessibility is used to list, focus, move and minimize windows, and for the ⌘Tab and ⌃⌥ shortcuts." = "Käyttöapu-lupaa käytetään ikkunoiden listaamiseen, aktivointiin, siirtämiseen ja pienentämiseen sekä pikanäppäimiin ⌘Tab ja ⌃⌥.";
+/* Finnish. Keys are the English text. */
+
+/* Menu bar */
 "Accessibility: allowed" = "Käyttöapu: sallittu";
 "Accessibility: not yet allowed" = "Käyttöapu: ei vielä sallittu";
-"Open System Settings" = "Avaa Järjestelmäasetukset";
-"Continue" = "Jatka";
-"Plinth Setup" = "Plinthin käyttöönotto";
 "Grant Accessibility…" = "Salli Käyttöapu…";
-"Launch at Login" = "Käynnistä kirjautuessa";
-"Quit Plinth" = "Lopeta Plinth";
-"Minimized" = "Pienennetty";
 "⌘Tab: active" = "⌘Tab: käytössä";
 "⌘Tab: not active" = "⌘Tab: ei käytössä";
 "Windows tracked: %ld" = "Seurattavia ikkunoita: %ld";
 "Restart Plinth" = "Käynnistä Plinth uudelleen";
+"Settings…" = "Asetukset…";
+"Quit Plinth" = "Lopeta Plinth";
+
+/* Onboarding */
+"Plinth Setup" = "Plinthin käyttöönotto";
+"Welcome to Plinth" = "Tervetuloa Plinthiin";
+"The Windows taskbar, ⌘Tab window switching and window snapping — in one small app that works as soon as it starts." = "Windowsin tehtäväpalkki, ⌘Tab-ikkunanvaihto ja ikkunoiden snäppäys — yhdessä pienessä sovelluksessa, joka toimii heti käynnistyttyään.";
+"Taskbar" = "Tehtäväpalkki";
+"Every window one click away. Hover a button to see its windows." = "Jokainen ikkuna yhden klikkauksen päässä. Vie hiiri napin päälle, niin näet sen ikkunat.";
+"⌘Tab" = "⌘Tab";
+"Switch between windows, not just apps." = "Vaihda ikkunoiden välillä, ei vain sovellusten.";
+"Snapping" = "Snäppäys";
+"Drag to an edge or press ⌃⌥ and an arrow." = "Raahaa reunaan tai paina ⌃⌥ ja nuolta.";
+"Get Started" = "Aloita";
+"Continue" = "Jatka";
+"Back" = "Takaisin";
+"Start Using Plinth" = "Ota Plinth käyttöön";
+
+"Allow Accessibility" = "Salli Käyttöapu";
+"Plinth needs one permission. It is used to list, focus, move and minimize windows, and for the ⌘Tab and ⌃⌥ shortcuts." = "Plinth tarvitsee yhden luvan. Sillä listataan, aktivoidaan, siirretään ja pienennetään ikkunoita sekä käytetään pikanäppäimiä ⌘Tab ja ⌃⌥.";
+"All set. Continue to the next step." = "Valmista. Jatka seuraavaan vaiheeseen.";
+"Turn on Plinth in the list. This page notices it by itself." = "Kytke Plinth päälle listassa. Tämä sivu huomaa sen itse.";
+"Open System Settings" = "Avaa Järjestelmäasetukset";
+"Plinth has no networking code and no third-party code. Nothing it sees leaves your Mac." = "Plinthissä ei ole verkkokoodia eikä kolmannen osapuolen koodia. Mikään sen näkemä ei poistu Maciltasi.";
+
+"Show window thumbnails?" = "Näytetäänkö ikkunoista pikkukuvat?";
+"Choose how windows look in the taskbar and in ⌘Tab. You can change this later in Settings." = "Valitse, miltä ikkunat näyttävät tehtäväpalkissa ja ⌘Tabissa. Voit muuttaa valintaa myöhemmin asetuksista.";
+"Icon and title" = "Ikoni ja otsikko";
+"No extra permission. Windows are told apart by title and a mini-map of where they are on screen." = "Ei lisälupia. Ikkunat erottaa otsikosta ja pienestä kartasta, joka näyttää niiden paikan näytöllä.";
+"Thumbnails" = "Pikkukuvat";
+"Needs the Screen & System Audio Recording permission." = "Vaatii Näytön ja järjestelmän äänen tallennus -luvan.";
+"Screen recording permission technically gives access to everything on screen. Plinth captures only a small image of one window, only while you hover the taskbar or use ⌘Tab, keeps it in memory and never while a password field is active." = "Tallennuslupa antaa teknisesti pääsyn kaikkeen näytöllä näkyvään. Plinth kaappaa vain pienen kuvan yhdestä ikkunasta, vain kun viet hiiren tehtäväpalkin päälle tai käytät ⌘Tabia, pitää sen muistissa eikä koskaan kaappaa, kun salasanakenttä on aktiivinen.";
+
+"Almost done" = "Melkein valmista";
+"Two quick adjustments make Plinth work like Windows. Each one is a single click." = "Kaksi pientä säätöä saa Plinthin toimimaan kuten Windows. Kumpikin on yksi klikkaus.";
+"Fit the Dock under the taskbar" = "Sovita Dock tehtäväpalkin alle";
+"Keeps the Dock at the bottom, always visible and small, so maximized windows stop at the taskbar." = "Pitää Dockin alareunassa, aina näkyvissä ja pienenä, jotta maksimoidut ikkunat pysähtyvät tehtäväpalkkiin.";
+"Fit" = "Sovita";
+"Turn off macOS edge tiling" = "Kytke macOS:n reunatiilitys pois";
+"macOS tiles windows dragged to screen edges too. Two snapping systems would fight." = "Myös macOS tiilittää reunoille raahatut ikkunat. Kaksi snäppäystä riitelisi keskenään.";
+"Turn Off" = "Kytke pois";
+"Done" = "Valmis";
+"Launch at login" = "Käynnistä kirjautuessa";
+"Switch windows" = "Vaihda ikkunaa";
+"Snap left or right" = "Snäppää vasemmalle tai oikealle";
+"Maximize" = "Maksimoi";
+
+/* Taskbar */
+"Minimized" = "Pienennetty";
+"Close window" = "Sulje ikkuna";
+"Close all windows" = "Sulje kaikki ikkunat";
+"New Window" = "Uusi ikkuna";
+"Open %@" = "Avaa %@";
+"Quit %@" = "Lopeta %@";
+"Pin to taskbar" = "Kiinnitä tehtäväpalkkiin";
+"Unpin from taskbar" = "Irrota tehtäväpalkista";
+"Enable window previews" = "Ota pikkukuvat käyttöön";
+"Show desktop" = "Näytä työpöytä";
+
+/* Settings */
+"Plinth Settings" = "Plinthin asetukset";
+"Window thumbnails" = "Ikkunoiden pikkukuvat";
+"Combine taskbar buttons" = "Yhdistä tehtäväpalkin napit";
+"Always" = "Aina";
+"Never" = "Ei koskaan";
+"Show taskbar on all displays" = "Tehtäväpalkki kaikilla näytöillä";
+"Keyboard shortcuts" = "Pikanäppäimet";
+"⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab ja ⌃⌥-snäppäys";
+"Show Setup Again" = "Näytä käyttöönotto uudelleen";
+
+/* Clean up */
+"Clean Up" = "Siivoa";
+"Clean Up…" = "Siivoa…";
+"Clean Up (%ld)…" = "Siivoa (%ld)…";
+"Windows you have not used for three days and apps left running without windows. Nothing is closed without you, and apps still ask to save your work." = "Ikkunat, joita et ole käyttänyt kolmeen päivään, ja sovellukset, jotka ovat jääneet päälle ilman ikkunoita. Mitään ei suljeta ilman sinua, ja sovellukset kysyvät tallennuksesta normaalisti.";
+"Nothing to clean up" = "Ei siivottavaa";
+"Everything open has been used recently." = "Kaikkea avoinna olevaa on käytetty äskettäin.";
+"Unused windows" = "Käyttämättömät ikkunat";
+"Apps without windows" = "Sovellukset ilman ikkunoita";
+"%ld selected" = "%ld valittu";
+"Close Selected" = "Sulje valitut";
+"Keep" = "Pidä";
+"Never suggest this app again" = "Älä ehdota tätä sovellusta enää";
+"used %@" = "käytetty %@";
+
+/* Diagnostics */
+"Debug Logging" = "Debug-lokitus";
+"Save Debug Log…" = "Tallenna debug-loki…";
+
+/* Not responding */
+"Not responding" = "Ei vastaa";

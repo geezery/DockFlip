@@ -5,6 +5,7 @@ import ApplicationServices
 public struct WindowSnapshot: Identifiable {
     public let id: CGWindowID
     public let pid: pid_t
+    public let bundleID: String?
     public let appName: String
     public let icon: NSImage?
     public var title: String
@@ -42,12 +43,30 @@ final class TrackedApp {
 @MainActor
 public final class WindowRegistry {
     private var apps: [pid_t: TrackedApp] = [:]
+    private var appOrder: [pid_t] = []
+    /// Apps whose Accessibility calls time out — shown as "Not responding".
+    private(set) var unresponsive = Set<pid_t>()
     private(set) var windows: [CGWindowID: WindowSnapshot] = [:]
     private(set) var mru = MRUList<CGWindowID>()
     private var tokens: [NSObjectProtocol] = []
 
-    /// Called after any change. The taskbar (M2) redraws from this.
-    public var onChange: (() -> Void)?
+    private var observers: [@MainActor () -> Void] = []
+    private var changePending = false
+
+    /// `handler` runs after changes, coalesced to at most once per run loop turn.
+    func addObserver(_ handler: @escaping @MainActor () -> Void) {
+        observers.append(handler)
+    }
+
+    private func notifyChange() {
+        guard !changePending else { return }
+        changePending = true
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.changePending = false
+            for observer in self.observers { observer() }
+        }
+    }
 
     public init() {}
 
@@ -60,7 +79,7 @@ public final class WindowRegistry {
         }
         seedMRUFromZOrder()
         observeWorkspace()
-        onChange?()
+        notifyChange()
     }
 
     // MARK: - Queries
@@ -79,9 +98,103 @@ public final class WindowRegistry {
         }
     }
 
+    /// Windows on the current Space (plus minimized and hidden-app windows), in MRU order.
+    func currentSpaceWindows() -> [WindowSnapshot] {
+        switcherWindows()
+    }
+
+    func window(_ id: CGWindowID) -> WindowSnapshot? {
+        windows[id]
+    }
+
+    /// Bundle ids (or "pid:N" for apps without one) of tracked apps, in launch order.
+    func runningApps() -> [NSRunningApplication] {
+        appOrder.compactMap { apps[$0]?.app }
+    }
+
+    /// The focused window of the frontmost app, if Plinth tracks it.
+    func focusedWindowID() -> CGWindowID? {
+        guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier,
+              let tracked = apps[pid],
+              let focused = tracked.element.element(kAXFocusedWindowAttribute) else { return nil }
+        return tracked.id(of: focused)
+    }
+
+    /// The most recently used, not minimized window of the frontmost app.
+    func activeWindowID() -> CGWindowID? {
+        guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier else { return nil }
+        return mru.items.first { id in
+            guard let window = windows[id] else { return false }
+            return window.pid == pid && !window.isMinimized
+        }
+    }
+
+    /// Reads the frame straight from Accessibility (AX space).
+    func liveFrame(of id: CGWindowID) -> CGRect? {
+        element(for: id)?.frame
+    }
+
+    /// Moves and resizes a window. Size–position–size, because some apps clamp
+    /// the size against the old position.
+    func setFrame(of id: CGWindowID, to rect: CGRect) {
+        guard let element = element(for: id) else { return }
+        var origin = rect.origin
+        var size = rect.size
+        if let sizeValue = AXValueCreate(.cgSize, &size) { element.set(kAXSizeAttribute, sizeValue) }
+        if let originValue = AXValueCreate(.cgPoint, &origin) { element.set(kAXPositionAttribute, originValue) }
+        if let sizeValue = AXValueCreate(.cgSize, &size) { element.set(kAXSizeAttribute, sizeValue) }
+    }
+
+    private func element(for id: CGWindowID) -> AXUIElement? {
+        guard let window = windows[id] else { return nil }
+        return apps[window.pid]?.windowElements[id]
+    }
+
     // MARK: - Actions
 
     public func focus(_ id: CGWindowID) {
+        Perf.shared.measure("action.focus") { focusUnmeasured(id) }
+    }
+
+    /// Checks whether an app still answers (one short Accessibility call).
+    /// Used when the user points at it, so a hung app is flagged without polling.
+    func probe(pid: pid_t) {
+        guard let tracked = apps[pid] else { return }
+        var value: CFTypeRef?
+        let error = Perf.shared.measure("ax.probe", detail: tracked.app.localizedName ?? "", quiet: true) {
+            AXUIElementCopyAttributeValue(tracked.element, kAXFocusedWindowAttribute as CFString, &value)
+        }
+        markResponsiveness(of: tracked, error: error)
+    }
+
+    private func markResponsiveness(of tracked: TrackedApp, error: AXError) {
+        let pid = tracked.pid
+        let name = tracked.app.localizedName ?? "?"
+        if error == .cannotComplete {
+            if unresponsive.insert(pid).inserted {
+                Log.registry.notice("Not responding: \(name, privacy: .public)")
+                notifyChange()
+            }
+        } else if unresponsive.remove(pid) != nil {
+            Log.registry.notice("Responding again: \(name, privacy: .public)")
+            notifyChange()
+        }
+    }
+
+    /// Lines for the debug log: tracked apps and window counts, never window titles.
+    func debugSummary() -> [String] {
+        var lines = ["apps=\(apps.count) windows=\(windows.count) unresponsive=\(unresponsive.count)"]
+        for pid in appOrder {
+            guard let tracked = apps[pid] else { continue }
+            let count = tracked.windowElements.count
+            let minimized = tracked.windowElements.keys.filter { windows[$0]?.isMinimized == true }.count
+            let flag = unresponsive.contains(pid) ? " NOT RESPONDING" : ""
+            lines.append("  \(tracked.app.localizedName ?? "?") [\(tracked.app.bundleIdentifier ?? "-")]: \(count) windows, \(minimized) minimized\(flag)")
+        }
+        return lines
+    }
+
+    private func focusUnmeasured(_ id: CGWindowID) {
         guard let window = windows[id], let tracked = apps[window.pid],
               let element = tracked.windowElements[id] else { return }
 
@@ -97,7 +210,7 @@ public final class WindowRegistry {
         }
 
         mru.moveToFront(id)
-        onChange?()
+        notifyChange()
     }
 
     public func minimize(_ id: CGWindowID) {
@@ -117,6 +230,12 @@ public final class WindowRegistry {
     }
 
     private func track(_ app: NSRunningApplication, attempt: Int = 0) {
+        Perf.shared.measure("ax.track", detail: app.localizedName ?? "") {
+            trackUnmeasured(app, attempt: attempt)
+        }
+    }
+
+    private func trackUnmeasured(_ app: NSRunningApplication, attempt: Int) {
         let pid = app.processIdentifier
         guard apps[pid] == nil, !app.isTerminated else { return }
 
@@ -143,6 +262,7 @@ public final class WindowRegistry {
         CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
         tracked.observer = observer
         apps[pid] = tracked
+        if !appOrder.contains(pid) { appOrder.append(pid) }
         refreshWindows(of: tracked)
     }
 
@@ -155,6 +275,8 @@ public final class WindowRegistry {
     }
 
     private func untrack(pid: pid_t) {
+        appOrder.removeAll { $0 == pid }
+        unresponsive.remove(pid)
         guard let tracked = apps.removeValue(forKey: pid) else { return }
         if let observer = tracked.observer {
             CFRunLoopRemoveSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
@@ -163,7 +285,7 @@ public final class WindowRegistry {
             windows[id] = nil
             mru.remove(id)
         }
-        onChange?()
+        notifyChange()
     }
 
     private func observeWindow(_ element: AXUIElement, of tracked: TrackedApp) {
@@ -183,8 +305,18 @@ public final class WindowRegistry {
 
     /// Re-reads one app's windows from Accessibility and reconciles the model.
     private func refreshWindows(of tracked: TrackedApp) {
+        Perf.shared.measure("ax.refreshWindows", detail: tracked.app.localizedName ?? "") {
+            refreshWindowsUnmeasured(of: tracked)
+        }
+    }
+
+    private func refreshWindowsUnmeasured(of tracked: TrackedApp) {
+        var value: CFTypeRef?
+        let error = AXUIElementCopyAttributeValue(tracked.element, kAXWindowsAttribute as CFString, &value)
+        markResponsiveness(of: tracked, error: error)
+        guard error != .cannotComplete else { return } // hung app: keep what we know
         var seen = Set<CGWindowID>()
-        for element in tracked.element.elements(kAXWindowsAttribute) {
+        for element in (value as? [AXUIElement]) ?? [] {
             guard element.isStandardWindow, let id = element.windowID else { continue }
             seen.insert(id)
             if tracked.windowElements[id] == nil {
@@ -200,7 +332,7 @@ public final class WindowRegistry {
             windows[id] = nil
             mru.remove(id)
         }
-        onChange?()
+        notifyChange()
     }
 
     private func refreshAll() {
@@ -216,6 +348,7 @@ public final class WindowRegistry {
         windows[id] = WindowSnapshot(
             id: id,
             pid: tracked.pid,
+            bundleID: tracked.app.bundleIdentifier,
             appName: tracked.app.localizedName ?? "",
             icon: tracked.app.icon,
             title: element.string(kAXTitleAttribute) ?? existing?.title ?? "",
@@ -229,12 +362,18 @@ public final class WindowRegistry {
         guard let focused = tracked.element.element(kAXFocusedWindowAttribute),
               let id = tracked.id(of: focused), windows[id] != nil else { return }
         mru.moveToFront(id)
-        onChange?()
+        notifyChange()
     }
 
     // MARK: - Accessibility notifications
 
     fileprivate func handle(_ notification: String, element: AXUIElement, tracked: TrackedApp) {
+        Perf.shared.measure("ax.notification", detail: notification, quiet: true) {
+            handleUnmeasured(notification, element: element, tracked: tracked)
+        }
+    }
+
+    private func handleUnmeasured(_ notification: String, element: AXUIElement, tracked: TrackedApp) {
         switch notification {
         case kAXWindowCreatedNotification:
             // Subrole and title are often not set yet at creation time.
@@ -250,7 +389,7 @@ public final class WindowRegistry {
             tracked.windowElements[id] = nil
             windows[id] = nil
             mru.remove(id)
-            onChange?()
+            notifyChange()
 
         case kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification:
             if tracked.app.isActive { bringFocusedWindowToFront(of: tracked) }
@@ -259,7 +398,7 @@ public final class WindowRegistry {
              kAXTitleChangedNotification, kAXMovedNotification, kAXResizedNotification:
             guard let id = tracked.id(of: element), let stored = tracked.windowElements[id] else { return }
             update(id: id, element: stored, tracked: tracked)
-            onChange?()
+            notifyChange()
 
         default:
             break
@@ -287,8 +426,11 @@ public final class WindowRegistry {
         tokens.append(center.addObserver(forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: .main) { [weak self] note in
             guard let active = WindowRegistry.runningApp(from: note) else { return }
             MainActor.assumeIsolated {
-                guard let self, let tracked = self.apps[active.processIdentifier] else { return }
-                self.bringFocusedWindowToFront(of: tracked)
+                guard let self else { return }
+                if let tracked = self.apps[active.processIdentifier] {
+                    self.bringFocusedWindowToFront(of: tracked)
+                }
+                self.notifyChange()
             }
         })
 
@@ -300,7 +442,7 @@ public final class WindowRegistry {
                     for (id, element) in tracked.windowElements {
                         self.update(id: id, element: element, tracked: tracked)
                     }
-                    self.onChange?()
+                    self.notifyChange()
                 }
             })
         }

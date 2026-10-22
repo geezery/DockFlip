@@ -42,9 +42,14 @@ monitor plug/unplug, for a week of daily use without a wrong switch.
 **Exit:** snapping behaves identically to Windows 11 for the listed gestures on
 single and dual displays.
 
+## M3.5 — Daily-use extras
+- Clean Up window (usage tracking, memory per app, keep list).
+- Window positions remembered per display setup.
+- "Not responding" indicator.
+- Debug logging, timing statistics and debug log export.
+
 ## M4 — Previews and polish
 - Opt-in previews with ScreenCaptureKit; capture on demand, memory only.
-- App Exposé via ⌃⌥↓.
 - Finnish localization.
 - Performance budgets verified.
 

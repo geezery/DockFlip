@@ -15,6 +15,7 @@ struct SwitcherItem: Identifiable {
 final class SwitcherModel: ObservableObject {
     @Published var items: [SwitcherItem] = []
     @Published var selection = 0
+    @Published var thumbnails: [CGWindowID: NSImage] = [:]
     var onPick: ((Int) -> Void)?
 }
 
@@ -49,7 +50,7 @@ struct SwitcherView: View {
         )
         LazyVGrid(columns: columns, alignment: .leading, spacing: SwitcherLayout.spacing) {
             ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
-                SwitcherTile(item: item, isSelected: index == model.selection)
+                SwitcherTile(item: item, thumbnail: model.thumbnails[item.id], isSelected: index == model.selection)
                     .onTapGesture { model.onPick?(index) }
             }
         }
@@ -60,21 +61,27 @@ struct SwitcherView: View {
 
 struct SwitcherTile: View {
     let item: SwitcherItem
+    let thumbnail: NSImage?
     let isSelected: Bool
 
     var body: some View {
         VStack(spacing: 8) {
-            Group {
-                if let icon = item.icon {
-                    Image(nsImage: icon).resizable().interpolation(.high)
-                } else {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.secondary.opacity(0.3))
-                }
+            if let thumbnail {
+                Image(nsImage: thumbnail)
+                    .resizable()
+                    .interpolation(.high)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 124, height: 78)
+                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .overlay(alignment: .bottomTrailing) {
+                        AppIconView(icon: item.icon, size: 26).offset(x: 6, y: 6)
+                    }
+                    .frame(height: 101)
+            } else {
+                AppIconView(icon: item.icon, size: 48)
+                Minimap(rect: item.minimap, isMinimized: item.isMinimized)
+                    .frame(width: 72, height: 45)
             }
-            .frame(width: 48, height: 48)
-
-            Minimap(rect: item.minimap, isMinimized: item.isMinimized)
-                .frame(width: 72, height: 45)
 
             VStack(spacing: 2) {
                 Text(verbatim: item.title)
@@ -132,5 +139,21 @@ struct Minimap: View {
             }
         }
         .accessibilityHidden(true)
+    }
+}
+
+struct AppIconView: View {
+    let icon: NSImage?
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let icon {
+                Image(nsImage: icon).resizable().interpolation(.high)
+            } else {
+                RoundedRectangle(cornerRadius: size * 0.22, style: .continuous).fill(Color.secondary.opacity(0.3))
+            }
+        }
+        .frame(width: size, height: size)
     }
 }

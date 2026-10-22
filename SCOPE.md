@@ -20,7 +20,9 @@ settings.
 2. **Zero configuration.** A new user installs, grants one permission, and is done.
 3. **Reliability before features.** A feature that misbehaves in edge cases
    (Electron apps, dialogs, sleep/wake, display changes) is worse than no feature.
-4. **Lightweight.** No third-party dependencies. Event-driven, no polling.
+4. **Lightweight.** No third-party dependencies. Event-driven, no polling — with one
+   documented exception: Dock badges are read every 15 seconds, because macOS
+   offers no notification for them.
 5. **Private by default.** Full functionality with Accessibility permission only.
    Screen Recording is opt-in, used only for previews. No networking code at all.
 6. **Latest macOS only.** macOS 26 or later. No back-porting.
@@ -73,7 +75,6 @@ settings.
   kept in memory, never written to disk.
 - When off: large app icon, window title, and a mini-map of the window's outline
   on its display. A small "Enable previews" link appears in the hover panel.
-- ⌃⌥↓ on a non-snapped window opens App Exposé — live previews without permission.
 
 ### Localization
 - English and Finnish in v1.
@@ -118,6 +119,15 @@ Anything else needs a strong case against principle 1.
 - Search/filter in the switcher, per-app CPU/memory, cross-display drag.
 - Mac App Store distribution (the sandbox forbids the Accessibility API).
 - macOS versions older than 26.
+
+### Beyond Windows (deliberate exceptions)
+- **Clean Up**: suggests closing windows unused for three days and quitting apps
+  left without windows. Suggest-only, never automatic; costs nothing when unused.
+- **Debug log export** for troubleshooting; local file only.
+
+### Also Windows 11 defaults, included
+- Remember window locations per display setup, restore on reconnect.
+- "Not responding" on a hung app's taskbar button.
 
 ## Deferred (after v1, still Windows defaults)
 

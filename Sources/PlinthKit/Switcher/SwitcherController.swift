@@ -10,6 +10,7 @@ final class SwitcherController {
     private var panel: NSPanel?
     private var selection: SwitcherSelection?
     private var windowIDs: [CGWindowID] = []
+    private var previewTask: Task<Void, Never>?
 
     var isActive: Bool { selection != nil }
 
@@ -54,6 +55,10 @@ final class SwitcherController {
     // MARK: - Lifecycle
 
     private func begin(reverse: Bool) -> Bool {
+        Perf.shared.measure("switcher.open") { beginUnmeasured(reverse: reverse) }
+    }
+
+    private func beginUnmeasured(reverse: Bool) -> Bool {
         let windows = registry.switcherWindows()
         guard !windows.isEmpty else { return false }
 
@@ -77,7 +82,9 @@ final class SwitcherController {
         let selection = SwitcherSelection(count: windows.count, reverse: reverse)
         self.selection = selection
         model.selection = selection.index
+        model.thumbnails = [:]
         show()
+        loadPreviews(for: windows)
         return true
     }
 
@@ -95,7 +102,24 @@ final class SwitcherController {
         registry.focus(id)
     }
 
+    private func loadPreviews(for windows: [WindowSnapshot]) {
+        previewTask?.cancel()
+        guard PreviewProvider.shared.isAvailable else { return }
+        previewTask = Task { @MainActor [weak self] in
+            for window in windows.prefix(21) {
+                guard !Task.isCancelled else { return }
+                let image = await PreviewProvider.shared.thumbnail(for: window)
+                // The switcher may have closed while capturing: drop the image then.
+                guard !Task.isCancelled, let self, self.isActive else { return }
+                if let image { self.model.thumbnails[window.id] = image }
+            }
+        }
+    }
+
     private func hide() {
+        previewTask?.cancel()
+        previewTask = nil
+        model.thumbnails = [:]
         panel?.orderOut(nil)
         selection = nil
         windowIDs = []
