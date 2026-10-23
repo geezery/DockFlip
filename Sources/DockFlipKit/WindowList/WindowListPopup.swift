@@ -53,6 +53,8 @@ final class WindowListModel: ObservableObject {
     @Published var hoveredTab: String?
     /// The window whose picture the peek pane shows (previews on, with tabs).
     @Published var peekWindow: CGWindowID?
+    /// The mouse is on the peek pane's picture.
+    @Published var hoveringPeek = false
     /// Windows whose long tab list is shown in full.
     @Published var expanded = Set<CGWindowID>()
 
@@ -252,6 +254,7 @@ final class WindowListPopup {
         if changedItem {
             model.expanded = []
             model.peekWindow = nil
+            model.hoveringPeek = false
             model.thumbnails = [:]
         }
 

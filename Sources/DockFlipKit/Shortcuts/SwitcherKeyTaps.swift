@@ -18,6 +18,9 @@ final class SwitcherKeyTaps {
 
     private var flagsTap: CFMachPort?
     private var keysTap: CFMachPort?
+    /// The switcher is open and wants its keys. The key tap is on only while this
+    /// is true; anything else would swallow ⌥ and ⌃ characters (@, {, [ …) everywhere.
+    private var keysWanted = false
     /// Key codes whose keyDown we swallowed; their keyUp is swallowed too.
     private var swallowed = Set<Int64>()
 
@@ -57,6 +60,7 @@ final class SwitcherKeyTaps {
 
     /// The key tap is on only while the switcher is open.
     func setSwitcherKeysEnabled(_ enabled: Bool) {
+        keysWanted = enabled
         guard let keysTap else { return }
         if CGEvent.tapIsEnabled(tap: keysTap) != enabled {
             CGEvent.tapEnable(tap: keysTap, enable: enabled)
@@ -81,8 +85,15 @@ final class SwitcherKeyTaps {
         let code = event.getIntegerValueField(.keyboardEventKeycode)
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
-            // macOS switched the tap off (it was slow): back on while switching.
-            if let keysTap { CGEvent.tapEnable(tap: keysTap, enable: true) }
+            // macOS switched the tap off (it was slow): back on only while switching.
+            // This notice can arrive after the switcher has closed; turning the tap
+            // on then would leave it on for good.
+            if keysWanted, let keysTap { CGEvent.tapEnable(tap: keysTap, enable: true) }
+            return false
+        case .keyDown where !keysWanted:
+            // The tap is on although the switcher is closed: switch it off and
+            // let typing through untouched.
+            if let keysTap { CGEvent.tapEnable(tap: keysTap, enable: false) }
             return false
         case .keyDown:
             let keyCode = UInt32(truncatingIfNeeded: code)
