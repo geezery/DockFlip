@@ -4,25 +4,24 @@ import CoreGraphics
 /// The two event taps the ⌘Tab switcher needs on top of the hot keys:
 /// - a listen-only tap for modifier changes, to notice ⌘ being released (secure
 ///   input does not hide modifier changes);
-/// - a key tap that is switched on only while the switcher is open, for Esc,
-///   the arrow keys and Return. The rest of the time no tap touches typing.
+/// - a key tap that is switched on only while the switcher is open, for Esc alone.
 ///   It sits at the HID level, the earliest point: on macOS 26 the Game Overlay
 ///   grabs ⌘Esc further down the line, and ⌘ is held while switching (AltTab #5585).
-///   Secure input hides key presses from every tap; then the switcher panel,
-///   which is the key window, gets them as ordinary key events.
+///   Every other key reaches the switcher panel, which is the key window, as an
+///   ordinary key event — as AltTab does. The rest of the time no tap touches typing.
 @MainActor
 final class SwitcherKeyTaps {
     var onCommandReleased: (() -> Void)?
-    /// Returns true when the input was consumed.
-    var onSwitcherKey: ((SwitcherInput) -> Bool)?
+    /// Returns true when Esc was consumed.
+    var onEscape: (() -> Bool)?
 
     private var flagsTap: CFMachPort?
     private var keysTap: CFMachPort?
-    /// The switcher is open and wants its keys. The key tap is on only while this
-    /// is true; anything else would swallow ⌥ and ⌃ characters (@, {, [ …) everywhere.
+    /// The switcher is open and wants Esc. The key tap is on only while this is
+    /// true; anything else would leave a tap in front of all typing.
     private var keysWanted = false
-    /// Key codes whose keyDown we swallowed; their keyUp is swallowed too.
-    private var swallowed = Set<Int64>()
+    /// We swallowed Esc's keyDown; its keyUp is swallowed too.
+    private var escapeSwallowed = false
 
     func start() -> Bool {
         guard flagsTap == nil else { return true }
@@ -65,7 +64,7 @@ final class SwitcherKeyTaps {
         if CGEvent.tapIsEnabled(tap: keysTap) != enabled {
             CGEvent.tapEnable(tap: keysTap, enable: enabled)
         }
-        if !enabled { swallowed.removeAll() }
+        if !enabled { escapeSwallowed = false }
     }
 
     fileprivate func flagsChanged(type: CGEventType, event: CGEvent) {
@@ -80,9 +79,8 @@ final class SwitcherKeyTaps {
         }
     }
 
-    /// Returns true when the event must be swallowed.
+    /// Returns true when the event must be swallowed. Only Esc ever is.
     fileprivate func switcherKey(type: CGEventType, event: CGEvent) -> Bool {
-        let code = event.getIntegerValueField(.keyboardEventKeycode)
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
             // macOS switched the tap off (it was slow): back on only while switching.
@@ -96,33 +94,26 @@ final class SwitcherKeyTaps {
             if let keysTap { CGEvent.tapEnable(tap: keysTap, enable: false) }
             return false
         case .keyDown:
-            let keyCode = UInt32(truncatingIfNeeded: code)
-            let command = event.flags.contains(.maskCommand)
-            // ⌘Tab belongs to the hot key; let it through.
-            if keyCode == KeyCode.tab && command { return false }
-            let input = SwitcherInput.from(
-                keyCode: keyCode, command: command, shift: event.flags.contains(.maskShift),
-                text: SwitcherText.typed(NSEvent(cgEvent: event))
-            )
-            // Keys that mean nothing to the switcher are swallowed too: nothing
-            // reaches the app underneath while the switcher is open.
-            if input == nil || onSwitcherKey?(input!) == true {
-                swallowed.insert(code)
-                return true
-            }
-            return false
+            guard Self.isEscape(event) else { return false }
+            escapeSwallowed = onEscape?() == true
+            return escapeSwallowed
         case .keyUp:
-            return swallowed.remove(code) != nil
+            guard escapeSwallowed, Self.isEscape(event) else { return false }
+            escapeSwallowed = false
+            return true
         default:
             return false
         }
     }
+
+    private static func isEscape(_ event: CGEvent) -> Bool {
+        event.getIntegerValueField(.keyboardEventKeycode) == Int64(KeyCode.escape)
+    }
 }
 
 extension SwitcherInput {
-    /// What a key press means to the open switcher, or nil for keys that mean
-    /// nothing. Shared by the key tap and the panel's own key events, so both
-    /// paths (normal, and secure keyboard input) behave the same.
+    /// What a key press the switcher panel receives means to the open switcher,
+    /// or nil for keys that mean nothing.
     static func from(keyCode: UInt32, command: Bool, shift: Bool, text: @autoclosure () -> String?) -> SwitcherInput? {
         switch keyCode {
         case KeyCode.tab: return command ? nil : .commandTab(shift: shift) // plain Tab steps while filtering
