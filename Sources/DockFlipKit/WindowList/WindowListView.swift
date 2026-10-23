@@ -48,7 +48,7 @@ struct WindowListView: View {
                     }
                     .scrollIndicators(.never)
                     if model.showsPreviews {
-                        PeekPane(model: model)
+                        PeekPane(model: model, popup: popup)
                     }
                 }
             }
@@ -204,9 +204,10 @@ struct WindowCardView: View {
 }
 
 /// One picture under a browser's tab list: the window under the mouse, else the
-/// active window, else the most recent one.
+/// active window, else the most recent one. Click it to bring that window forward.
 struct PeekPane: View {
     @ObservedObject var model: WindowListModel
+    let popup: WindowListPopup
 
     var body: some View {
         let row = model.peekWindow.flatMap { id in model.rows.first { $0.id == id } }
@@ -232,8 +233,20 @@ struct PeekPane: View {
                 }
             }
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color.accentColor, lineWidth: model.hoveringPeek ? 2 : 0)
+        )
         .animation(.easeOut(duration: 0.15), value: row?.id)
         .frame(height: WindowListLayout.peekHeight)
+        .contentShape(Rectangle())
+        .onHover { model.hoveringPeek = $0 }
+        .onTapGesture {
+            if let row { popup.pick(row.id) }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: row?.title ?? ""))
+        .accessibilityAddTraits(.isButton)
         .padding(.horizontal, 6)
         .padding(.bottom, 6)
     }
