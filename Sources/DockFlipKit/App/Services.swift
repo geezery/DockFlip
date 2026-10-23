@@ -43,7 +43,7 @@ final class Services {
         // secure keyboard input); the key taps follow the ⌘Tab session.
         hotKeys.handler = { [weak self] command in self?.perform(command) }
         keyTaps.onCommandReleased = { [weak self] in _ = self?.switcher.handle(.commandReleased) }
-        keyTaps.onSwitcherKey = { [weak self] input in self?.switcher.handle(input) ?? false }
+        keyTaps.onEscape = { [weak self] in self?.switcher.handle(.escape) ?? false }
         switcher.onActiveChanged = { [weak self] active in self?.keyTaps.setSwitcherKeysEnabled(active) }
         tapsRunning = keyTaps.start()
         if !tapsRunning {

@@ -247,7 +247,8 @@ final class SwitcherController {
         }
     }
 
-    /// While DockFlip is active, keys arrive as ordinary app events.
+    /// The panel is key, so every key but Esc (see `SwitcherKeyTaps`) arrives here
+    /// as an ordinary app event, even while another app holds secure keyboard input.
     private func installLocalMonitor() {
         guard localMonitor == nil else { return }
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
