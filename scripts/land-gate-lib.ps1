@@ -62,7 +62,7 @@ function ConvertTo-RedLines([string[]]$Log, [int]$Max = 40) {
     foreach ($raw in $Log) {
         # "<job>\t<step>\t<timestamp> <text>"; a step's first line has a BOM before its timestamp.
         $parts = $raw -split "`t", 3
-        $text = $parts[$parts.Count - 1] -replace '^﻿?\d{4}-\d\d-\d\dT[\d:.]+Z ?', ''
+        $text = $parts[$parts.Count - 1].TrimStart([char]0xFEFF) -replace '^\d{4}-\d\d-\d\dT[\d:.]+Z ?', ''
         if (-not $text.Trim()) { continue }
         $tail.Add($text)
         $line = $null
