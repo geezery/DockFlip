@@ -47,6 +47,7 @@
 "Managed by your organization" = "Hanteras av din organisation";
 "Screen Recording is not allowed yet" = "Skärminspelning är inte tillåten än";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillåt DockFlip i Systeminställningar. Om det redan är tillåtet, starta om DockFlip.";
+"Window thumbnails are not shown" = "Fönsterminiatyrer visas inte";
 "Show Setup Again" = "Visa konfigurationen igen";
 "Accessibility: allowed" = "Hjälpmedel: tillåtet";
 "Accessibility: not yet allowed" = "Hjälpmedel: inte tillåtet ännu";
@@ -105,6 +106,14 @@
 "Close Selected" = "Stäng markerade";
 "Keep" = "Behåll";
 "Never suggest this app again" = "Föreslå aldrig den här appen igen";
+"Keep this window for now. It is suggested again after three more unused days." = "Behåll det här fönstret tills vidare. Det föreslås igen efter tre oanvända dagar till.";
+"Keep this app running for now. It is suggested again after another unused day." = "Låt den här appen vara igång tills vidare. Den föreslås igen efter ännu en oanvänd dag.";
+"Kept Apps (%ld)" = "Behållna appar (%ld)";
+"Apps Clean Up never suggests" = "Appar som Städa upp aldrig föreslår";
+"Kept apps" = "Behållna appar";
+"Clean Up never suggests these apps or their windows." = "Städa upp föreslår aldrig de här apparna eller deras fönster.";
+"Remove" = "Ta bort";
+"Suggest this app again" = "Föreslå den här appen igen";
 "Minimized" = "Minimerat";
 "On another desktop" = "På ett annat skrivbord";
 "No windows match" = "Inga matchande fönster";

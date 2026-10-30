@@ -47,6 +47,7 @@
 "Managed by your organization" = "Von deiner Organisation verwaltet";
 "Screen Recording is not allowed yet" = "Bildschirmaufnahme ist noch nicht erlaubt";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Erlaube DockFlip in den Systemeinstellungen. Ist es schon erlaubt, starte DockFlip neu.";
+"Window thumbnails are not shown" = "Fensterminiaturen werden nicht angezeigt";
 "Show Setup Again" = "Einrichtung erneut anzeigen";
 "Accessibility: allowed" = "Bedienungshilfen: erlaubt";
 "Accessibility: not yet allowed" = "Bedienungshilfen: noch nicht erlaubt";
@@ -105,6 +106,14 @@
 "Close Selected" = "Auswahl schließen";
 "Keep" = "Behalten";
 "Never suggest this app again" = "Diese App nie wieder vorschlagen";
+"Keep this window for now. It is suggested again after three more unused days." = "Dieses Fenster vorerst behalten. Es wird nach drei weiteren unbenutzten Tagen wieder vorgeschlagen.";
+"Keep this app running for now. It is suggested again after another unused day." = "Diese App vorerst weiterlaufen lassen. Sie wird nach einem weiteren unbenutzten Tag wieder vorgeschlagen.";
+"Kept Apps (%ld)" = "Behaltene Apps (%ld)";
+"Apps Clean Up never suggests" = "Apps, die Aufräumen nie vorschlägt";
+"Kept apps" = "Behaltene Apps";
+"Clean Up never suggests these apps or their windows." = "Aufräumen schlägt diese Apps und ihre Fenster nie vor.";
+"Remove" = "Entfernen";
+"Suggest this app again" = "Diese App wieder vorschlagen";
 "Minimized" = "Im Dock abgelegt";
 "On another desktop" = "Auf anderem Schreibtisch";
 "No windows match" = "Keine passenden Fenster";

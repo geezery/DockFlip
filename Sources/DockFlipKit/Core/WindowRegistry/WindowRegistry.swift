@@ -26,6 +26,13 @@ public final class WindowRegistry {
     var windows: [CGWindowID: WindowSnapshot] = [:]
     var mru = MRUList<CGWindowID>()
     var tokens: [NSObjectProtocol] = []
+    /// Accessibility calls that wait on an app (actions, the hover probe) run
+    /// here, off the main thread, so a hung app never stalls the event taps.
+    let appQueues = AppQueues()
+    /// Apps with a probe on its way, so hovering a hung app's icon asks it once.
+    private var probing = Set<pid_t>()
+    /// Counts focus requests: an app that answers late is not brought forward over a newer one.
+    private var focusRequest = 0
 
     private var observers: [@MainActor () -> Void] = []
     private var changePending = false
@@ -95,6 +102,12 @@ public final class WindowRegistry {
         windows[id]
     }
 
+    /// Whether DockFlip knows a window of the app, from memory only: no
+    /// Accessibility or window-server call, so the Dock's click tap can ask.
+    func hasWindows(bundleID: String) -> Bool {
+        windows.values.contains { $0.bundleID == bundleID }
+    }
+
     /// The focused window of the frontmost app, if DockFlip tracks it.
     func focusedWindowID() -> CGWindowID? {
         guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier,
@@ -158,10 +171,24 @@ public final class WindowRegistry {
             refreshWindows(of: tracked)
             return
         }
-        var value: CFTypeRef?
-        let error = Perf.shared.measure("ax.probe", detail: tracked.app.localizedName ?? "", quiet: true) {
-            AXUIElementCopyAttributeValue(tracked.element, kAXFocusedWindowAttribute as CFString, &value)
-        }
+        // One short call, off the main thread: a hung app answers only after the
+        // timeout, and the mouse is on the Dock, about to click.
+        guard probing.insert(pid).inserted else { return }
+        let app = SendableElement(element: tracked.element)
+        let name = tracked.app.localizedName ?? ""
+        let start = Perf.now()
+        appQueues.run(for: pid, { () -> AXError in
+            var value: CFTypeRef?
+            return AXUIElementCopyAttributeValue(app.element, kAXFocusedWindowAttribute as CFString, &value)
+        }, then: { [weak self] error in
+            self?.probeAnswered(pid: pid, error: error, name: name, start: start)
+        })
+    }
+
+    private func probeAnswered(pid: pid_t, error: AXError, name: String, start: UInt64) {
+        probing.remove(pid)
+        Perf.shared.record("ax.probe", ms: Double(Perf.now() - start) / 1_000_000, detail: name, quiet: true)
+        guard let tracked = apps[pid] else { return }
         markResponsiveness(of: tracked, error: error)
     }
 
@@ -206,22 +233,52 @@ public final class WindowRegistry {
               let element = tracked.windowElements[id] else { return }
 
         if tracked.app.isHidden { tracked.app.unhide() }
-        if element.bool(kAXMinimizedAttribute) == true {
-            element.set(kAXMinimizedAttribute, kCFBooleanFalse)
-        }
-        tracked.element.set(kAXFrontmostAttribute, kCFBooleanTrue)
-        element.perform(kAXRaiseAction)
-        element.set(kAXMainAttribute, kCFBooleanTrue)
-        if !tracked.app.isActive {
+        focusRequest += 1
+        let request = focusRequest
+        let pid = tracked.pid
+        if unresponsive.contains(pid), !tracked.app.isActive {
+            // macOS brings a hung app forward without its help; waiting for its
+            // timeouts first would bring it forward a second late.
             _ = tracked.app.activate(options: [])
         }
+        // The app's calls run off the main thread, in order (`AppQueues`).
+        let app = SendableElement(element: tracked.element)
+        let target = SendableElement(element: element)
+        let start = Perf.now()
+        appQueues.run(for: pid, { () -> AXError in
+            var minimized: CFTypeRef?
+            let error = AXUIElementCopyAttributeValue(target.element, kAXMinimizedAttribute as CFString, &minimized)
+            // No answer in time: the app is hung, and each further call would wait as long.
+            guard error != .cannotComplete else { return error }
+            if (minimized as? Bool) == true {
+                target.element.set(kAXMinimizedAttribute, kCFBooleanFalse)
+            }
+            app.element.set(kAXFrontmostAttribute, kCFBooleanTrue)
+            target.element.perform(kAXRaiseAction)
+            target.element.set(kAXMainAttribute, kCFBooleanTrue)
+            return error
+        }, then: { [weak self] error in
+            self?.focusAnswered(pid: pid, request: request, error: error, start: start)
+        })
 
         mru.moveToFront(id)
         notifyChange()
     }
 
+    /// The app answered a focus request's calls, or timed out on the first one.
+    private func focusAnswered(pid: pid_t, request: Int, error: AXError, start: UInt64) {
+        guard let tracked = apps[pid] else { return }
+        Perf.shared.record("ax.focus", since: start, detail: tracked.app.localizedName ?? "")
+        markResponsiveness(of: tracked, error: error)
+        // Another window was asked for since: this app must not come over it.
+        guard request == focusRequest, !tracked.app.isActive else { return }
+        _ = tracked.app.activate(options: [])
+    }
+
     public func minimize(_ id: CGWindowID) {
-        element(for: id)?.set(kAXMinimizedAttribute, kCFBooleanTrue)
+        guard let window = windows[id], let element = element(for: id) else { return }
+        let target = SendableElement(element: element)
+        appQueues.run(for: window.pid, { target.element.set(kAXMinimizedAttribute, kCFBooleanTrue) })
     }
 
     /// Presses the window's close button, so the app can ask to save first — and

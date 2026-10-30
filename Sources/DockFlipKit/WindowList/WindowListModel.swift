@@ -51,6 +51,8 @@ final class WindowListModel: ObservableObject {
     @Published var showsPreviews = false
     @Published var hoveredRow: CGWindowID?
     @Published var hoveredTab: String?
+    /// The window whose "Show all N tabs" or "Show fewer" line the mouse is on.
+    @Published var hoveredFold: CGWindowID?
     /// The window whose picture the peek pane shows (previews on, with tabs).
     @Published var peekWindow: CGWindowID?
     /// The mouse is on the peek pane's picture.
@@ -60,6 +62,9 @@ final class WindowListModel: ObservableObject {
     /// The lowest point of the list on screen, measured from the list's top, as
     /// the scroll view last reported it; nil until it has. Decides "N more windows".
     @Published var listBottom: CGFloat?
+    /// The scroll view's identity: a new one each time a list starts, so it
+    /// opens at its top, not where the last app's list was scrolled to.
+    @Published private(set) var listID = 0
 
     var hasTabs: Bool { rows.contains { $0.tabs.count > 1 } }
     var usesCards: Bool { WindowListLayout.usesCards(rows: rows, previews: showsPreviews) }
@@ -68,6 +73,23 @@ final class WindowListModel: ObservableObject {
     var windowsBelow: Int {
         let bottom = listBottom ?? WindowListLayout.listHeight(rows: rows, expanded: expanded, previews: showsPreviews)
         return WindowListLayout.windowsBelow(rows: rows, expanded: expanded, visibleBottom: bottom)
+    }
+
+    /// Another app's list, or the list opened again: the popup keeps one panel
+    /// and one scroll view for every app, so nothing of the last list may carry
+    /// over, least of all its scroll offset, which would hide the most recent windows.
+    func startNewList() {
+        // A click hides the panel before the mouse leaves the row, so no exit
+        // arrives: the row would still be lit when the list opens again.
+        hoveredRow = nil
+        hoveredTab = nil
+        hoveredFold = nil
+        expanded = []
+        peekWindow = nil
+        hoveringPeek = false
+        thumbnails = [:]
+        listBottom = nil
+        listID += 1
     }
 
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
@@ -85,6 +107,14 @@ final class WindowListModel: ObservableObject {
             peekWindow = window
         } else if hoveredTab == id {
             hoveredTab = nil
+        }
+    }
+
+    func setHoveredFold(_ window: CGWindowID, _ inside: Bool) {
+        if inside {
+            hoveredFold = window
+        } else if hoveredFold == window {
+            hoveredFold = nil
         }
     }
 }

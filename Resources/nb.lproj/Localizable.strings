@@ -47,6 +47,7 @@
 "Managed by your organization" = "Administreres av organisasjonen din";
 "Screen Recording is not allowed yet" = "Skjermopptak er ikke tillatt ennå";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillat DockFlip i Systeminnstillinger. Hvis det allerede er tillatt, start DockFlip på nytt.";
+"Window thumbnails are not shown" = "Miniatyrbilder av vinduer vises ikke";
 "Show Setup Again" = "Vis konfigureringen igjen";
 "Accessibility: allowed" = "Tilgjengelighet: tillatt";
 "Accessibility: not yet allowed" = "Tilgjengelighet: ikke tillatt ennå";
@@ -105,6 +106,14 @@
 "Close Selected" = "Lukk valgte";
 "Keep" = "Behold";
 "Never suggest this app again" = "Aldri foreslå denne appen igjen";
+"Keep this window for now. It is suggested again after three more unused days." = "Behold dette vinduet inntil videre. Det foreslås igjen etter tre nye ubrukte dager.";
+"Keep this app running for now. It is suggested again after another unused day." = "La denne appen kjøre inntil videre. Den foreslås igjen etter enda en ubrukt dag.";
+"Kept Apps (%ld)" = "Beholdte apper (%ld)";
+"Apps Clean Up never suggests" = "Apper Rydd opp aldri foreslår";
+"Kept apps" = "Beholdte apper";
+"Clean Up never suggests these apps or their windows." = "Rydd opp foreslår aldri disse appene eller vinduene deres.";
+"Remove" = "Fjern";
+"Suggest this app again" = "Foreslå denne appen igjen";
 "Minimized" = "Minimert";
 "On another desktop" = "På et annet skrivebord";
 "No windows match" = "Ingen vinduer samsvarer";

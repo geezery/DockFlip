@@ -17,11 +17,20 @@ struct CleanupRow: Identifiable {
     let memoryBytes: Int64?
 }
 
+/// An app the user asked Clean Up never to suggest, for the "Kept Apps" list.
+struct KeptAppRow: Identifiable {
+    let id: String
+    let name: String
+    let icon: NSImage?
+}
+
 @MainActor
 final class CleanupModel: ObservableObject {
     @Published var windows: [CleanupRow] = []
     @Published var apps: [CleanupRow] = []
     @Published var selected = Set<CleanupRow.Target>()
+    @Published var kept: [KeptAppRow] = []
+    @Published var showsKept = false
 
     var isEmpty: Bool { windows.isEmpty && apps.isEmpty }
 }
@@ -41,9 +50,9 @@ final class CleanupController {
         self.usage = usage
     }
 
-    private var keep: Set<String> {
-        get { Set(UserDefaults.standard.stringArray(forKey: Self.keepKey) ?? []) }
-        set { UserDefaults.standard.set(Array(newValue).sorted(), forKey: Self.keepKey) }
+    private var kept: KeptApps {
+        get { KeptApps(UserDefaults.standard.stringArray(forKey: Self.keepKey) ?? []) }
+        set { UserDefaults.standard.set(newValue.bundleIDs, forKey: Self.keepKey) }
     }
 
     /// Number of suggestions, for the menu bar menu.
@@ -107,11 +116,32 @@ final class CleanupController {
         }
     }
 
-    func keepAlways(_ row: CleanupRow) {
+    /// "Keep": not now. Only this window (or app) counts as used now and comes back
+    /// after it sits unused as long again; the app's other windows stay suggested.
+    func keepForNow(_ row: CleanupRow) {
+        switch row.id {
+        case .window(let id):
+            usage.markUsed(window: id)
+        case .app(let pid):
+            // An app that quit meanwhile has nothing to mark; the reload drops its row.
+            if let app = NSRunningApplication(processIdentifier: pid) { usage.markUsed(app: app) }
+        }
+        reload()
+    }
+
+    /// Every window of the app, now and later, until removed from "Kept Apps".
+    func neverSuggest(_ row: CleanupRow) {
         guard let bundleID = row.bundleID else { return }
-        var set = keep
-        set.insert(bundleID)
-        keep = set
+        var kept = self.kept
+        kept.add(bundleID)
+        self.kept = kept
+        reload()
+    }
+
+    func suggestAgain(_ bundleID: String) {
+        var kept = self.kept
+        kept.remove(bundleID)
+        self.kept = kept
         reload()
     }
 
@@ -130,11 +160,28 @@ final class CleanupController {
         model.windows = windowRows
         model.apps = appRows
         model.selected = Set(windowRows.map(\.id) + appRows.map(\.id))
+        model.kept = keptRows()
+        if model.kept.isEmpty { model.showsKept = false }
+    }
+
+    /// Names and icons from the installed app; an app no longer installed shows its bundle id.
+    private func keptRows() -> [KeptAppRow] {
+        kept.bundleIDs.map { bundleID in
+            guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
+                return KeptAppRow(id: bundleID, name: bundleID, icon: nil)
+            }
+            return KeptAppRow(
+                id: bundleID,
+                name: FileManager.default.displayName(atPath: url.path),
+                icon: NSWorkspace.shared.icon(forFile: url.path)
+            )
+        }
+        .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
     private func candidates() -> ([CleanupRow], [CleanupRow]) {
         let now = Date()
-        let keep = self.keep
+        let keep = self.kept.set
         let snapshots = registry.currentSpaceWindows()
         let byID = Dictionary(uniqueKeysWithValues: snapshots.map { ($0.id, $0) })
 
@@ -197,108 +244,5 @@ enum ProcessInfoReader {
             }
         }
         return result == 0 ? Int64(info.ri_phys_footprint) : nil
-    }
-}
-
-// MARK: - View
-
-struct CleanupView: View {
-    @ObservedObject var model: CleanupModel
-    let controller: CleanupController
-
-    var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Clean Up").font(.system(size: 22, weight: .bold))
-                Text("Windows you have not used for three days and apps left running without windows. Nothing is closed without you, and apps still ask to save your work.")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
-
-            if model.isEmpty {
-                VStack(spacing: 10) {
-                    Image(systemName: "sparkles").font(.system(size: 32)).foregroundStyle(Color.accentColor)
-                    Text("Nothing to clean up").font(.system(size: 15, weight: .semibold))
-                    Text("Everything open has been used recently.").font(.system(size: 12)).foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                List {
-                    if !model.windows.isEmpty {
-                        Section("Unused windows") {
-                            ForEach(model.windows) { row in
-                                CleanupRowView(row: row, model: model, controller: controller)
-                            }
-                        }
-                    }
-                    if !model.apps.isEmpty {
-                        Section("Apps without windows") {
-                            ForEach(model.apps) { row in
-                                CleanupRowView(row: row, model: model, controller: controller)
-                            }
-                        }
-                    }
-                }
-                .listStyle(.inset)
-            }
-
-            HStack {
-                Text(String(format: L("%ld selected"), model.selected.count))
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Button("Close Selected") { controller.closeSelected() }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .disabled(model.selected.isEmpty)
-            }
-            .padding(16)
-            .overlay(alignment: .top) { Divider() }
-        }
-        .frame(minWidth: 480, minHeight: 360)
-    }
-}
-
-struct CleanupRowView: View {
-    let row: CleanupRow
-    @ObservedObject var model: CleanupModel
-    let controller: CleanupController
-
-    private var detail: String {
-        let relative = RelativeDateTimeFormatter()
-        relative.unitsStyle = .full
-        var parts = [String(format: L("used %@"), relative.localizedString(for: row.lastUsed, relativeTo: Date()))]
-        if let bytes = row.memoryBytes {
-            parts.append(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .memory))
-        }
-        if case .window = row.id { parts.insert(row.appName, at: 0) }
-        return parts.joined(separator: " · ")
-    }
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Toggle("", isOn: Binding(
-                get: { MainActor.assumeIsolated { model.selected.contains(row.id) } },
-                set: { _ in MainActor.assumeIsolated { controller.toggle(row.id) } }
-            ))
-            .toggleStyle(.checkbox)
-            .labelsHidden()
-            AppIconView(icon: row.icon, size: 24)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: row.title).font(.system(size: 13)).lineLimit(1)
-                Text(verbatim: detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
-            }
-            Spacer()
-            if row.bundleID != nil {
-                Button("Keep") { controller.keepAlways(row) }
-                    .buttonStyle(.borderless)
-                    .font(.system(size: 12))
-                    .help(Text("Never suggest this app again"))
-            }
-        }
-        .padding(.vertical, 2)
     }
 }

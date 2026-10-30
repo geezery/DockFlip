@@ -47,6 +47,7 @@
 "Managed by your organization" = "Beheerd door je organisatie";
 "Screen Recording is not allowed yet" = "Schermopname is nog niet toegestaan";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Sta DockFlip toe in Systeeminstellingen. Is het al toegestaan, herstart DockFlip dan.";
+"Window thumbnails are not shown" = "Vensterminiaturen worden niet getoond";
 "Show Setup Again" = "Toon configuratie opnieuw";
 "Accessibility: allowed" = "Toegankelijkheid: toegestaan";
 "Accessibility: not yet allowed" = "Toegankelijkheid: nog niet toegestaan";
@@ -105,6 +106,14 @@
 "Close Selected" = "Sluit selectie";
 "Keep" = "Behoud";
 "Never suggest this app again" = "Stel deze app nooit meer voor";
+"Keep this window for now. It is suggested again after three more unused days." = "Behoud dit venster voorlopig. Het wordt weer voorgesteld na nog drie ongebruikte dagen.";
+"Keep this app running for now. It is suggested again after another unused day." = "Laat deze app voorlopig open. Hij wordt weer voorgesteld na nog een ongebruikte dag.";
+"Kept Apps (%ld)" = "Behouden apps (%ld)";
+"Apps Clean Up never suggests" = "Apps die Opruimen nooit voorstelt";
+"Kept apps" = "Behouden apps";
+"Clean Up never suggests these apps or their windows." = "Opruimen stelt deze apps en hun vensters nooit voor.";
+"Remove" = "Verwijder";
+"Suggest this app again" = "Stel deze app weer voor";
 "Minimized" = "Geminimaliseerd";
 "On another desktop" = "Op een ander bureaublad";
 "No windows match" = "Geen overeenkomende vensters";
