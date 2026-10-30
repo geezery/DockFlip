@@ -46,9 +46,24 @@ jobs:
           plutil -lint build/DockFlip.app/Contents/Info.plist
           codesign --verify --verbose build/DockFlip.app
           du -sh build/DockFlip.app
+          # A fresh checkout is clean: its build must carry the bare commit, not -dirty.
+          commit=$(/usr/libexec/PlistBuddy -c 'Print :DockFlipCommit' build/DockFlip.app/Contents/Info.plist)
+          echo "::notice::DockFlipCommit $commit"
+          case "$commit" in
+            *-dirty|unknown|__COMMIT__) echo "::error::A clean checkout was built as commit '$commit'"; exit 1 ;;
+          esac
 
       - name: Landing gate tests
         run: pwsh -NoProfile -File scripts/land-gate-tests.ps1
 
+      - name: Build commit tests
+        run: pwsh -NoProfile -File scripts/build-commit-tests.ps1
+
       - name: Release workflow tests
         run: pwsh -NoProfile -File scripts/release-workflow-tests.ps1
+
+      - name: Privacy docs tests
+        run: pwsh -NoProfile -File scripts/privacy-docs-tests.ps1
+
+      - name: Uninstall tests
+        run: pwsh -NoProfile -File scripts/uninstall-tests.ps1

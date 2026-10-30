@@ -37,9 +37,11 @@ struct WindowListView: View {
                         VStack(spacing: 0) {
                             ForEach(model.rows) { row in
                                 WindowRowView(row: row, model: model, popup: popup)
-                                let visible = WindowListLayout.visibleTabs(of: row, expanded: model.expanded.contains(row.id))
+                                let isExpanded = model.expanded.contains(row.id)
+                                let visible = WindowListLayout.visibleTabs(of: row, expanded: isExpanded)
                                 if !visible.tabs.isEmpty {
-                                    TabListView(row: row, tabs: visible.tabs, hidden: visible.hidden, model: model, popup: popup)
+                                    let fold = WindowListLayout.foldControl(of: row, expanded: isExpanded)
+                                    TabListView(row: row, tabs: visible.tabs, fold: fold, model: model, popup: popup)
                                         .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }
@@ -47,6 +49,22 @@ struct WindowListView: View {
                         .padding(.horizontal, 6)
                     }
                     .scrollIndicators(.never)
+                    // Without scroll bars, windows past the tenth are a secret: say how many.
+                    .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                        geometry.visibleRect.maxY.rounded()
+                    } action: { _, bottom in
+                        model.listBottom = bottom
+                    }
+                    // A new scroll view for each app's list: it starts at the top.
+                    .id(model.listID)
+                    .overlay(alignment: .bottom) {
+                        let below = model.windowsBelow
+                        if below > 0 {
+                            MoreWindowsCue(count: below, previews: model.showsPreviews)
+                                .transition(.opacity)
+                        }
+                    }
+                    .animation(.easeOut(duration: 0.15), value: model.windowsBelow > 0)
                     if model.showsPreviews {
                         PeekPane(model: model, popup: popup)
                     }
@@ -59,10 +77,43 @@ struct WindowListView: View {
             model.showsPreviews ? AnyShapeStyle(.thickMaterial) : AnyShapeStyle(.regularMaterial),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
+        // A window scrolled to the panel's foot, or the cue's fade, stays inside the rounded corners.
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
         )
+    }
+}
+
+/// "4 more windows" over a fade at the foot of a list that scrolls. Not a
+/// button: the mouse goes through it, so the wheel over it still scrolls the
+/// list and the window under it can still be clicked.
+struct MoreWindowsCue: View {
+    let count: Int
+    /// The panel's backdrop is thicker with pictures; the fade matches it.
+    let previews: Bool
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(verbatim: count == 1 ? L("1 more window") : String(format: L("%ld more windows"), count))
+            Image(systemName: "chevron.down")
+                .font(.system(size: 9, weight: .semibold))
+                .accessibilityHidden(true)
+        }
+        .font(.system(size: 11, weight: .medium))
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity)
+        .frame(height: WindowListLayout.moreCueHeight)
+        .background(
+            Rectangle()
+                .fill(previews ? AnyShapeStyle(.thickMaterial) : AnyShapeStyle(.regularMaterial))
+                .mask(LinearGradient(
+                    stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.6)],
+                    startPoint: .top, endPoint: .bottom
+                ))
+        )
+        .allowsHitTesting(false)
     }
 }
 

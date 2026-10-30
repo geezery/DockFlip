@@ -28,14 +28,18 @@ final class SettingsWindowController {
             window.center()
             self.window = window
             // Coming back from System Settings brings this window forward: read the
-            // Screen Recording answer again then, not on a timer.
+            // Screen Recording and Login Items answers again then, not on a timer.
             keyObserver = NotificationCenter.default.addObserver(
                 forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
             ) { [weak self] _ in
-                MainActor.assumeIsolated { self?.screenRecording.refresh() }
+                MainActor.assumeIsolated {
+                    self?.screenRecording.refresh()
+                    Settings.shared.refreshLaunchAtLogin()
+                }
             }
         }
         screenRecording.refresh()
+        Settings.shared.refreshLaunchAtLogin()
         if let window { WindowPresenter.bringToFront(window) }
     }
 }
@@ -58,6 +62,11 @@ struct SettingsView: View {
                         get: { MainActor.assumeIsolated { settings.launchAtLogin } },
                         set: { value in MainActor.assumeIsolated { settings.launchAtLogin = value } }
                     ))
+                    if let problem = settings.launchAtLoginProblem {
+                        LaunchAtLoginWarning(problem: problem) {
+                            MainActor.assumeIsolated { settings.openLoginItemsSettings() }
+                        }
+                    }
                     Toggle(isOn: Binding(
                         get: { MainActor.assumeIsolated { settings.previewsEnabled } },
                         set: { value in
@@ -104,11 +113,18 @@ struct SettingsView: View {
     }
 }
 
-/// Under the thumbnails switch while it is on but macOS has not allowed Screen
-/// Recording: a denied prompt, or the restart macOS wants after allowing it,
-/// would otherwise leave the Dock list without pictures and no word why.
-struct ScreenRecordingWarning: View {
-    let relaunch: () -> Void
+/// A warning under a Settings switch: what is wrong, what to do, and the buttons
+/// that do it. Both warnings share it so they look alike.
+struct SettingsWarningRow<Actions: View>: View {
+    let title: Text
+    let detail: Text
+    let actions: Actions
+
+    init(title: Text, detail: Text, @ViewBuilder actions: () -> Actions) {
+        self.title = title
+        self.detail = detail
+        self.actions = actions()
+    }
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -117,19 +133,66 @@ struct ScreenRecordingWarning: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Screen Recording is not allowed yet")
-                    Text("Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.")
+                    title
+                    detail
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                HStack {
-                    Button("Open System Settings") {
-                        MainActor.assumeIsolated { PreviewProvider.openScreenRecordingSettings() }
-                    }
-                    Button("Restart DockFlip", action: relaunch)
-                }
+                actions
             }
+        }
+    }
+}
+
+/// Under the thumbnails switch while it is on but macOS has not allowed Screen
+/// Recording: a denied prompt, or the restart macOS wants after allowing it,
+/// would otherwise leave the Dock list without pictures and no word why.
+struct ScreenRecordingWarning: View {
+    let relaunch: () -> Void
+
+    var body: some View {
+        SettingsWarningRow(
+            title: Text("Screen Recording is not allowed yet"),
+            detail: Text("Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.")
+        ) {
+            HStack {
+                Button("Open System Settings") {
+                    MainActor.assumeIsolated { PreviewProvider.openScreenRecordingSettings() }
+                }
+                Button("Restart DockFlip", action: relaunch)
+            }
+        }
+    }
+}
+
+/// Under the Launch at login switch when macOS didn't take the change: the switch
+/// only flips back, and DockFlip would quietly not start after the next reboot.
+struct LaunchAtLoginWarning: View {
+    let problem: LoginItemProblem
+    let openLoginItems: () -> Void
+
+    var body: some View {
+        SettingsWarningRow(title: title, detail: detail) {
+            Button("Open Login Items", action: openLoginItems)
+        }
+    }
+
+    private var title: Text {
+        switch problem {
+        case .needsApproval: return Text("DockFlip is switched off in Login Items")
+        case .failed: return Text("Launch at login could not be changed")
+        }
+    }
+
+    private var detail: Text {
+        switch problem {
+        case .needsApproval:
+            return Text("Open Login Items and switch DockFlip on there to start it when you log in.")
+        case .failed(let reason):
+            // macOS's own words, already in the user's language.
+            if let reason { return Text(verbatim: reason) }
+            return Text("macOS did not accept the change.")
         }
     }
 }

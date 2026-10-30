@@ -5,7 +5,8 @@
 The first line of the menu bar menu says it, for example *DockFlip 0.3.0
 (c79a704)*. The part in brackets is the commit the app was built from. Builds
 from source all carry the same version number, so the commit tells you whether
-yours has a fix. Settings and **Save Debug Log…** show the same.
+yours has a fix. A build made with changes that commit doesn't hold says so:
+*DockFlip 0.3.0 (c79a704-dirty)*. Settings and **Save Debug Log…** show the same.
 
 ## ⌘Tab does nothing after a rebuild
 
@@ -36,6 +37,16 @@ working. Quit the other app (and remove it from *Login Items*), then turn
 *⌘Tab: not active* with **Restart DockFlip** below it means macOS refused
 DockFlip's key taps: choose **Restart DockFlip**.
 
+## ⌃⌥← does another app's thing, or nothing
+
+Rectangle's and Magnet's default shortcuts are ⌃⌥ with the arrows, D and E,
+the same keys as DockFlip's, and whichever app starts first gets them. The menu
+bar menu then shows a line such as *⌃⌥← ⌃⌥→ ⌃⌥D: used by another app*, naming
+Rectangle, Rectangle Pro, Magnet or Spectacle below it when one of them is
+running (macOS doesn't say which app holds a key). Quit that app or change its
+shortcuts, then click the line: DockFlip asks for the shortcuts again. AltTab
+is named the same way under *⌘Tab: used by another app*.
+
 ## An app's windows don't show up
 
 - **Is a window actually open?** The dot under a Dock icon means the app is
@@ -44,9 +55,11 @@ DockFlip's key taps: choose **Restart DockFlip**.
 - **Slow apps** (Office, sometimes Chrome) can take a moment to answer. DockFlip
   asks again rather than concluding "no windows".
 - Still missing? Turn on **Debug Logging** in the menu bar menu, reproduce the
-  problem, choose **Save Debug Log…** and attach the file to a
+  problem, choose **Save Debug Log…**, pick where to save it (the Desktop is
+  suggested) and attach the file to a
   [bug report](https://github.com/geezery/DockFlip/issues/new/choose). The log
-  never contains window or tab titles.
+  never contains window or tab titles, and saving it asks for no permission. If
+  it can't be saved, DockFlip says why; pick another folder.
 
 ## Browser tabs aren't listed
 
@@ -60,6 +73,14 @@ Thumbnails need *Screen & System Audio Recording*. While it isn't allowed,
 Settings says so under **Window thumbnails**: press **Open System Settings**,
 allow DockFlip there, then press **Restart DockFlip**, because macOS often
 applies the permission only after a restart.
+
+## DockFlip doesn't start when I log in
+
+Launch at login lives in macOS, in *System Settings → General → Login Items &
+Extensions*. If DockFlip is switched off there, the **Launch at login** switch
+can't turn it back on: Settings says so under the switch. Press **Open Login
+Items**, switch DockFlip on there, and the switch in Settings follows. If macOS
+refuses for another reason, Settings shows macOS's own words.
 
 ## Snapping fights with macOS
 

@@ -196,7 +196,8 @@ Accessibility**. The setup window opens the right page for you.
 3. It copies the app to `/Applications` and starts it.
 
 No Apple Developer account and no fees. `make uninstall` removes everything,
-the certificate included.
+the certificate included, and turns macOS's own edge tiling back on if
+DockFlip's setup turned it off.
 
 Other targets: `make` (build only), `make run`, `make test`, `make clean`.
 </details>
@@ -238,6 +239,9 @@ polished from the first second without ever seeing your screen.
 - **No third-party code.** Apple frameworks only.
 - **Your typing stays yours.** DockFlip sees ordinary keys only while the ⌘Tab
   switcher is open, for type-to-filter.
+- **Your clicks pass through.** DockFlip watches left clicks and drags, as
+  pointer positions only, for Dock icon clicks and drag snapping; clicks
+  outside the Dock reach your apps untouched.
 - **Thumbnails are opt-in.** If you want real pictures, they're taken on demand,
   kept in memory for two minutes at most, and never taken of password managers,
   System Settings or while a password field is active.

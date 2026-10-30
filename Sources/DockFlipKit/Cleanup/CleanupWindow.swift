@@ -17,11 +17,20 @@ struct CleanupRow: Identifiable {
     let memoryBytes: Int64?
 }
 
+/// An app the user asked Clean Up never to suggest, for the "Kept Apps" list.
+struct KeptAppRow: Identifiable {
+    let id: String
+    let name: String
+    let icon: NSImage?
+}
+
 @MainActor
 final class CleanupModel: ObservableObject {
     @Published var windows: [CleanupRow] = []
     @Published var apps: [CleanupRow] = []
     @Published var selected = Set<CleanupRow.Target>()
+    @Published var kept: [KeptAppRow] = []
+    @Published var showsKept = false
 
     var isEmpty: Bool { windows.isEmpty && apps.isEmpty }
 }
@@ -41,9 +50,9 @@ final class CleanupController {
         self.usage = usage
     }
 
-    private var keep: Set<String> {
-        get { Set(UserDefaults.standard.stringArray(forKey: Self.keepKey) ?? []) }
-        set { UserDefaults.standard.set(Array(newValue).sorted(), forKey: Self.keepKey) }
+    private var kept: KeptApps {
+        get { KeptApps(UserDefaults.standard.stringArray(forKey: Self.keepKey) ?? []) }
+        set { UserDefaults.standard.set(newValue.bundleIDs, forKey: Self.keepKey) }
     }
 
     /// Number of suggestions, for the menu bar menu.
@@ -76,7 +85,8 @@ final class CleanupController {
             case .window(let id):
                 registry.close(id)
             case .app(let pid):
-                _ = NSRunningApplication(processIdentifier: pid)?.terminate()
+                guard let app = NSRunningApplication(processIdentifier: pid) else { continue }
+                followUpQuit(of: app, wasAsked: app.terminate())
             }
         }
         Log.app.notice("Clean up: closed \(targets.count, privacy: .public) items")
@@ -87,11 +97,51 @@ final class CleanupController {
         }
     }
 
-    func keepAlways(_ row: CleanupRow) {
+    /// One-shot look, never a repeating timer: an app that asks to review changes
+    /// is still running a second later, and its question is shown where it can be seen.
+    private func followUpQuit(of app: NSRunningApplication, wasAsked: Bool) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            let check = QuitFollowUp.Check(
+                wasAsked: wasAsked,
+                isTerminated: app.isTerminated,
+                isHidden: app.isHidden,
+                isActive: app.isActive
+            )
+            guard QuitFollowUp.after(check) == .bringForward else { return }
+            let name = app.localizedName ?? "?"
+            Log.app.notice("Clean up: bringing forward an app that asks first: \(name, privacy: .public)")
+            if app.isHidden { app.unhide() }
+            _ = app.activate(options: [])
+        }
+    }
+
+    /// "Keep": not now. Only this window (or app) counts as used now and comes back
+    /// after it sits unused as long again; the app's other windows stay suggested.
+    func keepForNow(_ row: CleanupRow) {
+        switch row.id {
+        case .window(let id):
+            usage.markUsed(window: id)
+        case .app(let pid):
+            // An app that quit meanwhile has nothing to mark; the reload drops its row.
+            if let app = NSRunningApplication(processIdentifier: pid) { usage.markUsed(app: app) }
+        }
+        reload()
+    }
+
+    /// Every window of the app, now and later, until removed from "Kept Apps".
+    func neverSuggest(_ row: CleanupRow) {
         guard let bundleID = row.bundleID else { return }
-        var set = keep
-        set.insert(bundleID)
-        keep = set
+        var kept = self.kept
+        kept.add(bundleID)
+        self.kept = kept
+        reload()
+    }
+
+    func suggestAgain(_ bundleID: String) {
+        var kept = self.kept
+        kept.remove(bundleID)
+        self.kept = kept
         reload()
     }
 
@@ -110,11 +160,28 @@ final class CleanupController {
         model.windows = windowRows
         model.apps = appRows
         model.selected = Set(windowRows.map(\.id) + appRows.map(\.id))
+        model.kept = keptRows()
+        if model.kept.isEmpty { model.showsKept = false }
+    }
+
+    /// Names and icons from the installed app; an app no longer installed shows its bundle id.
+    private func keptRows() -> [KeptAppRow] {
+        kept.bundleIDs.map { bundleID in
+            guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
+                return KeptAppRow(id: bundleID, name: bundleID, icon: nil)
+            }
+            return KeptAppRow(
+                id: bundleID,
+                name: FileManager.default.displayName(atPath: url.path),
+                icon: NSWorkspace.shared.icon(forFile: url.path)
+            )
+        }
+        .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
     private func candidates() -> ([CleanupRow], [CleanupRow]) {
         let now = Date()
-        let keep = self.keep
+        let keep = self.kept.set
         let snapshots = registry.currentSpaceWindows()
         let byID = Dictionary(uniqueKeysWithValues: snapshots.map { ($0.id, $0) })
 
@@ -229,6 +296,16 @@ struct CleanupView: View {
                 Text(String(format: L("%ld selected"), model.selected.count))
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
+                if !model.kept.isEmpty {
+                    Button(String(format: L("Kept Apps (%ld)"), model.kept.count)) { model.showsKept = true }
+                        .buttonStyle(.borderless)
+                        .font(.system(size: 12))
+                        .help(Text("Apps Clean Up never suggests"))
+                        .popover(isPresented: $model.showsKept) {
+                            KeptAppsView(model: model, controller: controller)
+                        }
+                        .padding(.leading, 8)
+                }
                 Spacer()
                 Button("Close Selected") { controller.closeSelected() }
                     .buttonStyle(.borderedProminent)
@@ -272,13 +349,35 @@ struct CleanupRowView: View {
                 Text(verbatim: detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
             }
             Spacer()
-            if row.bundleID != nil {
-                Button("Keep") { controller.keepAlways(row) }
-                    .buttonStyle(.borderless)
-                    .font(.system(size: 12))
-                    .help(Text("Never suggest this app again"))
-            }
+            keepButton
+                .buttonStyle(.borderless)
+                .font(.system(size: 12))
+                .help(Text(keepHelp))
         }
         .padding(.vertical, 2)
+    }
+
+    private var keepHelp: String {
+        if case .window = row.id {
+            return L("Keep this window for now. It is suggested again after three more unused days.")
+        }
+        return L("Keep this app running for now. It is suggested again after another unused day.")
+    }
+
+    /// "Keep" is for this row only; banning the whole app sits one click further, in its menu.
+    @ViewBuilder private var keepButton: some View {
+        if row.bundleID != nil {
+            Menu {
+                Button("Never suggest this app again") { controller.neverSuggest(row) }
+            } label: {
+                Text("Keep")
+            } primaryAction: {
+                controller.keepForNow(row)
+            }
+            .menuStyle(.button)
+            .fixedSize()
+        } else {
+            Button("Keep") { controller.keepForNow(row) }
+        }
     }
 }

@@ -4,7 +4,8 @@ import SwiftUI
 /// Drives the ⌘Tab switcher. While it is open, its full-screen panel is the key
 /// window and has the keyboard, so the app you came from (say, Terminal) gets no
 /// key presses. Releasing ⌘ opens the window in front; Esc or a click outside goes
-/// back to where you were.
+/// back to where you were. The panel takes the keyboard at once but is drawn
+/// only once ⌘ has been held a moment (`SwitcherReveal`), so quick hops never flash.
 ///
 /// The panel is a non-activating panel that is made key *without activating
 /// DockFlip* — what AltTab and DockDoor do. Since macOS 14, an app in the background
@@ -25,7 +26,13 @@ final class SwitcherController {
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
     private var previewTasks: [Task<Void, Never>] = []
+    /// Windows whose pictures this session asked for already, so a step asks only for new ones.
+    private var askedPreviews = Set<CGWindowID>()
     private var previousApp: NSRunningApplication?
+    /// Draws the switcher once ⌘ has been held long enough (`SwitcherReveal`).
+    private var revealTask: Task<Void, Never>?
+    /// The switcher can be seen. Until then its panel is key but invisible.
+    private var isDrawn = false
     private var localMonitor: Any?
     private var resignKeyToken: NSObjectProtocol?
 
@@ -123,9 +130,7 @@ final class SwitcherController {
 
         let selection = SwitcherSelection(count: windows.count, reverse: reverse)
         // Open without animating from the previous session's state.
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
-        withTransaction(transaction) { model.selection = selection.index }
+        showSelection(selection.index, animated: false)
         self.selection = selection
 
         // A quick ⌘Tab can let go of ⌘ before this hot key is handled; no release
@@ -138,10 +143,53 @@ final class SwitcherController {
             return true
         }
 
+        // Take the keyboard now but draw only after a short hold: a quick ⌘Tab-Tab
+        // switches without the full-screen stack flashing up (as macOS and AltTab).
         show()
         onActiveChanged?(true)
-        loadPreviews(for: windows)
+        scheduleReveal()
         return true
+    }
+
+    private func scheduleReveal() {
+        revealTask?.cancel()
+        revealTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: SwitcherReveal.holdDelay)
+            guard let self, !Task.isCancelled else { return }
+            self.revealTask = nil
+            let commandHeld = NSEvent.modifierFlags.contains(.command)
+            switch SwitcherReveal.afterHold(selection: self.selection, query: self.query, commandHeld: commandHeld) {
+            case .draw:
+                self.reveal()
+            case .open(let index):
+                Log.keys.debug("⌘ released during the hold without a release event; switching")
+                self.commit(at: index)
+            case .closed:
+                break
+            }
+        }
+    }
+
+    /// Makes the panel that `show()` ordered in invisible visible and clickable.
+    private func reveal() {
+        revealTask?.cancel()
+        revealTask = nil
+        guard isActive, !isDrawn, let panel else { return }
+        isDrawn = true
+        // Pictures memory holds go in first, so the stack appears with them.
+        loadPreviews(lookAhead: true)
+        panel.ignoresMouseEvents = false
+        panel.alphaValue = 1
+    }
+
+    private func showSelection(_ index: Int, animated: Bool) {
+        guard !animated else {
+            model.selection = index
+            return
+        }
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { model.selection = index }
     }
 
     /// Shows only the windows whose title, app or document contains every typed word.
@@ -157,15 +205,17 @@ final class SwitcherController {
         newSelection.select(0)
         selection = newSelection
         model.selection = newSelection.index
-        let ids = Set(matches.map(\.windowID))
-        loadPreviews(for: allWindows.filter { ids.contains($0.id) })
+        if SwitcherReveal.drawsAtOnce(query: newQuery) { reveal() }
+        loadPreviews(lookAhead: true)
     }
 
     private func step(_ delta: Int) {
         guard var selection else { return }
         selection.step(delta)
         self.selection = selection
-        model.selection = selection.index
+        // Steps during the hold don't animate: the stack appears settled, not mid-spring.
+        showSelection(selection.index, animated: isDrawn)
+        loadPreviews(lookAhead: false)
     }
 
     private func commit(at index: Int) {
@@ -187,8 +237,12 @@ final class SwitcherController {
     }
 
     private func hide() {
+        revealTask?.cancel()
+        revealTask = nil
+        isDrawn = false
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
+        askedPreviews = []
         if let localMonitor { NSEvent.removeMonitor(localMonitor) }
         localMonitor = nil
         panel?.orderOut(nil)
@@ -203,18 +257,24 @@ final class SwitcherController {
     }
 
     /// Pictures memory already has appear with the stack; fresh ones are
-    /// captured side by side, the windows nearest the front first.
-    private func loadPreviews(for windows: [WindowSnapshot]) {
-        previewTasks.forEach { $0.cancel() }
-        previewTasks = []
-        guard PreviewProvider.shared.isAvailable else { return }
-        let wanted = windows.prefix(16)
+    /// captured side by side, the windows nearest the front first. Called again
+    /// on every step and filter change for the cards not asked for yet (see
+    /// `SwitcherPreviews`); captures already running keep going. Nothing is
+    /// captured before the switcher is drawn, so a quick hop takes no pictures.
+    private func loadPreviews(lookAhead: Bool) {
+        guard isDrawn else { return }
+        let ids = SwitcherPreviews.toCapture(
+            ids: model.items.map(\.windowID), selection: model.selection,
+            visibleDepth: SwitcherStack.visibleDepth, asked: askedPreviews, lookAhead: lookAhead)
+        guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
+        askedPreviews.formUnion(ids)
+        let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
         for window in wanted where model.thumbnails[window.id] == nil {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
                 model.thumbnails[window.id] = cached
             }
         }
-        previewTasks = wanted.map { window in
+        previewTasks += wanted.map { window in
             Task { @MainActor [weak self] in
                 let image = await PreviewProvider.shared.thumbnail(for: window)
                 // The switcher may have closed while capturing: drop the image then.
@@ -226,6 +286,9 @@ final class SwitcherController {
 
     // MARK: - Panel
 
+    /// Orders the panel in and makes it key, but invisible and click-through until
+    /// `reveal()`: keys pressed during the hold (⌘Q, arrows) reach the switcher,
+    /// not the app you are leaving.
     private func show() {
         let panel = self.panel ?? makePanel()
         self.panel = panel
@@ -237,6 +300,8 @@ final class SwitcherController {
         if let front = NSWorkspace.shared.frontmostApplication, front.processIdentifier != own {
             previousApp = front
         }
+        panel.alphaValue = 0
+        panel.ignoresMouseEvents = true
         panel.makeKeyAndOrderFront(nil)
         panel.orderFrontRegardless()
         installLocalMonitor()
