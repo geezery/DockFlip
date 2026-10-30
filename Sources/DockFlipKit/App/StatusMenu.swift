@@ -43,7 +43,12 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         }
         addEdgeTilingWarning(to: menu)
         if let services {
-            addStatus(commandTabStatus(services), to: menu)
+            let commandTab = addStatus(commandTabStatus(services), to: menu)
+            if services.commandTabHeldElsewhere,
+               let app = ShortcutConflicts.running(ShortcutConflicts.commandTabApps, bundleIDs: Self.runningBundleIDs()).first {
+                commandTab.subtitle = String(format: L("Probably %@"), app)
+            }
+            addLayoutShortcutConflict(services, to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), services.registry.trackedWindowCount), to: menu)
             if !services.tapsRunning {
                 menu.addItem(ClosureMenuItem(L("Restart DockFlip"), handler: actions.relaunch))
@@ -83,10 +88,12 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         menu.addItem(NSMenuItem(title: L("Quit DockFlip"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }
 
-    private func addStatus(_ title: String, to menu: NSMenu) {
+    @discardableResult
+    private func addStatus(_ title: String, to menu: NSMenu) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         item.isEnabled = false
         menu.addItem(item)
+        return item
     }
 
     /// Says why ⌘Tab isn't DockFlip's when another app (AltTab) holds it: then
@@ -94,6 +101,30 @@ final class StatusMenu: NSObject, NSMenuDelegate {
     private func commandTabStatus(_ services: Services) -> String {
         if services.shortcutsActive { return L("⌘Tab: active") }
         return services.commandTabHeldElsewhere ? L("⌘Tab: used by another app") : L("⌘Tab: not active")
+    }
+
+    /// Names the ⌃⌥ shortcuts another app (Rectangle, Magnet) holds: otherwise ⌃⌥←
+    /// does that app's thing, or nothing, and snapping just looks broken. macOS
+    /// doesn't say which app holds a key, so the known ones that run are named.
+    /// Clicking asks for the shortcuts again, once the other app has let go.
+    private func addLayoutShortcutConflict(_ services: Services, to menu: NSMenu) {
+        let held = services.layoutShortcutsHeldElsewhere
+        guard !held.isEmpty else { return }
+        let item = ClosureMenuItem(String(format: L("%@: used by another app"), held.joined(separator: " "))) {
+            Log.keys.notice("Shortcuts asked for again from the menu")
+            services.applyShortcutSetting()
+        }
+        item.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
+        let apps = ShortcutConflicts.running(ShortcutConflicts.layoutApps, bundleIDs: Self.runningBundleIDs())
+        item.subtitle = apps.isEmpty
+            ? L("Quit the app that uses them, then click to try again.")
+            : String(format: L("Probably %@. Quit it or change its shortcuts, then click to try again."),
+                     apps.joined(separator: ", "))
+        menu.addItem(item)
+    }
+
+    private static func runningBundleIDs() -> [String] {
+        NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
     }
 
     /// macOS's own edge tiling can come back on after setup turned it off (System
