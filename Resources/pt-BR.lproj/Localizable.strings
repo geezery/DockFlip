@@ -109,6 +109,8 @@
 "Select All" = "Selecionar Tudo";
 "%ld tabs" = "%ld abas";
 "Show all %ld tabs" = "Mostrar todas as %ld abas";
+"1 more window" = "Mais 1 janela";
+"%ld more windows" = "Mais %ld janelas";
 "Duplicate" = "Duplicada";
 "Not responding" = "Não responde";
 "Active window" = "Janela ativa";

@@ -109,6 +109,8 @@
 "Select All" = "Markera alla";
 "%ld tabs" = "%ld flikar";
 "Show all %ld tabs" = "Visa alla %ld flikar";
+"1 more window" = "1 fönster till";
+"%ld more windows" = "%ld fönster till";
 "Duplicate" = "Dubblett";
 "Not responding" = "Svarar inte";
 "Active window" = "Aktivt fönster";

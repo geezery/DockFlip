@@ -109,6 +109,8 @@
 "Select All" = "全选";
 "%ld tabs" = "%ld 个标签页";
 "Show all %ld tabs" = "显示全部 %ld 个标签页";
+"1 more window" = "还有 1 个窗口";
+"%ld more windows" = "还有 %ld 个窗口";
 "Duplicate" = "重复";
 "Not responding" = "未响应";
 "Active window" = "当前窗口";

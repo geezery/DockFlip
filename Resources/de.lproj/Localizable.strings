@@ -109,6 +109,8 @@
 "Select All" = "Alles auswählen";
 "%ld tabs" = "%ld Tabs";
 "Show all %ld tabs" = "Alle %ld Tabs anzeigen";
+"1 more window" = "1 weiteres Fenster";
+"%ld more windows" = "%ld weitere Fenster";
 "Duplicate" = "Duplikat";
 "Not responding" = "Reagiert nicht";
 "Active window" = "Aktives Fenster";

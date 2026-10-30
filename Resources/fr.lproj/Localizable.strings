@@ -109,6 +109,8 @@
 "Select All" = "Tout sélectionner";
 "%ld tabs" = "%ld onglets";
 "Show all %ld tabs" = "Afficher les %ld onglets";
+"1 more window" = "1 autre fenêtre";
+"%ld more windows" = "%ld autres fenêtres";
 "Duplicate" = "Doublon";
 "Not responding" = "Ne répond pas";
 "Active window" = "Fenêtre active";

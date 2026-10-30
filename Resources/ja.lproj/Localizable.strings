@@ -109,6 +109,8 @@
 "Select All" = "すべてを選択";
 "%ld tabs" = "%ld個のタブ";
 "Show all %ld tabs" = "%ld個のタブをすべて表示";
+"1 more window" = "ほかに1個のウインドウ";
+"%ld more windows" = "ほかに%ld個のウインドウ";
 "Duplicate" = "重複";
 "Not responding" = "応答なし";
 "Active window" = "アクティブなウインドウ";
