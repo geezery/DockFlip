@@ -73,7 +73,8 @@ extension AXUIElement {
     }
 
     /// `windowID` kept out of the self-check, for elements that need not be
-    /// windows: the search for windows on other Spaces tries every element id.
+    /// windows (the search for windows on other Spaces tries every element id)
+    /// or may be gone (a window's destroyed notification).
     var windowIDOfAnyElement: CGWindowID? {
         var id: CGWindowID = 0
         guard _AXUIElementGetWindow(self, &id) == .success, id != 0 else { return nil }
