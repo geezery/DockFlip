@@ -6,18 +6,21 @@ import SwiftUI
 /// key presses. Releasing ⌘ opens the window in front; Esc or a click outside goes
 /// back to where you were. The panel takes the keyboard at once but is drawn
 /// only once ⌘ has been held a moment (`SwitcherReveal`), so quick hops never flash.
+/// How the panel takes the keyboard without activating DockFlip: `SwitcherPanel`.
 ///
-/// The panel is a non-activating panel that is made key *without activating
-/// DockFlip* — what AltTab and DockDoor do. Since macOS 14, an app in the background
-/// cannot reliably activate itself (cooperative activation), but a non-activating
-/// panel can always become key. The app you came from stays the active app, so
-/// cancelling needs no re-activation, and keys reach the panel even while that app
-/// holds secure keyboard input (where event taps see no key presses at all).
+/// The windows, focusing, the live ⌘ state and the panel come in from outside,
+/// so tests run the whole open/step/release flow with fakes, without
+/// Accessibility or a panel (`SwitcherControllerTests`).
 @MainActor
 final class SwitcherController {
-    private let registry: WindowRegistry
-    private let model = SwitcherModel()
-    private var panel: NSPanel?
+    private let switcherWindows: @MainActor () -> [WindowSnapshot]
+    private let focusWindow: @MainActor (CGWindowID) -> Void
+    /// Whether ⌘ is down right now, read from the system, not from events.
+    private let isCommandHeld: @MainActor () -> Bool
+    /// The hold before the switcher is drawn; tests pass one that ends at once.
+    private let sleep: @MainActor (Duration) async -> Void
+    private let presenter: any SwitcherPresenter
+    private let model: SwitcherModel
     private var selection: SwitcherSelection?
     /// Every window of this session; `model.items` holds the ones matching the filter.
     private var allWindows: [WindowSnapshot] = []
@@ -28,23 +31,45 @@ final class SwitcherController {
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures this session asked for already, so a step asks only for new ones.
     private var askedPreviews = Set<CGWindowID>()
-    private var previousApp: NSRunningApplication?
     /// Draws the switcher once ⌘ has been held long enough (`SwitcherReveal`).
-    private var revealTask: Task<Void, Never>?
+    /// Readable so tests can wait for it.
+    private(set) var revealTask: Task<Void, Never>?
     /// The switcher can be seen. Until then its panel is key but invisible.
     private var isDrawn = false
-    private var localMonitor: Any?
-    private var resignKeyToken: NSObjectProtocol?
 
     /// Called with true when the switcher opens and false when it closes.
     var onActiveChanged: ((Bool) -> Void)?
 
     var isActive: Bool { selection != nil }
 
-    init(registry: WindowRegistry) {
-        self.registry = registry
+    convenience init(registry: WindowRegistry) {
+        self.init(
+            switcherWindows: { registry.switcherWindows() },
+            focusWindow: { registry.focus($0) },
+            isCommandHeld: { NSEvent.modifierFlags.contains(.command) },
+            sleep: { try? await Task.sleep(for: $0) },
+            presenter: nil
+        )
+    }
+
+    /// Tests pass fakes; `presenter` nil means the real panel.
+    init(
+        switcherWindows: @escaping @MainActor () -> [WindowSnapshot],
+        focusWindow: @escaping @MainActor (CGWindowID) -> Void,
+        isCommandHeld: @escaping @MainActor () -> Bool,
+        sleep: @escaping @MainActor (Duration) async -> Void,
+        presenter: (any SwitcherPresenter)?
+    ) {
+        let model = SwitcherModel()
+        self.switcherWindows = switcherWindows
+        self.focusWindow = focusWindow
+        self.isCommandHeld = isCommandHeld
+        self.sleep = sleep
+        self.model = model
+        self.presenter = presenter ?? SwitcherPanel(model: model)
         model.onPick = { [weak self] index in self?.commit(at: index) }
         model.onCancel = { [weak self] in self?.cancel() }
+        self.presenter.onInput = { [weak self] input in _ = self?.handle(input) }
     }
 
     /// Returns true when the input was consumed.
@@ -100,7 +125,7 @@ final class SwitcherController {
     }
 
     private func beginUnmeasured(reverse: Bool) -> Bool {
-        let windows = registry.switcherWindows()
+        let windows = switcherWindows()
         guard !windows.isEmpty else { return false }
 
         allWindows = windows
@@ -136,7 +161,7 @@ final class SwitcherController {
         // A quick ⌘Tab can let go of ⌘ before this hot key is handled; no release
         // follows then. Switch at once, without drawing the switcher. A release
         // after this check still arrives as `.commandReleased`.
-        let commandHeld = NSEvent.modifierFlags.contains(.command)
+        let commandHeld = isCommandHeld()
         if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: commandHeld) {
             Log.keys.debug("⌘ already released when the switcher opened; switching at once")
             commit(at: index)
@@ -145,7 +170,7 @@ final class SwitcherController {
 
         // Take the keyboard now but draw only after a short hold: a quick ⌘Tab-Tab
         // switches without the full-screen stack flashing up (as macOS and AltTab).
-        show()
+        presenter.show()
         onActiveChanged?(true)
         scheduleReveal()
         return true
@@ -153,11 +178,12 @@ final class SwitcherController {
 
     private func scheduleReveal() {
         revealTask?.cancel()
+        let sleep = self.sleep
         revealTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(for: SwitcherReveal.holdDelay)
+            await sleep(SwitcherReveal.holdDelay)
             guard let self, !Task.isCancelled else { return }
             self.revealTask = nil
-            let commandHeld = NSEvent.modifierFlags.contains(.command)
+            let commandHeld = self.isCommandHeld()
             switch SwitcherReveal.afterHold(selection: self.selection, query: self.query, commandHeld: commandHeld) {
             case .draw:
                 self.reveal()
@@ -170,16 +196,15 @@ final class SwitcherController {
         }
     }
 
-    /// Makes the panel that `show()` ordered in invisible visible and clickable.
+    /// Makes the panel that `presenter.show()` ordered in invisible visible and clickable.
     private func reveal() {
         revealTask?.cancel()
         revealTask = nil
-        guard isActive, !isDrawn, let panel else { return }
+        guard isActive, !isDrawn else { return }
         isDrawn = true
         // Pictures memory holds go in first, so the stack appears with them.
         loadPreviews(lookAhead: true)
-        panel.ignoresMouseEvents = false
-        panel.alphaValue = 1
+        presenter.draw()
     }
 
     private func showSelection(_ index: Int, animated: Bool) {
@@ -221,38 +246,29 @@ final class SwitcherController {
     private func commit(at index: Int) {
         guard isActive, model.items.indices.contains(index) else { return }
         let item = model.items[index]
-        hide()
-        registry.focus(item.windowID)
+        hide(returningToPreviousApp: false)
+        focusWindow(item.windowID)
     }
 
     private func cancel() {
         guard isActive else { return }
-        let previous = previousApp
-        let wasActivated = NSApp.isActive
-        hide()
-        // Normally DockFlip never became active and the previous app still is.
-        if wasActivated {
-            _ = previous?.activate(from: NSRunningApplication.current, options: [])
-        }
+        hide(returningToPreviousApp: true)
     }
 
-    private func hide() {
+    private func hide(returningToPreviousApp: Bool) {
         revealTask?.cancel()
         revealTask = nil
         isDrawn = false
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
         askedPreviews = []
-        if let localMonitor { NSEvent.removeMonitor(localMonitor) }
-        localMonitor = nil
-        panel?.orderOut(nil)
+        presenter.hide(returningToPreviousApp: returningToPreviousApp)
         selection = nil
         allWindows = []
         allItems = []
         query = ""
         model.query = ""
         model.thumbnails = [:]
-        previousApp = nil
         onActiveChanged?(false)
     }
 
@@ -282,87 +298,5 @@ final class SwitcherController {
                 self.model.thumbnails[window.id] = image
             }
         }
-    }
-
-    // MARK: - Panel
-
-    /// Orders the panel in and makes it key, but invisible and click-through until
-    /// `reveal()`: keys pressed during the hold (⌘Q, arrows) reach the switcher,
-    /// not the app you are leaving.
-    private func show() {
-        let panel = self.panel ?? makePanel()
-        self.panel = panel
-        guard let screen = DisplayLayout.screen(containingMouse: NSEvent.mouseLocation) else { return }
-        panel.setFrame(screen.frame, display: true)
-
-        // Take the keyboard while switching, without activating DockFlip (see the type comment).
-        let own = ProcessInfo.processInfo.processIdentifier
-        if let front = NSWorkspace.shared.frontmostApplication, front.processIdentifier != own {
-            previousApp = front
-        }
-        panel.alphaValue = 0
-        panel.ignoresMouseEvents = true
-        panel.makeKeyAndOrderFront(nil)
-        panel.orderFrontRegardless()
-        installLocalMonitor()
-        let isKey = panel.isKeyWindow
-        Log.keys.debug("Switcher panel shown, key window: \(isKey, privacy: .public)")
-    }
-
-    /// Another window can take key status while the switcher is open (an app
-    /// opening a window, a notification). Take it back on the next turn of the
-    /// run loop — making it key again inside the notification is ignored.
-    private func observeResignKey(of panel: NSPanel) {
-        resignKeyToken = NotificationCenter.default.addObserver(
-            forName: NSWindow.didResignKeyNotification, object: panel, queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in
-                guard let self, self.isActive, let panel = self.panel else { return }
-                Log.keys.debug("Switcher panel lost key status; taking it back")
-                panel.makeKeyAndOrderFront(nil)
-            }
-        }
-    }
-
-    /// The panel is key, so every key but Esc (see `SwitcherKeyTaps`) arrives here
-    /// as an ordinary app event, even while another app holds secure keyboard input.
-    private func installLocalMonitor() {
-        guard localMonitor == nil else { return }
-        localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
-            let swallow: Bool = MainActor.assumeIsolated { self?.handleLocal(event) ?? false }
-            return swallow ? nil : event
-        }
-    }
-
-    /// Returns true when the event must not reach anything else.
-    private func handleLocal(_ event: NSEvent) -> Bool {
-        guard isActive else { return false }
-        if event.type == .flagsChanged {
-            if !event.modifierFlags.contains(.command) { handle(.commandReleased) }
-            return false
-        }
-        let input = SwitcherInput.from(
-            keyCode: UInt32(event.keyCode),
-            command: event.modifierFlags.contains(.command),
-            shift: event.modifierFlags.contains(.shift),
-            text: SwitcherText.typed(event)
-        )
-        if let input { handle(input) }
-        return true // nothing else reaches any app while switching
-    }
-
-    private func makePanel() -> NSPanel {
-        // Above menus, on every Space and over full-screen apps; takes the keyboard.
-        let panel = Panels.make(
-            level: .popUpMenu,
-            behavior: [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle],
-            keyable: true
-        )
-
-        let hosting = FirstMouseHostingView(rootView: SwitcherView(model: model))
-        hosting.sizingOptions = []
-        panel.contentView = hosting
-        observeResignKey(of: panel)
-        return panel
     }
 }

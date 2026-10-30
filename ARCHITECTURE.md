@@ -56,6 +56,9 @@ that acts on them: `SwitcherReveal`, `DockPress`, `HotKeyRegistration`,
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
 The Dock list's sizing rules (`WindowListLayout`) are tested there too.
+So is the ⌘Tab flow in `SwitcherController` (open, step, release, filter, cancel):
+it gets its windows, focusing and the ⌘ state as closures and draws through a
+`SwitcherPresenter` (`SwitcherPanel` in the app), so tests pass fakes for all of them.
 
 ## Key ideas
 
