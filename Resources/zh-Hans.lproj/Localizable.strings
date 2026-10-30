@@ -65,6 +65,7 @@
 "Restart DockFlip" = "重新启动 DockFlip";
 "Turn Off macOS Edge Tiling" = "关闭 macOS 边缘平铺";
 "Windows snap twice when dragged to an edge" = "拖到边缘的窗口会贴靠两次";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "macOS 边缘平铺也已打开。可在 DockFlip 菜单中关闭。";
 "Window Layout" = "窗口布局";
 "Clean Up (%ld)…" = "清理（%ld）…";
 "Clean Up…" = "清理…";

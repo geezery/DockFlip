@@ -65,6 +65,7 @@
 "Restart DockFlip" = "Käynnistä DockFlip uudelleen";
 "Turn Off macOS Edge Tiling" = "Laita macOS:n reunajärjestys pois";
 "Windows snap twice when dragged to an edge" = "Reunaan vedetyt ikkunat asettuvat kahdesti";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "macOS:n reunajärjestys on myös päällä. Laita se pois DockFlipin valikosta.";
 "Window Layout" = "Ikkunoiden asettelu";
 "Clean Up (%ld)…" = "Siivoa (%ld)…";
 "Clean Up…" = "Siivoa…";

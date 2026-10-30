@@ -65,6 +65,7 @@
 "Restart DockFlip" = "Reiniciar o DockFlip";
 "Turn Off macOS Edge Tiling" = "Desativar o mosaico nas bordas do macOS";
 "Windows snap twice when dragged to an edge" = "As janelas se encaixam duas vezes ao serem arrastadas para uma borda";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "O mosaico nas bordas do macOS também está ativado. Desative-o no menu do DockFlip.";
 "Window Layout" = "Disposição das Janelas";
 "Clean Up (%ld)…" = "Limpar (%ld)…";
 "Clean Up…" = "Limpar…";

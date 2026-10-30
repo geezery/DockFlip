@@ -65,6 +65,7 @@
 "Restart DockFlip" = "Restart DockFlip";
 "Turn Off macOS Edge Tiling" = "Turn Off macOS Edge Tiling";
 "Windows snap twice when dragged to an edge" = "Windows snap twice when dragged to an edge";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "macOS edge tiling is on too. Turn it off in the DockFlip menu.";
 "Window Layout" = "Window Layout";
 "Clean Up (%ld)…" = "Clean Up (%ld)…";
 "Clean Up…" = "Clean Up…";

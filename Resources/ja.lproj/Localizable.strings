@@ -65,6 +65,7 @@
 "Restart DockFlip" = "DockFlipを再起動";
 "Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";
 "Windows snap twice when dragged to an edge" = "端にドラッグしたウインドウが二重にスナップします";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "macOSの画面端タイル表示もオンです。DockFlipのメニューからオフにできます。";
 "Window Layout" = "ウインドウレイアウト";
 "Clean Up (%ld)…" = "整理（%ld）…";
 "Clean Up…" = "整理…";
