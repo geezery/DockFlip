@@ -52,6 +52,8 @@ struct SnapDrag {
             phase = .watching(windowID: found.id, frame: found.frame, mouse: mouse)
 
         case .watching(let id, let seen, let seenMouse):
+            // No frame: its app may hang, and asking again on every drag event
+            // would block each one, so this drag is left alone.
             guard let now = frame(id) else {
                 phase = .ignored
                 return

@@ -24,7 +24,7 @@ struct SnapDragTests {
         }
         #expect(lookups == 0)
         #expect(drag.phase == .pressed)
-        #expect(drag.window == nil)
+        #expect(drag.window?.id == nil)
     }
 
     @Test func titleBarDragBecomesWindowDragWithItsStartFrame() {
