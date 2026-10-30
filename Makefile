@@ -3,7 +3,8 @@
 #   make            build build/DockFlip.app
 #   make install    create the local signing certificate (first time only),
 #                   build, and install to /Applications
-#   make uninstall  quit and remove DockFlip, its permissions, settings and certificate
+#   make uninstall  quit and remove DockFlip, its permissions, settings and certificate,
+#                   and turn macOS's own edge tiling back on if it is off
 #   make run        build and run from build/
 #   make test       run unit tests
 #   make clean
@@ -13,8 +14,9 @@ BUNDLE_ID ?= io.github.dockflip.DockFlip
 VERSION   ?= 0.3.0
 BUILD_NUM ?= 1
 # The commit the app is built from, shown in the menu bar menu next to the version:
-# builds from source all say 0.3.0, so this is what tells them apart.
-COMMIT    ?= $(or $(shell git rev-parse --short=7 HEAD 2>/dev/null),unknown)
+# builds from source all say 0.3.0, so this is what tells them apart. It ends in -dirty
+# when the checkout has changes that commit doesn't hold.
+COMMIT    ?= $(or $(shell sh scripts/build-commit.sh),unknown)
 CONFIG    ?= release
 # Extra flags for swift build, e.g. SWIFT_FLAGS="--arch arm64 --arch x86_64"
 # for a universal build (the release workflow does that).
@@ -84,6 +86,7 @@ uninstall:
 	@-defaults delete "$(BUNDLE_ID)" >/dev/null 2>&1
 	@-security delete-keychain "$(SIGN_KEYCHAIN)" >/dev/null 2>&1
 	@rm -f "$(SIGN_PASSFILE)"
+	@-./scripts/restore-edge-tiling.sh
 	@echo "Removed DockFlip."
 
 run: app

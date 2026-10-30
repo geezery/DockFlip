@@ -5,7 +5,8 @@
 The first line of the menu bar menu says it, for example *DockFlip 0.3.0
 (c79a704)*. The part in brackets is the commit the app was built from. Builds
 from source all carry the same version number, so the commit tells you whether
-yours has a fix. Settings and **Save Debug Log…** show the same.
+yours has a fix. A build made with changes that commit doesn't hold says so:
+*DockFlip 0.3.0 (c79a704-dirty)*. Settings and **Save Debug Log…** show the same.
 
 ## ⌘Tab does nothing after a rebuild
 
@@ -72,6 +73,14 @@ Thumbnails need *Screen & System Audio Recording*. While it isn't allowed,
 Settings says so under **Window thumbnails**: press **Open System Settings**,
 allow DockFlip there, then press **Restart DockFlip**, because macOS often
 applies the permission only after a restart.
+
+## DockFlip doesn't start when I log in
+
+Launch at login lives in macOS, in *System Settings → General → Login Items &
+Extensions*. If DockFlip is switched off there, the **Launch at login** switch
+can't turn it back on: Settings says so under the switch. Press **Open Login
+Items**, switch DockFlip on there, and the switch in Settings follows. If macOS
+refuses for another reason, Settings shows macOS's own words.
 
 ## Snapping fights with macOS
 

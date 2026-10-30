@@ -41,19 +41,24 @@ final class OnboardingModel: ObservableObject {
 
 /// First-run setup: what DockFlip is, the one required permission, the previews
 /// choice (nothing preselected), and turning off macOS's own edge tiling.
-/// The only timer in the app lives here, and only while this window is open.
+/// The permission step notices the switch by events, not a timer (`AccessibilityWatch`).
 @MainActor
 final class OnboardingController: NSObject, NSWindowDelegate {
     private let model = OnboardingModel()
+    private let watch = AccessibilityWatch()
     private var window: NSWindow?
-    private var timer: Timer?
     private var axObserver: NSObjectProtocol?
+    private var activeObserver: NSObjectProtocol?
     private let onDone: () -> Void
 
     init(onDone: @escaping () -> Void) {
         self.onDone = onDone
         super.init()
         model.onFinish = { [weak self] in self?.finish() }
+        model.granted = watch.granted
+        watch.onChange = { [weak self] granted in
+            withAnimation(.snappy) { self?.model.granted = granted }
+        }
         let settings = Settings.shared
         model.launchAtLogin = SetupEnd.initialLaunchAtLogin(
             completedBefore: settings.onboardingCompleted, current: settings.launchAtLogin
@@ -75,7 +80,7 @@ final class OnboardingController: NSObject, NSWindowDelegate {
             window.center()
             self.window = window
         }
-        model.granted = Permissions.isAccessibilityTrusted
+        watch.check()
         model.nativeTilingOn = NativeEdgeTiling.isOn
         startWatching()
         if let window { WindowPresenter.bringToFront(window) }
@@ -89,37 +94,41 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         if saveChoices() { onDone() }
     }
 
+    /// Back from System Settings: the user clicked this window.
+    func windowDidBecomeKey(_ notification: Notification) {
+        watch.check()
+    }
+
     private func startWatching() {
-        guard timer == nil else { return }
+        guard axObserver == nil else { return }
+        // macOS posts this whenever a switch in the Accessibility list flips.
         axObserver = DistributedNotificationCenter.default().addObserver(
             forName: NSNotification.Name("com.apple.accessibility.api"),
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(300))
-                self?.check()
-            }
+            MainActor.assumeIsolated { _ = self?.watch.settingsChanged() }
         }
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.check() }
+        // In case the announcement is missed: back from System Settings by ⌘Tab or the Dock.
+        activeObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.watch.check() }
         }
     }
 
     private func stopWatching() {
-        timer?.invalidate()
-        timer = nil
         if let axObserver {
             DistributedNotificationCenter.default().removeObserver(axObserver)
         }
-        axObserver = nil
-    }
-
-    private func check() {
-        let trusted = Permissions.isAccessibilityTrusted
-        if trusted != model.granted {
-            withAnimation(.snappy) { model.granted = trusted }
+        if let activeObserver {
+            NotificationCenter.default.removeObserver(activeObserver)
         }
+        axObserver = nil
+        activeObserver = nil
+        watch.stop()
     }
 
     /// Saves what setup asked, the same way for Continue and for the close button.
