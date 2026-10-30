@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: attivo";
 "⌘Tab: not active" = "⌘Tab: non attivo";
 "⌘Tab: used by another app" = "⌘Tab: usato da un'altra app";
+"Probably %@" = "Probabilmente %@";
+"%@: used by another app" = "%@: usati da un’altra app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Probabilmente %@. Chiudila o cambia le sue scorciatoie, poi fai clic per riprovare.";
+"Quit the app that uses them, then click to try again." = "Chiudi l’app che li usa, poi fai clic per riprovare.";
 "Windows tracked: %ld" = "Finestre monitorate: %ld";
 "Restart DockFlip" = "Riavvia DockFlip";
 "Turn Off macOS Edge Tiling" = "Disattiva l’affiancamento ai bordi di macOS";
@@ -59,6 +63,7 @@
 "Settings…" = "Impostazioni…";
 "Debug Logging" = "Log di debug";
 "Save Debug Log…" = "Salva log di debug…";
+"Could Not Save the Debug Log" = "Impossibile salvare il log di debug";
 "Quit DockFlip" = "Esci da DockFlip";
 "Left Half" = "Metà sinistra";
 "Right Half" = "Metà destra";

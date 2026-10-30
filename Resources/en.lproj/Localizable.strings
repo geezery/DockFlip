@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: active";
 "⌘Tab: not active" = "⌘Tab: not active";
 "⌘Tab: used by another app" = "⌘Tab: used by another app";
+"Probably %@" = "Probably %@";
+"%@: used by another app" = "%@: used by another app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Probably %@. Quit it or change its shortcuts, then click to try again.";
+"Quit the app that uses them, then click to try again." = "Quit the app that uses them, then click to try again.";
 "Windows tracked: %ld" = "Windows tracked: %ld";
 "Restart DockFlip" = "Restart DockFlip";
 "Turn Off macOS Edge Tiling" = "Turn Off macOS Edge Tiling";
@@ -59,6 +63,7 @@
 "Settings…" = "Settings…";
 "Debug Logging" = "Debug Logging";
 "Save Debug Log…" = "Save Debug Log…";
+"Could Not Save the Debug Log" = "Could Not Save the Debug Log";
 "Quit DockFlip" = "Quit DockFlip";
 "Left Half" = "Left Half";
 "Right Half" = "Right Half";
