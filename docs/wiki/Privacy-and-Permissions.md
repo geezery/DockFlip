@@ -25,7 +25,7 @@ opt-in.
 - **Left mouse clicks and drags, anywhere on the Mac, as pointer positions
   only.** That's how a click on a Dock icon brings its window forward and how
   dragging a window to a screen edge snaps it. Clicks and drags outside the
-  Dock pass through untouched, and nothing about them is recorded or logged.
+  Dock pass through untouched, and where you click is never recorded or logged.
   Right clicks and scrolling are never seen.
 - **Pointer movement, only while it's over the Dock or a window list**, so the
   list closes when you move away.

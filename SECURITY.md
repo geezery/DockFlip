@@ -38,7 +38,7 @@ where the pointer went down and moved, to tell a Dock icon click from a window
 drag, never what you clicked inside an app, and it never sees right clicks or
 scrolling. The only clicks it takes over are plain clicks on an
 app icon in the Dock; ⌘, ⌥, ⌃ and ⇧ clicks, dragging an icon and press-and-hold
-still go to the Dock. Nothing about your clicks is recorded or logged.
+still go to the Dock. Where you click is never recorded or logged.
 
 The rest of the time DockFlip doesn't see what you type. Its shortcuts are
 registered as system hot keys, so macOS only tells DockFlip when one of them is
