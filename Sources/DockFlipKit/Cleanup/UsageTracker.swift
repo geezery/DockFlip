@@ -64,17 +64,14 @@ final class UsageTracker {
         app.bundleIdentifier ?? "pid:\(app.processIdentifier)"
     }
 
+    /// Runs after every registry change, a window drag's moves and resizes too, so it
+    /// reads only the registry: no window server lists here (those wait for `save()`).
     private func update() {
-        let now = Date()
-        for window in registry.currentSpaceWindows() where windowLastUsed[window.id] == nil {
-            windowLastUsed[window.id] = now
-        }
-        if let active = registry.activeWindowID() {
-            windowLastUsed[active] = now
-            if active != lastActive {
-                lastActive = active
-                scheduleSave()
-            }
+        let active = registry.activeWindowID()
+        UsageDates.stamp(&windowLastUsed, tracked: registry.trackedWindowIDs, active: active, now: Date())
+        if let active, active != lastActive {
+            lastActive = active
+            scheduleSave()
         }
     }
 
