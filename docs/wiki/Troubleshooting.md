@@ -43,6 +43,13 @@ once, and the native switcher is back.
 - **Firefox** turns on its accessibility engine the first time DockFlip asks it
   for tabs. Give it a second.
 
+## Thumbnails are on but no pictures show
+
+Thumbnails need *Screen & System Audio Recording*. While it isn't allowed,
+Settings says so under **Window thumbnails**: press **Open System Settings**,
+allow DockFlip there, then press **Restart DockFlip**, because macOS often
+applies the permission only after a restart.
+
 ## Snapping fights with macOS
 
 If windows jump around twice when you drag them to an edge, macOS's own tiling
