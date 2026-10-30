@@ -2,13 +2,14 @@ import Foundation
 
 /// Which DockFlip this is, read from the bundle's Info.plist. A build from source
 /// keeps the Makefile's version number, so the git commit it was built from
-/// (`DockFlipCommit`, filled in by `make app`) is what tells two builds apart.
+/// (`DockFlipCommit`, filled in by `make app`) is what tells two builds apart. It ends
+/// in "-dirty" when the build had changes that commit doesn't hold (scripts/build-commit.sh).
 enum AppVersion {
     static var version: String { info("CFBundleShortVersionString") ?? "?" }
     static var build: String { info("CFBundleVersion") ?? "?" }
     static var commit: String? { info("DockFlipCommit") }
 
-    /// "0.3.0 (c79a704)", or "0.3.0" when the commit is unknown.
+    /// "0.3.0 (c79a704)", "0.3.0 (c79a704-dirty)", or "0.3.0" when the commit is unknown.
     static var display: String { format(version: version, commit: commit) }
 
     static func format(version: String, commit: String?) -> String {
