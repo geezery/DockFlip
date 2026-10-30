@@ -76,7 +76,8 @@ final class CleanupController {
             case .window(let id):
                 registry.close(id)
             case .app(let pid):
-                _ = NSRunningApplication(processIdentifier: pid)?.terminate()
+                guard let app = NSRunningApplication(processIdentifier: pid) else { continue }
+                followUpQuit(of: app, wasAsked: app.terminate())
             }
         }
         Log.app.notice("Clean up: closed \(targets.count, privacy: .public) items")
@@ -84,6 +85,25 @@ final class CleanupController {
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(1.5))
             self?.reload()
+        }
+    }
+
+    /// One-shot look, never a repeating timer: an app that asks to review changes
+    /// is still running a second later, and its question is shown where it can be seen.
+    private func followUpQuit(of app: NSRunningApplication, wasAsked: Bool) {
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1))
+            let check = QuitFollowUp.Check(
+                wasAsked: wasAsked,
+                isTerminated: app.isTerminated,
+                isHidden: app.isHidden,
+                isActive: app.isActive
+            )
+            guard QuitFollowUp.after(check) == .bringForward else { return }
+            let name = app.localizedName ?? "?"
+            Log.app.notice("Clean up: bringing forward an app that asks first: \(name, privacy: .public)")
+            if app.isHidden { app.unhide() }
+            _ = app.activate(options: [])
         }
     }
 
