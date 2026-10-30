@@ -110,6 +110,12 @@ Test 'a failure with no compiler or test line shows the end of the log' {
     Expect (@(ConvertTo-RedLines @()).Count) 0 'empty log'
 }
 
+Test 'the BOM before a step''s first timestamp goes with it' {
+    $bom = [char]0xFEFF
+    $log = @("build`tCheck bundle`t${bom}2026-10-30T21:35:33.5615320Z codesign: invalid signature")
+    Expect (@(ConvertTo-RedLines $log)[0]) 'error: codesign: invalid signature' 'line'
+}
+
 Test 'red lines stop at the maximum' {
     $log = 1..50 | ForEach-Object { LogLine "/Users/runner/work/DockFlip/DockFlip/Sources/A.swift:${_}:1: error: e$_" }
     Expect (@(ConvertTo-RedLines $log -Max 40).Count) 40 'lines'
