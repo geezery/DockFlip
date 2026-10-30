@@ -86,10 +86,12 @@ final class SnapController {
         registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: area))
     }
 
+    /// The front app's window and its frame, from the registry's memory: asking the
+    /// app would hold up the key press for a second when the app hangs. Focus
+    /// notifications keep the focused window first in the MRU order.
     private func targetWindow() -> (CGWindowID, CGRect)? {
-        guard let id = registry.focusedWindowID() ?? registry.activeWindowID(),
-              registry.window(id)?.isMinimized == false,
-              let frame = registry.liveFrame(of: id) else { return nil }
+        guard let id = registry.activeWindowID(),
+              let frame = registry.knownFrame(of: id) else { return nil }
         return (id, frame)
     }
 
@@ -118,7 +120,7 @@ final class SnapController {
         state.moved(to: mouse, windowUnder: { point in
             Perf.shared.measure("snap.dragStart", quiet: true) { trackedWindow(under: point) }
         }, frame: { id in
-            Perf.shared.measure("snap.dragCheck", quiet: true) { registry.liveFrame(of: id) }
+            Perf.shared.measure("snap.dragCheck", quiet: true) { registry.knownFrame(of: id) }
         })
         drag = state
         guard state.window != nil else { return }
@@ -159,10 +161,11 @@ final class SnapController {
         }
     }
 
-    /// The tracked window under the mouse and its live frame: one window-list
-    /// read and one Accessibility call to its app.
+    /// The tracked window under the mouse and its frame: one window-list read,
+    /// and the frame from the registry's memory, which the moved notifications
+    /// keep current through the drag. Its app is never asked.
     private func trackedWindow(under cocoaPoint: NSPoint) -> (id: CGWindowID, frame: CGRect)? {
-        guard let id = windowID(under: cocoaPoint), let frame = registry.liveFrame(of: id) else { return nil }
+        guard let id = windowID(under: cocoaPoint), let frame = registry.knownFrame(of: id) else { return nil }
         return (id, frame)
     }
 
