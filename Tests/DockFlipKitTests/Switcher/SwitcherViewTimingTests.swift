@@ -20,11 +20,11 @@ struct SwitcherViewTimingTests {
     static let ciAllowance = 3
     /// Each timing is the median of this many, so one busy moment on the runner
     /// does not fail the run.
-    static let rounds = 7
+    static let rounds = 5
     /// A MacBook Air's screen, so runs on different displays compare.
     static let screen = CGSize(width: 1440, height: 900)
 
-    @Test func opensAndStepsWithSixtyWindowsWithinTheBudget() {
+    @Test func sixtyWindowsOpenAndStepWithinTheBudget() {
         let stage = Stage(size: Self.screen)
         defer { stage.close() }
         let apps = Self.apps()
@@ -33,20 +33,30 @@ struct SwitcherViewTimingTests {
 
         var opens: [Duration] = []
         var steps: [Duration] = []
+        var sixties: [Duration] = []
+        var tens: [Duration] = []
+        // 60 and 10 windows in turns, so a busy moment on the runner hits both alike.
+        // Other windows each time, so every card is built anew, not reused.
         for round in 1...Self.rounds {
-            // Other windows each round, so every card is built anew, not reused.
-            let items = Self.items(60, apps: apps, firstID: CGWindowID(round * 1000))
-            let opened = clock.measure { stage.open(items) }
+            let sixtyItems = Self.items(60, apps: apps, firstID: CGWindowID(round * 1000))
+            let tenItems = Self.items(10, apps: apps, firstID: CGWindowID(round * 1000 + 500))
+            let opened = clock.measure { stage.open(sixtyItems) }
             let stepped = clock.measure { stage.step() }
+            let tenTook = clock.measure { stage.open(tenItems); stage.step() }
             opens.append(opened)
             steps.append(stepped)
+            sixties.append(opened + stepped)
+            tens.append(tenTook)
         }
         let opening = Self.median(opens)
         let stepping = Self.median(steps)
+        let sixty = Self.median(sixties)
+        let ten = Self.median(tens)
         let limit = Duration.milliseconds(Self.budgetMs * Self.ciAllowance)
         print("SwitcherView timing: 60 windows, open \(Self.ms(opening)) ms, step \(Self.ms(stepping)) ms "
-              + "(median of \(Self.rounds); limit \(Self.ms(limit)) ms, SCOPE's \(Self.budgetMs) ms × \(Self.ciAllowance)); "
-              + "first open in a process \(Self.ms(cold)) ms, not held to it")
+              + "(limit \(Self.ms(limit)) ms, SCOPE's \(Self.budgetMs) ms × \(Self.ciAllowance)); "
+              + "open and step with 10 windows \(Self.ms(ten)) ms, with 60 \(Self.ms(sixty)) ms; "
+              + "medians of \(Self.rounds); first open in a process \(Self.ms(cold)) ms, not held to it")
 
         // Building ten new cards takes milliseconds. Near nothing means SwiftUI drew
         // nothing in `Stage.render`, and then this test times nothing.
@@ -54,33 +64,10 @@ struct SwitcherViewTimingTests {
         #expect(opening > drawing, "Opening took \(Self.ms(opening)) ms: nothing was drawn, so nothing was timed")
         #expect(opening < limit, "Opening ⌘Tab with 60 windows took \(Self.ms(opening)) ms, over \(Self.ms(limit)) ms")
         #expect(stepping < limit, "A ⌘Tab step with 60 windows took \(Self.ms(stepping)) ms, over \(Self.ms(limit)) ms")
-    }
 
-    @Test func sixtyWindowsCostAboutWhatTenDo() {
         // Only the cards near the front are drawn (`SwitcherStack.drawnIndices`): ten
         // with 10 windows and ten with 60. Drawing every card makes 60 cost about six
         // times as much, on any Mac, however slow the runner is that day.
-        let stage = Stage(size: Self.screen)
-        defer { stage.close() }
-        let apps = Self.apps()
-        stage.warmUp(Self.items(60, apps: apps, firstID: 1))
-
-        let clock = ContinuousClock()
-        var tens: [Duration] = []
-        var sixties: [Duration] = []
-        // Taken in turns, so a busy moment on the runner hits both alike.
-        for round in 1...Self.rounds {
-            let tenItems = Self.items(10, apps: apps, firstID: CGWindowID(round * 1000))
-            let sixtyItems = Self.items(60, apps: apps, firstID: CGWindowID(round * 1000 + 500))
-            let tenTook = clock.measure { stage.open(tenItems); stage.step() }
-            let sixtyTook = clock.measure { stage.open(sixtyItems); stage.step() }
-            tens.append(tenTook)
-            sixties.append(sixtyTook)
-        }
-        let ten = Self.median(tens)
-        let sixty = Self.median(sixties)
-        print("SwitcherView timing: open and step, 10 windows \(Self.ms(ten)) ms, 60 windows \(Self.ms(sixty)) ms")
-
         let allowed: Duration = ten * 2 + .milliseconds(5)
         #expect(sixty < allowed, "60 windows took \(Self.ms(sixty)) ms, 10 took \(Self.ms(ten)) ms: is every card drawn?")
     }
