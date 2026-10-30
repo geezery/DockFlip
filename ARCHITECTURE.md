@@ -50,6 +50,10 @@ Pure rules with no AppKit in them (`SnapEngine`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`.
 
+The tests mirror the source folders: each type's suite is in
+`Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
+The Dock list's sizing rules (`WindowListLayout`) are tested there too.
+
 ## Key ideas
 
 - **Accessibility lists only the current Space.** Windows on other desktops and

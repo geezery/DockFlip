@@ -67,7 +67,8 @@ Maintainers: see [RELEASING.md](RELEASING.md). In short, push a `v*` tag.
 
 Native speakers are very welcome to improve any of the 15 languages. Edit
 `Resources/<language>.lproj/Localizable.strings` and open a pull request. If a
-translation makes you wince, it probably made others wince too.
+translation makes you wince, it probably made others wince too. The homepage's
+text is in `site/i18n/<language>.js`, one file per language.
 
 ## License
 
