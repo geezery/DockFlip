@@ -113,11 +113,18 @@ struct SettingsView: View {
     }
 }
 
-/// Under the thumbnails switch while it is on but macOS has not allowed Screen
-/// Recording: a denied prompt, or the restart macOS wants after allowing it,
-/// would otherwise leave the Dock list without pictures and no word why.
-struct ScreenRecordingWarning: View {
-    let relaunch: () -> Void
+/// A warning under a Settings switch: what is wrong, what to do, and the buttons
+/// that do it. Both warnings share it so they look alike.
+struct SettingsWarningRow<Actions: View>: View {
+    let title: Text
+    let detail: Text
+    let actions: Actions
+
+    init(title: Text, detail: Text, @ViewBuilder actions: () -> Actions) {
+        self.title = title
+        self.detail = detail
+        self.actions = actions()
+    }
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -126,18 +133,34 @@ struct ScreenRecordingWarning: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Screen Recording is not allowed yet")
-                    Text("Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.")
+                    title
+                    detail
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                HStack {
-                    Button("Open System Settings") {
-                        MainActor.assumeIsolated { PreviewProvider.openScreenRecordingSettings() }
-                    }
-                    Button("Restart DockFlip", action: relaunch)
+                actions
+            }
+        }
+    }
+}
+
+/// Under the thumbnails switch while it is on but macOS has not allowed Screen
+/// Recording: a denied prompt, or the restart macOS wants after allowing it,
+/// would otherwise leave the Dock list without pictures and no word why.
+struct ScreenRecordingWarning: View {
+    let relaunch: () -> Void
+
+    var body: some View {
+        SettingsWarningRow(
+            title: Text("Screen Recording is not allowed yet"),
+            detail: Text("Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.")
+        ) {
+            HStack {
+                Button("Open System Settings") {
+                    MainActor.assumeIsolated { PreviewProvider.openScreenRecordingSettings() }
                 }
+                Button("Restart DockFlip", action: relaunch)
             }
         }
     }
@@ -150,35 +173,26 @@ struct LaunchAtLoginWarning: View {
     let openLoginItems: () -> Void
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
-                    switch problem {
-                    case .needsApproval:
-                        Text("DockFlip is switched off in Login Items")
-                        detail(Text("Open Login Items and switch DockFlip on there to start it when you log in."))
-                    case .failed(let reason):
-                        Text("Launch at login could not be changed")
-                        if let reason {
-                            // macOS's own words, already in the user's language.
-                            detail(Text(verbatim: reason))
-                        } else {
-                            detail(Text("macOS did not accept the change."))
-                        }
-                    }
-                }
-                Button("Open Login Items", action: openLoginItems)
-            }
+        SettingsWarningRow(title: title, detail: detail) {
+            Button("Open Login Items", action: openLoginItems)
         }
     }
 
-    private func detail(_ text: Text) -> some View {
-        text
-            .font(.callout)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
+    private var title: Text {
+        switch problem {
+        case .needsApproval: return Text("DockFlip is switched off in Login Items")
+        case .failed: return Text("Launch at login could not be changed")
+        }
+    }
+
+    private var detail: Text {
+        switch problem {
+        case .needsApproval:
+            return Text("Open Login Items and switch DockFlip on there to start it when you log in.")
+        case .failed(let reason):
+            // macOS's own words, already in the user's language.
+            if let reason { return Text(verbatim: reason) }
+            return Text("macOS did not accept the change.")
+        }
     }
 }
