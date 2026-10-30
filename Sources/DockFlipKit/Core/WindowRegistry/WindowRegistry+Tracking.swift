@@ -102,58 +102,80 @@ extension WindowRegistry {
     }
 
     /// Re-reads one app's windows from Accessibility and reconciles the model.
+    /// Returns before the app is asked: the reads run on the app's queue
+    /// (`AppQueues`), and the model changes on the main actor once it answered.
     func refreshWindows(of tracked: TrackedApp) {
-        Perf.shared.measure("ax.refreshWindows", detail: tracked.app.localizedName ?? "") {
-            refreshWindowsUnmeasured(of: tracked)
+        // One read at a time per app. Asked again meanwhile (a window created, the
+        // icon pointed at once more), it reads once more after this one.
+        guard !tracked.isReading else {
+            tracked.readAgain = true
+            return
         }
+        tracked.isReading = true
+        let app = SendableElement(element: tracked.element)
+        let read = tracked.readWindows
+        let start = Perf.now()
+        appQueues.run(for: tracked.pid, { read(app.element) }, then: { [weak self] result in
+            tracked.isReading = false
+            guard let self else { return }
+            defer { self.launchReadFinished(tracked.pid) }
+            guard self.apps[tracked.pid] === tracked else { return }
+            Perf.shared.record("ax.refreshWindows", since: start, detail: tracked.app.localizedName ?? "")
+            self.reconcile(result, of: tracked)
+            if tracked.readAgain {
+                tracked.readAgain = false
+                self.refreshWindows(of: tracked)
+            }
+        })
     }
 
-    private func refreshWindowsUnmeasured(of tracked: TrackedApp) {
-        var value: CFTypeRef?
-        let error = AXUIElementCopyAttributeValue(tracked.element, kAXWindowsAttribute as CFString, &value)
-        markResponsiveness(of: tracked, error: error)
-        guard error != .cannotComplete else {
-            // Busy or hung: keep what we know and ask again shortly.
+    private func reconcile(_ read: WindowsRead, of tracked: TrackedApp) {
+        markResponsiveness(of: tracked, error: read.error)
+        guard read.error != .cannotComplete else {
+            // Busy or hung: keep what we know and ask again shortly. The retry reads
+            // again, so a request made during this read needs no read of its own.
+            tracked.readAgain = false
             scheduleRetry(of: tracked)
             return
         }
-        var seen = Set<CGWindowID>()
-        var unanswered = false
-        for element in (value as? [AXUIElement]) ?? [] {
-            guard let id = element.windowID else { continue }
-            let role = element.string(kAXRoleAttribute)
-            let subrole = element.string(kAXSubroleAttribute)
-            // A failed read is not an answer: a window whose role did not arrive in
-            // time is kept if known, and read again shortly — never dropped.
-            if role == nil || (role == kAXWindowRole && subrole == nil) {
-                unanswered = true
-                if tracked.windowElements[id] != nil { seen.insert(id) }
-                continue
-            }
-            guard role == kAXWindowRole, subrole == kAXStandardWindowSubrole else { continue }
-            seen.insert(id)
-            if tracked.windowElements[id] == nil {
-                tracked.windowElements[id] = element
-                observeWindow(element, of: tracked)
-            }
-            update(id: id, element: element, tracked: tracked)
-            mru.appendIfMissing(id)
-        }
-        // Windows on other Spaces are missing from kAXWindows; the window server
-        // still lists them. Only windows it no longer knows are gone.
         let inventory = WindowServer.inventory()[tracked.pid] ?? []
-        let gone = tracked.windowElements.keys.filter { !seen.contains($0) && !inventory.contains($0) }
-        for id in gone {
+        let plan = WindowsReconcile.after(
+            listed: read.windows.map { (id: $0.id, isStandard: $0.isStandard) },
+            known: Set(tracked.windowElements.keys),
+            inventory: inventory
+        )
+        for window in read.windows where window.isStandard == true {
+            if tracked.windowElements[window.id] == nil {
+                tracked.windowElements[window.id] = window.element
+                observeWindow(window.element, of: tracked)
+            }
+            update(id: window.id, with: window.attributes, tracked: tracked)
+            mru.appendIfMissing(window.id)
+        }
+        for id in plan.gone {
             tracked.windowElements[id] = nil
             windows[id] = nil
             mru.remove(id)
         }
-        if unanswered {
+        if plan.readAgain {
             scheduleRetry(of: tracked)
         } else {
             tracked.retryCount = 0
         }
+        if tracked.bringFocusedForward {
+            tracked.bringFocusedForward = false
+            // It just answered, so this one more call on the main thread is quick.
+            if tracked.app.isActive { bringFocusedWindowToFront(of: tracked) }
+        }
         searchOtherSpaces(of: tracked, inventory: inventory)
+        notifyChange()
+    }
+
+    /// The windows read at launch arrive app by app: each answer puts the windows
+    /// known so far into stacking order, as `start()` would have done at once.
+    private func launchReadFinished(_ pid: pid_t) {
+        guard launchReads.remove(pid) != nil else { return }
+        seedMRUFromZOrder()
         notifyChange()
     }
 
@@ -171,25 +193,25 @@ extension WindowRegistry {
         searchedElsewhere[pid, default: []].formUnion(missing)
         let name = tracked.app.localizedName ?? "?"
         Task.detached(priority: .utility) { [weak self] in
-            let found = WindowServer.findWindows(pid: pid, ids: missing).mapValues { SendableElement(element: $0) }
+            // Each found window's kind and state are read here too, off the main thread.
+            let found = WindowServer.findWindows(pid: pid, ids: missing).map { WindowsRead.Window.read(id: $0.key, element: $0.value).window }
             await self?.searchFinished(found, pid: pid, of: missing.count, name: name)
         }
     }
 
-    private func searchFinished(_ found: [CGWindowID: SendableElement], pid: pid_t, of total: Int, name: String) {
+    private func searchFinished(_ found: [WindowsRead.Window], pid: pid_t, of total: Int, name: String) {
         searchingElsewhere.remove(pid)
-        adopt(found.mapValues(\.element), pid: pid)
+        adopt(found, pid: pid)
         Log.registry.notice("\(name, privacy: .public): \(found.count, privacy: .public) of \(total, privacy: .public) windows found on other Spaces")
     }
 
-    private func adopt(_ found: [CGWindowID: AXUIElement], pid: pid_t) {
+    private func adopt(_ found: [WindowsRead.Window], pid: pid_t) {
         guard let tracked = apps[pid], !found.isEmpty else { return }
-        for (id, element) in found where tracked.windowElements[id] == nil {
-            guard element.isStandardWindow else { continue }
-            tracked.windowElements[id] = element
-            observeWindow(element, of: tracked)
-            update(id: id, element: element, tracked: tracked)
-            mru.appendIfMissing(id)
+        for window in found where tracked.windowElements[window.id] == nil && window.isStandard == true {
+            tracked.windowElements[window.id] = window.element
+            observeWindow(window.element, of: tracked)
+            update(id: window.id, with: window.attributes, tracked: tracked)
+            mru.appendIfMissing(window.id)
         }
         notifyChange()
     }
@@ -218,7 +240,14 @@ extension WindowRegistry {
         }
     }
 
+    /// Reads one window's state from Accessibility, on the main thread: only for an
+    /// app that just sent a notification about it, so it answers.
     func update(id: CGWindowID, element: AXUIElement, tracked: TrackedApp) {
+        update(id: id, with: WindowsRead.Window.read(id: id, element: element).window.attributes, tracked: tracked)
+    }
+
+    /// What the app did not say keeps its last known value.
+    func update(id: CGWindowID, with attributes: WindowAttributes, tracked: TrackedApp) {
         let existing = windows[id]
         windows[id] = WindowSnapshot(
             id: id,
@@ -226,11 +255,11 @@ extension WindowRegistry {
             bundleID: tracked.app.bundleIdentifier,
             appName: tracked.app.localizedName ?? "",
             icon: tracked.app.icon,
-            title: element.string(kAXTitleAttribute) ?? existing?.title ?? "",
-            frame: element.frame ?? existing?.frame ?? .zero,
-            isMinimized: element.bool(kAXMinimizedAttribute) ?? existing?.isMinimized ?? false,
+            title: attributes.title ?? existing?.title ?? "",
+            frame: attributes.frame ?? existing?.frame ?? .zero,
+            isMinimized: attributes.isMinimized ?? existing?.isMinimized ?? false,
             isAppHidden: tracked.app.isHidden,
-            document: element.string(kAXDocumentAttribute).flatMap { Self.documentName($0) } ?? existing?.document
+            document: attributes.document ?? existing?.document
         )
     }
 
@@ -239,12 +268,5 @@ extension WindowRegistry {
               let id = tracked.id(of: focused), windows[id] != nil else { return }
         mru.moveToFront(id)
         notifyChange()
-    }
-
-    /// "file:///Users/x/Budget%202026.xlsx" → "Budget 2026.xlsx"
-    private nonisolated static func documentName(_ value: String) -> String? {
-        let url = URL(string: value) ?? URL(fileURLWithPath: value)
-        let name = url.lastPathComponent
-        return name.isEmpty || name == "/" ? nil : name
     }
 }

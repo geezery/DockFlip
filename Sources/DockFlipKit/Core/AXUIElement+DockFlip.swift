@@ -91,10 +91,6 @@ extension AXUIElement {
         return id
     }
 
-    var isStandardWindow: Bool {
-        string(kAXRoleAttribute) == kAXWindowRole && string(kAXSubroleAttribute) == kAXStandardWindowSubrole
-    }
-
     @discardableResult
     func set(_ name: String, _ value: CFTypeRef) -> Bool {
         AXUIElementSetAttributeValue(self, name as CFString, value) == .success
