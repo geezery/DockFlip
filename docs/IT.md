@@ -16,7 +16,7 @@ Every [release](https://github.com/geezery/DockFlip/releases/latest) has:
 | `DockFlip-<version>.pkg` | Installs `DockFlip.app` into `/Applications` |
 | `DockFlip-Accessibility.mobileconfig` | Pre-approves the Accessibility permission (PPPC) |
 | `DockFlip.dmg` | Manual installs |
-| `*.sha256` | A SHA-256 checksum for each of the files above |
+| `*.sha256` | SHA-256 checksums of the `.pkg`, the profile and `DockFlip-<version>.dmg` |
 
 ## Verify the files
 
