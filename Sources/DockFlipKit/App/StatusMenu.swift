@@ -31,6 +31,8 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         menu.removeAllItems()
         let services = actions.services()
 
+        // Which build is running, so a bug report can say whether it has a fix.
+        addStatus("DockFlip \(AppVersion.display)", to: menu)
         if Permissions.isAccessibilityTrusted {
             addStatus(L("Accessibility: allowed"), to: menu)
         } else {

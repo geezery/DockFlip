@@ -1,5 +1,12 @@
 # Troubleshooting
 
+## Which version do I have?
+
+The first line of the menu bar menu says it, for example *DockFlip 0.3.0
+(c79a704)*. The part in brackets is the commit the app was built from. Builds
+from source all carry the same version number, so the commit tells you whether
+yours has a fix. Settings and **Save Debug Log…** show the same.
+
 ## ⌘Tab does nothing after a rebuild
 
 macOS may be holding on to an Accessibility entry for an older signature. Open

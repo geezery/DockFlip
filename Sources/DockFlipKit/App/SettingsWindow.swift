@@ -64,7 +64,7 @@ struct SettingsView: View {
             HStack {
                 Button("Show Setup Again", action: showSetup)
                 Spacer()
-                Text(verbatim: "DockFlip \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "") · GPL-3.0")
+                Text(verbatim: "DockFlip \(AppVersion.display) · GPL-3.0")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
             }
