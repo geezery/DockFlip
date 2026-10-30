@@ -6,6 +6,8 @@ import AppKit
 /// Nothing changes unless the user presses that button.
 enum NativeEdgeTiling {
     private static let domain = "com.apple.WindowManager" as CFString
+    /// `make uninstall` turns these back on (scripts/restore-edge-tiling.sh,
+    /// whose key list scripts/uninstall-tests.ps1 keeps equal to this one).
     static let keys = ["EnableTilingByEdgeDrag", "EnableTopTilingByEdgeDrag"]
 
     static var isOn: Bool {

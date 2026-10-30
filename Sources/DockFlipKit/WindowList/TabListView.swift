@@ -2,7 +2,7 @@ import SwiftUI
 
 // Browser tabs under their window in the Dock list: a branch line per tab, the
 // selected tab marked in the app's colour, a colour chip per site, duplicates
-// marked, long lists folded behind "Show all N tabs".
+// marked, long lists folded behind "Show all N tabs" and back with "Show fewer".
 
 /// "15 tabs · Gmail, YouTube, Teams +3": how many tabs, and the sites most of them are on.
 enum TabSummary {
@@ -41,7 +41,8 @@ enum SiteColor {
 struct TabListView: View {
     let row: WindowListRow
     let tabs: [BrowserTab]
-    let hidden: Int
+    /// "Show all N tabs" or "Show fewer" under the tabs; nil for a short list.
+    let fold: TabFold?
     @ObservedObject var model: WindowListModel
     let popup: WindowListPopup
 
@@ -53,14 +54,14 @@ struct TabListView: View {
                 let isDuplicate = titles[tab.fullTitle].map { $0.first?.id != tab.id } ?? false
                 TabRowView(
                     tab: tab,
-                    isLast: position == tabs.count - 1 && hidden == 0,
+                    isLast: position == tabs.count - 1 && fold == nil,
                     isDuplicate: isDuplicate,
                     tint: row.tint,
                     model: model,
                     popup: popup
                 )
             }
-            if hidden > 0 {
+            if let fold {
                 Button {
                     popup.toggleExpanded(row.id)
                 } label: {
@@ -68,10 +69,10 @@ struct TabListView: View {
                         TreeBranch(isLast: true)
                             .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                             .frame(width: 14)
-                        Text(String(format: L("Show all %ld tabs"), row.tabs.count))
+                        Text(verbatim: fold.label)
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(Color.accentColor)
-                        Image(systemName: "chevron.down")
+                        Image(systemName: fold == .showFewer ? "chevron.up" : "chevron.down")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundStyle(Color.accentColor)
                         Spacer()
@@ -84,6 +85,15 @@ struct TabListView: View {
             }
         }
         .padding(.bottom, WindowListLayout.tabListPadding)
+    }
+}
+
+extension TabFold {
+    var label: String {
+        switch self {
+        case .showAll(let count): return String(format: L("Show all %ld tabs"), count)
+        case .showFewer: return L("Show fewer")
+        }
     }
 }
 

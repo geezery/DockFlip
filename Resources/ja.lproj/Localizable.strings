@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "リストでDockFlipがすでにオンになっているのに、何も変わりませんか？";
 "Reset Permission" = "アクセス権をリセット";
 "Launch at login" = "ログイン時に起動";
+"DockFlip is switched off in Login Items" = "DockFlipはログイン項目でオフになっています";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "ログイン項目を開き、DockFlipをオンにすると、ログイン時に起動します。";
+"Launch at login could not be changed" = "ログイン時に起動の設定を変更できませんでした";
+"macOS did not accept the change." = "macOSが変更を受け付けませんでした。";
+"Open Login Items" = "ログイン項目を開く";
 "Done" = "完了";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "アイコンにポインタを置くと、そのウインドウとタブが表示されます。クリックでウインドウをしまったり元に戻したりできます。";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "システム設定でDockFlipを許可してください。すでに許可している場合は、DockFlipを再起動してください。";
 "Show Setup Again" = "セットアップを再表示";
 "Accessibility: allowed" = "アクセシビリティ：許可済み";
+"Accessibility: not yet allowed" = "アクセシビリティ：まだ許可されていません";
+"Turn on DockFlip in the list. This page notices it by itself." = "リストでDockFlipをオンにしてください。このページは自動的に検出します。";
+"All set. Continue to the next step." = "準備ができました。次のステップに進んでください。";
 "Grant Accessibility…" = "アクセシビリティを許可…";
 "Continue Setup…" = "セットアップを続ける…";
 "⌘Tab: active" = "⌘Tab：有効";
@@ -116,6 +124,7 @@
 "Paste" = "ペースト";
 "Select All" = "すべてを選択";
 "%ld tabs" = "%ld個のタブ";
+"Show fewer" = "表示を減らす";
 "Show all %ld tabs" = "%ld個のタブをすべて表示";
 "1 more window" = "ほかに1個のウインドウ";
 "%ld more windows" = "ほかに%ld個のウインドウ";

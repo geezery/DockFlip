@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip staat al aan in de lijst, maar er verandert niets?";
 "Reset Permission" = "Herstel toestemming";
 "Launch at login" = "Open bij inloggen";
+"DockFlip is switched off in Login Items" = "DockFlip staat uit bij inlogonderdelen";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Open inlogonderdelen en zet DockFlip daar aan om het bij inloggen te openen.";
+"Launch at login could not be changed" = "Open bij inloggen kon niet worden gewijzigd";
+"macOS did not accept the change." = "macOS heeft de wijziging niet geaccepteerd.";
+"Open Login Items" = "Open inlogonderdelen";
 "Done" = "Gereed";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Houd de aanwijzer op een symbool om de vensters en tabbladen te zien. Klik om te minimaliseren en te herstellen.";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Sta DockFlip toe in Systeeminstellingen. Is het al toegestaan, herstart DockFlip dan.";
 "Show Setup Again" = "Toon configuratie opnieuw";
 "Accessibility: allowed" = "Toegankelijkheid: toegestaan";
+"Accessibility: not yet allowed" = "Toegankelijkheid: nog niet toegestaan";
+"Turn on DockFlip in the list. This page notices it by itself." = "Zet DockFlip aan in de lijst. Deze pagina merkt het vanzelf op.";
+"All set. Continue to the next step." = "Alles klaar. Ga door naar de volgende stap.";
 "Grant Accessibility…" = "Sta toegankelijkheid toe…";
 "Continue Setup…" = "Ga door met configuratie…";
 "⌘Tab: active" = "⌘Tab: actief";
@@ -116,6 +124,7 @@
 "Paste" = "Plak";
 "Select All" = "Selecteer alles";
 "%ld tabs" = "%ld tabbladen";
+"Show fewer" = "Toon minder";
 "Show all %ld tabs" = "Toon alle %ld tabbladen";
 "1 more window" = "Nog 1 venster";
 "%ld more windows" = "Nog %ld vensters";

@@ -118,8 +118,10 @@ extension SwitcherInput {
         switch keyCode {
         case KeyCode.tab: return command ? nil : .commandTab(shift: shift) // plain Tab steps while filtering
         case KeyCode.escape: return .escape
-        case KeyCode.left: return .left
-        case KeyCode.right: return .right
+        // ↓ steps on like Tab and →, ↑ back like ⇧Tab and ←. Arrow keys type no
+        // text, so without these lines they would be swallowed doing nothing.
+        case KeyCode.left, KeyCode.up: return .left
+        case KeyCode.right, KeyCode.down: return .right
         case KeyCode.returnKey, KeyCode.keypadEnter: return .enter
         case KeyCode.delete: return .deleteBackward
         default: return text().map { .text($0) }

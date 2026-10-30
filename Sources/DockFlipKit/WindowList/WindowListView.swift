@@ -37,9 +37,11 @@ struct WindowListView: View {
                         VStack(spacing: 0) {
                             ForEach(model.rows) { row in
                                 WindowRowView(row: row, model: model, popup: popup)
-                                let visible = WindowListLayout.visibleTabs(of: row, expanded: model.expanded.contains(row.id))
+                                let isExpanded = model.expanded.contains(row.id)
+                                let visible = WindowListLayout.visibleTabs(of: row, expanded: isExpanded)
                                 if !visible.tabs.isEmpty {
-                                    TabListView(row: row, tabs: visible.tabs, hidden: visible.hidden, model: model, popup: popup)
+                                    let fold = WindowListLayout.foldControl(of: row, expanded: isExpanded)
+                                    TabListView(row: row, tabs: visible.tabs, fold: fold, model: model, popup: popup)
                                         .transition(.opacity.combined(with: .move(edge: .top)))
                                 }
                             }

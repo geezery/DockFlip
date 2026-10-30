@@ -27,7 +27,7 @@ and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
 - Each site gets its own colour chip, and the same site always gets the same colour.
 - Duplicate tabs are marked "Duplicate", for the 14 tabs of the same doc we all
   have open.
-- Long lists fold after eight tabs; "Show all N tabs" unfolds them.
+- Long lists fold after eight tabs; "Show all N tabs" unfolds them and "Show fewer" folds them back.
 - Click a tab to go straight to it.
 
 Tabs are read from the browser's tab bar, never from page content.
@@ -49,7 +49,7 @@ recently used in front.
 |---|---|
 | Tab | Next window |
 | ⇧ Tab | Previous window |
-| ← → | Move through the stack |
+| ← → ↑ ↓ | Move through the stack (→ and ↓ next, ← and ↑ previous) |
 | Release ⌘ | Switch to the window in front |
 | Return | Switch (also while filtering) |
 | Esc | Cancel, or clear the filter |
@@ -89,7 +89,9 @@ quit. ⌘` stays the macOS way.
 ## 🧹 The small stuff
 
 - **Windows remember their place for each display setup.** Unplug the external
-  display, plug it back in, and every window returns to where it was.
+  display, plug it back in, and every window returns to where it was, even if
+  DockFlip restarted in between. Only positions are kept, never titles, and only
+  until the Mac restarts.
 - **Clean Up** (menu bar → *Clean Up…*) lists windows unused for three days and
   apps running without windows. It only suggests. Nothing closes without you,
   and apps still ask to save: an app that asks comes forward with its question.

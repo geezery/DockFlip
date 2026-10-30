@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip è già attivato nell’elenco, ma non cambia nulla?";
 "Reset Permission" = "Reimposta autorizzazione";
 "Launch at login" = "Apri al login";
+"DockFlip is switched off in Login Items" = "DockFlip è disattivato negli elementi login";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Apri gli elementi login e attiva DockFlip per aprirlo al login.";
+"Launch at login could not be changed" = "Impossibile modificare Apri al login";
+"macOS did not accept the change." = "macOS non ha accettato la modifica.";
+"Open Login Items" = "Apri elementi login";
 "Done" = "Fine";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Passa il puntatore su un’icona per vederne le finestre e i pannelli. Fai clic per contrarre e ripristinare.";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Consenti DockFlip in Impostazioni di Sistema. Se è già consentito, riavvia DockFlip.";
 "Show Setup Again" = "Mostra di nuovo la configurazione";
 "Accessibility: allowed" = "Accessibilità: consentita";
+"Accessibility: not yet allowed" = "Accessibilità: non ancora consentita";
+"Turn on DockFlip in the list. This page notices it by itself." = "Attiva DockFlip nell’elenco. Questa pagina se ne accorge da sola.";
+"All set. Continue to the next step." = "Tutto pronto. Continua con il passaggio successivo.";
 "Grant Accessibility…" = "Consenti accessibilità…";
 "Continue Setup…" = "Continua configurazione…";
 "⌘Tab: active" = "⌘Tab: attivo";
@@ -116,6 +124,7 @@
 "Paste" = "Incolla";
 "Select All" = "Seleziona tutto";
 "%ld tabs" = "%ld pannelli";
+"Show fewer" = "Mostra meno";
 "Show all %ld tabs" = "Mostra tutti i %ld pannelli";
 "1 more window" = "Un'altra finestra";
 "%ld more windows" = "Altre %ld finestre";

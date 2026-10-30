@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip on jo päällä listassa, mutta mikään ei muutu?";
 "Reset Permission" = "Nollaa lupa";
 "Launch at login" = "Avaa sisäänkirjautuessa";
+"DockFlip is switched off in Login Items" = "DockFlip on poistettu käytöstä kirjautumiskohteissa";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Avaa kirjautumiskohteet ja kytke DockFlip siellä päälle, niin se avautuu sisäänkirjautuessa.";
+"Launch at login could not be changed" = "Sisäänkirjautuessa avaamista ei voitu muuttaa";
+"macOS did not accept the change." = "macOS ei hyväksynyt muutosta.";
+"Open Login Items" = "Avaa kirjautumiskohteet";
 "Done" = "Valmis";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Pidä osoitinta kuvakkeen päällä nähdäksesi sen ikkunat ja välilehdet. Klikkaa pienentääksesi ja palauttaaksesi.";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Salli DockFlip Järjestelmäasetuksissa. Jos se on jo sallittu, käynnistä DockFlip uudelleen.";
 "Show Setup Again" = "Näytä käyttöönotto uudelleen";
 "Accessibility: allowed" = "Käyttöapu: sallittu";
+"Accessibility: not yet allowed" = "Käyttöapu: ei vielä sallittu";
+"Turn on DockFlip in the list. This page notices it by itself." = "Laita DockFlip päälle luettelossa. Tämä sivu huomaa sen itse.";
+"All set. Continue to the next step." = "Kaikki valmista. Jatka seuraavaan vaiheeseen.";
 "Grant Accessibility…" = "Salli Käyttöapu…";
 "Continue Setup…" = "Jatka käyttöönottoa…";
 "⌘Tab: active" = "⌘Tab: käytössä";
@@ -116,6 +124,7 @@
 "Paste" = "Sijoita";
 "Select All" = "Valitse kaikki";
 "%ld tabs" = "Välilehtiä: %ld";
+"Show fewer" = "Näytä vähemmän";
 "Show all %ld tabs" = "Näytä kaikki %ld välilehteä";
 "1 more window" = "1 ikkuna lisää";
 "%ld more windows" = "%ld ikkunaa lisää";

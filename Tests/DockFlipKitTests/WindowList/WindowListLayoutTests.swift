@@ -55,6 +55,42 @@ struct WindowListLayoutTests {
         #expect(hidden == 0)
     }
 
+    @Test func shortTabListHasNoFoldControl() {
+        #expect(WindowListLayout.foldControl(of: row(1, tabs: tabs(8)), expanded: false) == nil)
+        #expect(WindowListLayout.foldControl(of: row(1, tabs: tabs(8)), expanded: true) == nil)
+    }
+
+    @Test func foldedListOffersShowAll() {
+        #expect(WindowListLayout.foldControl(of: row(1, tabs: tabs(12)), expanded: false) == .showAll(12))
+    }
+
+    @Test func expandedListOffersShowFewer() {
+        #expect(WindowListLayout.foldControl(of: row(1, tabs: tabs(12)), expanded: true) == .showFewer)
+    }
+
+    @Test func showFewerFoldsBackToEightLines() {
+        let twelve = row(1, tabs: tabs(12))
+        var expanded: Set<CGWindowID> = [1]
+        #expect(WindowListLayout.foldControl(of: twelve, expanded: expanded.contains(1)) == .showFewer)
+        // "Show fewer" calls toggleExpanded, which takes the window out of `expanded`.
+        expanded.remove(1)
+        let (shown, hidden) = WindowListLayout.visibleTabs(of: twelve, expanded: expanded.contains(1))
+        #expect(shown.map(\.index) == Array(0..<7))
+        #expect(hidden == 5)
+        #expect(WindowListLayout.foldControl(of: twelve, expanded: expanded.contains(1)) == .showAll(12))
+        // Seven tabs and "Show all 12 tabs": eight lines.
+        let size = WindowListLayout.size(rows: [twelve], expanded: expanded, previews: false)
+        #expect(size.height == 46 + 48 + 8 * 28 + 6)
+    }
+
+    @Test func blockCountsTheFoldLine() {
+        // What "N more windows" counts with: the open list's "Show fewer" line too.
+        let twelve = row(1, tabs: tabs(12))
+        #expect(WindowListLayout.blockHeight(of: twelve, expanded: true) == 48 + 13 * 28 + 6)
+        #expect(WindowListLayout.blockHeight(of: twelve, expanded: false) == 48 + 8 * 28 + 6)
+        #expect(WindowListLayout.blockHeight(of: row(1, tabs: tabs(8)), expanded: true) == 48 + 8 * 28 + 6)
+    }
+
     @Test func cardsOnlyWithPreviewsFewWindowsAndNoTabs() {
         let three = [row(1), row(2), row(3)]
         #expect(WindowListLayout.usesCards(rows: three, previews: true))
@@ -122,8 +158,12 @@ struct WindowListLayoutTests {
         // Twelve tabs fold to seven lines plus "Show all 12 tabs".
         let folded = WindowListLayout.size(rows: [row(1, tabs: tabs(12))], expanded: [], previews: false)
         #expect(folded.height == 46 + 48 + 8 * 28 + 6)
+        // Open, all twelve plus "Show fewer".
         let expanded = WindowListLayout.size(rows: [row(1, tabs: tabs(12))], expanded: [1], previews: false)
-        #expect(expanded.height == 46 + 48 + 12 * 28 + 6)
+        #expect(expanded.height == 46 + 48 + 13 * 28 + 6)
+        // Eight tabs fit unfolded and get neither line, open or not.
+        let eight = WindowListLayout.size(rows: [row(1, tabs: tabs(8))], expanded: [1], previews: false)
+        #expect(eight.height == 46 + 48 + 8 * 28 + 6)
     }
 
     @Test func tabListWithPeekPicture() {

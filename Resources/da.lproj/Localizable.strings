@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip er allerede slået til på listen, men der sker ikke noget?";
 "Reset Permission" = "Nulstil tilladelse";
 "Launch at login" = "Åbn ved login";
+"DockFlip is switched off in Login Items" = "DockFlip er slået fra i Login-emner";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Åbn Login-emner, og slå DockFlip til der for at åbne det, når du logger ind.";
+"Launch at login could not be changed" = "Åbn ved login kunne ikke ændres";
+"macOS did not accept the change." = "macOS accepterede ikke ændringen.";
+"Open Login Items" = "Åbn Login-emner";
 "Done" = "Færdig";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Hold markøren over et symbol for at se dets vinduer og faner. Klik for at minimere og gendanne.";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillad DockFlip i Systemindstillinger. Hvis det allerede er tilladt, så genstart DockFlip.";
 "Show Setup Again" = "Vis konfigurationen igen";
 "Accessibility: allowed" = "Tilgængelighed: tilladt";
+"Accessibility: not yet allowed" = "Tilgængelighed: endnu ikke tilladt";
+"Turn on DockFlip in the list. This page notices it by itself." = "Slå DockFlip til på listen. Denne side opdager det af sig selv.";
+"All set. Continue to the next step." = "Alt er klar. Fortsæt til næste trin.";
 "Grant Accessibility…" = "Tillad Tilgængelighed…";
 "Continue Setup…" = "Fortsæt konfigurationen…";
 "⌘Tab: active" = "⌘Tab: aktiv";
@@ -116,6 +124,7 @@
 "Paste" = "Indsæt";
 "Select All" = "Vælg alle";
 "%ld tabs" = "%ld faner";
+"Show fewer" = "Vis færre";
 "Show all %ld tabs" = "Vis alle %ld faner";
 "1 more window" = "1 vindue mere";
 "%ld more windows" = "%ld vinduer mere";

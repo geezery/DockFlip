@@ -130,6 +130,7 @@ final class Services {
         if !handingOver { NativeCommandTab.setEnabled(true) }
         hotKeys.unregisterAll()
         usage.saveNow()
+        placement.saveOnQuit()
     }
 
     /// Lines for the debug log.

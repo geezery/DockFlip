@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip 已在列表中打开，但没有任何变化？";
 "Reset Permission" = "重置权限";
 "Launch at login" = "登录时启动";
+"DockFlip is switched off in Login Items" = "DockFlip 已在登录项中关闭";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "打开登录项并在其中启用 DockFlip，即可在登录时启动。";
+"Launch at login could not be changed" = "无法更改“登录时启动”";
+"macOS did not accept the change." = "macOS 未接受此更改。";
+"Open Login Items" = "打开登录项";
 "Done" = "完成";
 "Dock" = "程序坞";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "将指针停留在图标上可查看其窗口和标签页。点按可最小化和恢复。";
@@ -44,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "请在系统设置中允许 DockFlip。如果已经允许，请重新启动 DockFlip。";
 "Show Setup Again" = "再次显示设置助理";
 "Accessibility: allowed" = "辅助功能：已允许";
+"Accessibility: not yet allowed" = "辅助功能：尚未允许";
+"Turn on DockFlip in the list. This page notices it by itself." = "在列表中打开 DockFlip。此页面会自动检测到。";
+"All set. Continue to the next step." = "一切就绪。继续下一步。";
 "Grant Accessibility…" = "授予辅助功能权限…";
 "Continue Setup…" = "继续设置…";
 "⌘Tab: active" = "⌘Tab：已启用";
@@ -116,6 +124,7 @@
 "Paste" = "粘贴";
 "Select All" = "全选";
 "%ld tabs" = "%ld 个标签页";
+"Show fewer" = "收起";
 "Show all %ld tabs" = "显示全部 %ld 个标签页";
 "1 more window" = "还有 1 个窗口";
 "%ld more windows" = "还有 %ld 个窗口";
