@@ -59,6 +59,7 @@
 "Settings…" = "Réglages…";
 "Debug Logging" = "Journal de débogage";
 "Save Debug Log…" = "Enregistrer le journal de débogage…";
+"Could Not Save the Debug Log" = "Impossible d’enregistrer le journal de débogage";
 "Quit DockFlip" = "Quitter DockFlip";
 "Left Half" = "Moitié gauche";
 "Right Half" = "Moitié droite";

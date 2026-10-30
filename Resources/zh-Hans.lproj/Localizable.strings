@@ -59,6 +59,7 @@
 "Settings…" = "设置…";
 "Debug Logging" = "调试日志";
 "Save Debug Log…" = "存储调试日志…";
+"Could Not Save the Debug Log" = "无法存储调试日志";
 "Quit DockFlip" = "退出 DockFlip";
 "Left Half" = "左半边";
 "Right Half" = "右半边";

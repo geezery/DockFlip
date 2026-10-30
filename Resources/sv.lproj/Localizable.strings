@@ -59,6 +59,7 @@
 "Settings…" = "Inställningar…";
 "Debug Logging" = "Felsökningsloggning";
 "Save Debug Log…" = "Spara felsökningslogg…";
+"Could Not Save the Debug Log" = "Kunde inte spara felsökningsloggen";
 "Quit DockFlip" = "Avsluta DockFlip";
 "Left Half" = "Vänster halva";
 "Right Half" = "Höger halva";

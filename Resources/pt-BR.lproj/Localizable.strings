@@ -59,6 +59,7 @@
 "Settings…" = "Ajustes…";
 "Debug Logging" = "Registro de Depuração";
 "Save Debug Log…" = "Salvar Registro de Depuração…";
+"Could Not Save the Debug Log" = "Não foi possível salvar o registro de depuração";
 "Quit DockFlip" = "Encerrar DockFlip";
 "Left Half" = "Metade Esquerda";
 "Right Half" = "Metade Direita";

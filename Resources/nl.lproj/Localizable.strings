@@ -59,6 +59,7 @@
 "Settings…" = "Instellingen…";
 "Debug Logging" = "Debuglogboek";
 "Save Debug Log…" = "Bewaar debuglogboek…";
+"Could Not Save the Debug Log" = "Kan debuglogboek niet bewaren";
 "Quit DockFlip" = "Stop DockFlip";
 "Left Half" = "Linkerhelft";
 "Right Half" = "Rechterhelft";

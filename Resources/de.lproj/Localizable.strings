@@ -59,6 +59,7 @@
 "Settings…" = "Einstellungen …";
 "Debug Logging" = "Debug-Protokollierung";
 "Save Debug Log…" = "Debug-Protokoll sichern …";
+"Could Not Save the Debug Log" = "Debug-Protokoll konnte nicht gesichert werden";
 "Quit DockFlip" = "DockFlip beenden";
 "Left Half" = "Linke Hälfte";
 "Right Half" = "Rechte Hälfte";

@@ -59,6 +59,7 @@
 "Settings…" = "Indstillinger…";
 "Debug Logging" = "Fejlfindingslogning";
 "Save Debug Log…" = "Gem fejlfindingslog…";
+"Could Not Save the Debug Log" = "Fejlfindingsloggen kunne ikke gemmes";
 "Quit DockFlip" = "Slut DockFlip";
 "Left Half" = "Venstre halvdel";
 "Right Half" = "Højre halvdel";

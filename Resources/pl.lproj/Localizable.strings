@@ -59,6 +59,7 @@
 "Settings…" = "Ustawienia…";
 "Debug Logging" = "Rejestrowanie debugowania";
 "Save Debug Log…" = "Zachowaj dziennik debugowania…";
+"Could Not Save the Debug Log" = "Nie można zachować dziennika debugowania";
 "Quit DockFlip" = "Zakończ DockFlip";
 "Left Half" = "Lewa połowa";
 "Right Half" = "Prawa połowa";
