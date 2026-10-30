@@ -189,16 +189,27 @@ extension DockController {
     }
 
     /// ⌃⌥1…9: the n-th app in the Dock, as Win+1…9 on Windows.
+    /// Asks the Dock on every press, so a dragged icon counts at once, but only
+    /// for its icon list and the icons up to the n-th app (`DockAppOrder`).
     func activateItem(at index: Int) {
-        guard let list = dockList else { return }
-        let apps = list.elements(kAXChildrenAttribute).compactMap(Self.appIcon)
-        guard apps.indices.contains(index) else { return }
-        let bundleID = apps[index].bundleID
+        guard let list = dockList,
+              let bundleID = DockAppOrder.app(at: index, in: list.elements(kAXChildrenAttribute), bundleID: { self.dockItemBundleID($0) })
+        else { return }
         if let item = windowListItem(for: bundleID) {
             perform(action(for: item.windows, bundleID: bundleID), bundleID: bundleID)
         } else if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
             NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
         }
+    }
+
+    /// The bundle ID behind a Dock icon, or nil for folders, the Trash and
+    /// separators: subrole and URL in one call to the Dock, no frame, and the
+    /// app's Info.plist read once (`bundleIDs`).
+    private func dockItemBundleID(_ element: AXUIElement) -> String? {
+        guard let values = element.copyAttributes([kAXSubroleAttribute, kAXURLAttribute]),
+              values[0] as? String == "AXApplicationDockItem",
+              let url = values[1] as? URL else { return nil }
+        return bundleIDs.bundleID(for: url) { Bundle(url: $0)?.bundleIdentifier }
     }
 }
 
