@@ -55,6 +55,8 @@ struct WindowListView: View {
                     } action: { _, bottom in
                         model.listBottom = bottom
                     }
+                    // A new scroll view for each app's list: it starts at the top.
+                    .id(model.listID)
                     .overlay(alignment: .bottom) {
                         let below = model.windowsBelow
                         if below > 0 {
