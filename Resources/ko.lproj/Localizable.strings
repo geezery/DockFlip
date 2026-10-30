@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "목록에서 DockFlip이 이미 켜져 있는데도 아무 변화가 없나요?";
 "Reset Permission" = "권한 재설정";
 "Launch at login" = "로그인 시 실행";
+"DockFlip is switched off in Login Items" = "DockFlip이 로그인 항목에서 꺼져 있습니다";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "로그인 항목을 열고 DockFlip을 켜면 로그인할 때 실행됩니다.";
+"Launch at login could not be changed" = "로그인 시 실행을 변경할 수 없습니다";
+"macOS did not accept the change." = "macOS가 변경을 받아들이지 않았습니다.";
+"Open Login Items" = "로그인 항목 열기";
 "Done" = "완료";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "아이콘 위에 포인터를 올려 놓으면 해당 윈도우와 탭이 표시됩니다. 클릭하면 최소화하거나 복원합니다.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: 활성";
 "⌘Tab: not active" = "⌘Tab: 비활성";
 "⌘Tab: used by another app" = "⌘Tab: 다른 앱이 사용 중";
+"Probably %@" = "아마도 %@";
+"%@: used by another app" = "%@: 다른 앱이 사용 중";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "아마도 %@입니다. 앱을 종료하거나 단축키를 변경한 후 클릭하여 다시 시도하세요.";
+"Quit the app that uses them, then click to try again." = "단축키를 사용하는 앱을 종료한 후 클릭하여 다시 시도하세요.";
 "Windows tracked: %ld" = "추적 중인 윈도우: %ld";
 "Restart DockFlip" = "DockFlip 다시 시작";
 "Turn Off macOS Edge Tiling" = "macOS 가장자리 타일 정렬 끄기";
@@ -59,6 +68,7 @@
 "Settings…" = "설정…";
 "Debug Logging" = "디버그 로깅";
 "Save Debug Log…" = "디버그 로그 저장…";
+"Could Not Save the Debug Log" = "디버그 로그를 저장할 수 없음";
 "Quit DockFlip" = "DockFlip 종료";
 "Left Half" = "왼쪽 절반";
 "Right Half" = "오른쪽 절반";
@@ -105,6 +115,8 @@
 "%ld tabs" = "탭 %ld개";
 "Show fewer" = "간단히 보기";
 "Show all %ld tabs" = "탭 %ld개 모두 보기";
+"1 more window" = "창 1개 더";
+"%ld more windows" = "창 %ld개 더";
 "Duplicate" = "중복";
 "Not responding" = "응답 없음";
 "Active window" = "활성 윈도우";

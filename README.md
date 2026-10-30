@@ -238,6 +238,9 @@ polished from the first second without ever seeing your screen.
 - **No third-party code.** Apple frameworks only.
 - **Your typing stays yours.** DockFlip sees ordinary keys only while the ⌘Tab
   switcher is open, for type-to-filter.
+- **Your clicks pass through.** DockFlip watches left clicks and drags, as
+  pointer positions only, for Dock icon clicks and drag snapping; clicks
+  outside the Dock reach your apps untouched.
 - **Thumbnails are opt-in.** If you want real pictures, they're taken on demand,
   kept in memory for two minutes at most, and never taken of password managers,
   System Settings or while a password field is active.

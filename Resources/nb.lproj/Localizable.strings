@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip er allerede slått på i listen, men ingenting skjer?";
 "Reset Permission" = "Nullstill tillatelse";
 "Launch at login" = "Åpne ved pålogging";
+"DockFlip is switched off in Login Items" = "DockFlip er slått av i påloggingsobjekter";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Åpne påloggingsobjekter og slå på DockFlip der for å åpne det når du logger på.";
+"Launch at login could not be changed" = "Åpne ved pålogging kunne ikke endres";
+"macOS did not accept the change." = "macOS godtok ikke endringen.";
+"Open Login Items" = "Åpne påloggingsobjekter";
 "Done" = "Ferdig";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Hold pekeren over et symbol for å se vinduene og fanene. Klikk for å minimere og gjenopprette.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
 "⌘Tab: used by another app" = "⌘Tab: brukes av en annen app";
+"Probably %@" = "Sannsynligvis %@";
+"%@: used by another app" = "%@: brukes av en annen app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Sannsynligvis %@. Avslutt den eller endre snarveiene dens, og klikk så for å prøve igjen.";
+"Quit the app that uses them, then click to try again." = "Avslutt appen som bruker dem, og klikk så for å prøve igjen.";
 "Windows tracked: %ld" = "Overvåkede vinduer: %ld";
 "Restart DockFlip" = "Start DockFlip på nytt";
 "Turn Off macOS Edge Tiling" = "Slå av macOS-plassering av vinduer ved kantene";
@@ -59,6 +68,7 @@
 "Settings…" = "Innstillinger…";
 "Debug Logging" = "Feilsøkingslogging";
 "Save Debug Log…" = "Arkiver feilsøkingslogg…";
+"Could Not Save the Debug Log" = "Kunne ikke arkivere feilsøkingsloggen";
 "Quit DockFlip" = "Avslutt DockFlip";
 "Left Half" = "Venstre halvdel";
 "Right Half" = "Høyre halvdel";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld faner";
 "Show fewer" = "Vis færre";
 "Show all %ld tabs" = "Vis alle %ld faner";
+"1 more window" = "1 vindu til";
+"%ld more windows" = "%ld vinduer til";
 "Duplicate" = "Duplikat";
 "Not responding" = "Svarer ikke";
 "Active window" = "Aktivt vindu";

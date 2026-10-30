@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "O DockFlip já está ativado na lista, mas nada muda?";
 "Reset Permission" = "Redefinir Permissão";
 "Launch at login" = "Abrir ao iniciar sessão";
+"DockFlip is switched off in Login Items" = "O DockFlip está desativado em Itens de Início";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Abra Itens de Início e ative o DockFlip para que ele abra ao iniciar sessão.";
+"Launch at login could not be changed" = "Não foi possível alterar Abrir ao iniciar sessão";
+"macOS did not accept the change." = "O macOS não aceitou a alteração.";
+"Open Login Items" = "Abrir Itens de Início";
 "Done" = "OK";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Pare o ponteiro sobre um ícone para ver suas janelas e abas. Clique para minimizar e restaurar.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: ativo";
 "⌘Tab: not active" = "⌘Tab: inativo";
 "⌘Tab: used by another app" = "⌘Tab: em uso por outro app";
+"Probably %@" = "Provavelmente %@";
+"%@: used by another app" = "%@: em uso por outro app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Provavelmente %@. Encerre-o ou altere os atalhos dele e clique para tentar de novo.";
+"Quit the app that uses them, then click to try again." = "Encerre o app que os usa e clique para tentar de novo.";
 "Windows tracked: %ld" = "Janelas monitoradas: %ld";
 "Restart DockFlip" = "Reiniciar o DockFlip";
 "Turn Off macOS Edge Tiling" = "Desativar o mosaico nas bordas do macOS";
@@ -59,6 +68,7 @@
 "Settings…" = "Ajustes…";
 "Debug Logging" = "Registro de Depuração";
 "Save Debug Log…" = "Salvar Registro de Depuração…";
+"Could Not Save the Debug Log" = "Não foi possível salvar o registro de depuração";
 "Quit DockFlip" = "Encerrar DockFlip";
 "Left Half" = "Metade Esquerda";
 "Right Half" = "Metade Direita";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld abas";
 "Show fewer" = "Mostrar menos";
 "Show all %ld tabs" = "Mostrar todas as %ld abas";
+"1 more window" = "Mais 1 janela";
+"%ld more windows" = "Mais %ld janelas";
 "Duplicate" = "Duplicada";
 "Not responding" = "Não responde";
 "Active window" = "Janela ativa";

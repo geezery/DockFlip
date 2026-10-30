@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "リストでDockFlipがすでにオンになっているのに、何も変わりませんか？";
 "Reset Permission" = "アクセス権をリセット";
 "Launch at login" = "ログイン時に起動";
+"DockFlip is switched off in Login Items" = "DockFlipはログイン項目でオフになっています";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "ログイン項目を開き、DockFlipをオンにすると、ログイン時に起動します。";
+"Launch at login could not be changed" = "ログイン時に起動の設定を変更できませんでした";
+"macOS did not accept the change." = "macOSが変更を受け付けませんでした。";
+"Open Login Items" = "ログイン項目を開く";
 "Done" = "完了";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "アイコンにポインタを置くと、そのウインドウとタブが表示されます。クリックでウインドウをしまったり元に戻したりできます。";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab：有効";
 "⌘Tab: not active" = "⌘Tab：無効";
 "⌘Tab: used by another app" = "⌘Tab：別のアプリが使用中";
+"Probably %@" = "おそらく%@";
+"%@: used by another app" = "%@：別のアプリが使用中";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "おそらく%@です。終了するかショートカットを変更してから、クリックして再試行してください。";
+"Quit the app that uses them, then click to try again." = "使用しているアプリを終了してから、クリックして再試行してください。";
 "Windows tracked: %ld" = "追跡中のウインドウ：%ld";
 "Restart DockFlip" = "DockFlipを再起動";
 "Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";
@@ -59,6 +68,7 @@
 "Settings…" = "設定…";
 "Debug Logging" = "デバッグログ";
 "Save Debug Log…" = "デバッグログを保存…";
+"Could Not Save the Debug Log" = "デバッグログを保存できませんでした";
 "Quit DockFlip" = "DockFlipを終了";
 "Left Half" = "左半分";
 "Right Half" = "右半分";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld個のタブ";
 "Show fewer" = "表示を減らす";
 "Show all %ld tabs" = "%ld個のタブをすべて表示";
+"1 more window" = "ほかに1個のウインドウ";
+"%ld more windows" = "ほかに%ld個のウインドウ";
 "Duplicate" = "重複";
 "Not responding" = "応答なし";
 "Active window" = "アクティブなウインドウ";

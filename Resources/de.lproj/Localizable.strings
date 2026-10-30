@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip ist in der Liste bereits aktiviert, aber nichts ändert sich?";
 "Reset Permission" = "Berechtigung zurücksetzen";
 "Launch at login" = "Beim Anmelden öffnen";
+"DockFlip is switched off in Login Items" = "DockFlip ist in den Anmeldeobjekten ausgeschaltet";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Öffne die Anmeldeobjekte und schalte DockFlip dort ein, damit es beim Anmelden startet.";
+"Launch at login could not be changed" = "Beim Anmelden öffnen konnte nicht geändert werden";
+"macOS did not accept the change." = "macOS hat die Änderung nicht angenommen.";
+"Open Login Items" = "Anmeldeobjekte öffnen";
 "Done" = "Fertig";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Verweile mit dem Zeiger auf einem Symbol, um seine Fenster und Tabs zu sehen. Klicke, um sie im Dock abzulegen und wiederherzustellen.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: nicht aktiv";
 "⌘Tab: used by another app" = "⌘Tab: von einer anderen App belegt";
+"Probably %@" = "Vermutlich %@";
+"%@: used by another app" = "%@: von einer anderen App belegt";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Vermutlich %@. Beende die App oder ändere ihre Kurzbefehle und klicke dann, um es erneut zu versuchen.";
+"Quit the app that uses them, then click to try again." = "Beende die App, die sie belegt, und klicke dann, um es erneut zu versuchen.";
 "Windows tracked: %ld" = "Erfasste Fenster: %ld";
 "Restart DockFlip" = "DockFlip neu starten";
 "Turn Off macOS Edge Tiling" = "Kacheln am Bildschirmrand von macOS ausschalten";
@@ -59,6 +68,7 @@
 "Settings…" = "Einstellungen …";
 "Debug Logging" = "Debug-Protokollierung";
 "Save Debug Log…" = "Debug-Protokoll sichern …";
+"Could Not Save the Debug Log" = "Debug-Protokoll konnte nicht gesichert werden";
 "Quit DockFlip" = "DockFlip beenden";
 "Left Half" = "Linke Hälfte";
 "Right Half" = "Rechte Hälfte";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld Tabs";
 "Show fewer" = "Weniger anzeigen";
 "Show all %ld tabs" = "Alle %ld Tabs anzeigen";
+"1 more window" = "1 weiteres Fenster";
+"%ld more windows" = "%ld weitere Fenster";
 "Duplicate" = "Duplikat";
 "Not responding" = "Reagiert nicht";
 "Active window" = "Aktives Fenster";

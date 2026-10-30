@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip est déjà activé dans la liste, mais rien ne change ?";
 "Reset Permission" = "Réinitialiser l’autorisation";
 "Launch at login" = "Ouvrir à l’ouverture de session";
+"DockFlip is switched off in Login Items" = "DockFlip est désactivé dans Ouverture";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Ouvrez les éléments d’ouverture et activez DockFlip pour qu’il s’ouvre à l’ouverture de session.";
+"Launch at login could not be changed" = "Impossible de modifier l’ouverture à l’ouverture de session";
+"macOS did not accept the change." = "macOS n’a pas accepté la modification.";
+"Open Login Items" = "Ouvrir les éléments d’ouverture";
 "Done" = "Terminé";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Survolez une icône pour voir ses fenêtres et ses onglets. Cliquez pour réduire et restaurer.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab : actif";
 "⌘Tab: not active" = "⌘Tab : inactif";
 "⌘Tab: used by another app" = "⌘Tab : utilisé par une autre app";
+"Probably %@" = "Probablement %@";
+"%@: used by another app" = "%@ : utilisés par une autre app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Probablement %@. Quittez-la ou modifiez ses raccourcis, puis cliquez pour réessayer.";
+"Quit the app that uses them, then click to try again." = "Quittez l’app qui les utilise, puis cliquez pour réessayer.";
 "Windows tracked: %ld" = "Fenêtres suivies : %ld";
 "Restart DockFlip" = "Relancer DockFlip";
 "Turn Off macOS Edge Tiling" = "Désactiver la mosaïque sur les bords de macOS";
@@ -59,6 +68,7 @@
 "Settings…" = "Réglages…";
 "Debug Logging" = "Journal de débogage";
 "Save Debug Log…" = "Enregistrer le journal de débogage…";
+"Could Not Save the Debug Log" = "Impossible d’enregistrer le journal de débogage";
 "Quit DockFlip" = "Quitter DockFlip";
 "Left Half" = "Moitié gauche";
 "Right Half" = "Moitié droite";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld onglets";
 "Show fewer" = "Afficher moins";
 "Show all %ld tabs" = "Afficher les %ld onglets";
+"1 more window" = "1 autre fenêtre";
+"%ld more windows" = "%ld autres fenêtres";
 "Duplicate" = "Doublon";
 "Not responding" = "Ne répond pas";
 "Active window" = "Fenêtre active";

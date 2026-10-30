@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip jest już włączony na liście, ale nic się nie zmienia?";
 "Reset Permission" = "Resetuj uprawnienie";
 "Launch at login" = "Otwieraj po zalogowaniu";
+"DockFlip is switched off in Login Items" = "DockFlip jest wyłączony w rzeczach otwieranych podczas logowania";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Otwórz rzeczy otwierane podczas logowania i włącz tam DockFlip, aby otwierał się po zalogowaniu.";
+"Launch at login could not be changed" = "Nie udało się zmienić otwierania po zalogowaniu";
+"macOS did not accept the change." = "macOS nie przyjął zmiany.";
+"Open Login Items" = "Otwórz rzeczy otwierane podczas logowania";
 "Done" = "Gotowe";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Zatrzymaj wskaźnik na ikonie, aby zobaczyć jej okna i karty. Kliknij, aby zminimalizować i przywrócić.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: aktywny";
 "⌘Tab: not active" = "⌘Tab: nieaktywny";
 "⌘Tab: used by another app" = "⌘Tab: używany przez inną aplikację";
+"Probably %@" = "Prawdopodobnie %@";
+"%@: used by another app" = "%@: używane przez inną aplikację";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Prawdopodobnie %@. Zamknij ją lub zmień jej skróty, a potem kliknij, aby spróbować ponownie.";
+"Quit the app that uses them, then click to try again." = "Zamknij aplikację, która ich używa, a potem kliknij, aby spróbować ponownie.";
 "Windows tracked: %ld" = "Śledzone okna: %ld";
 "Restart DockFlip" = "Uruchom DockFlip ponownie";
 "Turn Off macOS Edge Tiling" = "Wyłącz kafelkowanie przy krawędziach w macOS";
@@ -59,6 +68,7 @@
 "Settings…" = "Ustawienia…";
 "Debug Logging" = "Rejestrowanie debugowania";
 "Save Debug Log…" = "Zachowaj dziennik debugowania…";
+"Could Not Save the Debug Log" = "Nie można zachować dziennika debugowania";
 "Quit DockFlip" = "Zakończ DockFlip";
 "Left Half" = "Lewa połowa";
 "Right Half" = "Prawa połowa";
@@ -105,6 +115,8 @@
 "%ld tabs" = "Karty: %ld";
 "Show fewer" = "Pokaż mniej";
 "Show all %ld tabs" = "Pokaż wszystkie karty (%ld)";
+"1 more window" = "Jeszcze 1 okno";
+"%ld more windows" = "Więcej okien: %ld";
 "Duplicate" = "Duplikat";
 "Not responding" = "Nie odpowiada";
 "Active window" = "Aktywne okno";

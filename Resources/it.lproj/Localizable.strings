@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip è già attivato nell’elenco, ma non cambia nulla?";
 "Reset Permission" = "Reimposta autorizzazione";
 "Launch at login" = "Apri al login";
+"DockFlip is switched off in Login Items" = "DockFlip è disattivato negli elementi login";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Apri gli elementi login e attiva DockFlip per aprirlo al login.";
+"Launch at login could not be changed" = "Impossibile modificare Apri al login";
+"macOS did not accept the change." = "macOS non ha accettato la modifica.";
+"Open Login Items" = "Apri elementi login";
 "Done" = "Fine";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Passa il puntatore su un’icona per vederne le finestre e i pannelli. Fai clic per contrarre e ripristinare.";
@@ -49,6 +54,10 @@
 "⌘Tab: active" = "⌘Tab: attivo";
 "⌘Tab: not active" = "⌘Tab: non attivo";
 "⌘Tab: used by another app" = "⌘Tab: usato da un'altra app";
+"Probably %@" = "Probabilmente %@";
+"%@: used by another app" = "%@: usati da un’altra app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Probabilmente %@. Chiudila o cambia le sue scorciatoie, poi fai clic per riprovare.";
+"Quit the app that uses them, then click to try again." = "Chiudi l’app che li usa, poi fai clic per riprovare.";
 "Windows tracked: %ld" = "Finestre monitorate: %ld";
 "Restart DockFlip" = "Riavvia DockFlip";
 "Turn Off macOS Edge Tiling" = "Disattiva l’affiancamento ai bordi di macOS";
@@ -59,6 +68,7 @@
 "Settings…" = "Impostazioni…";
 "Debug Logging" = "Log di debug";
 "Save Debug Log…" = "Salva log di debug…";
+"Could Not Save the Debug Log" = "Impossibile salvare il log di debug";
 "Quit DockFlip" = "Esci da DockFlip";
 "Left Half" = "Metà sinistra";
 "Right Half" = "Metà destra";
@@ -105,6 +115,8 @@
 "%ld tabs" = "%ld pannelli";
 "Show fewer" = "Mostra meno";
 "Show all %ld tabs" = "Mostra tutti i %ld pannelli";
+"1 more window" = "Un'altra finestra";
+"%ld more windows" = "Altre %ld finestre";
 "Duplicate" = "Duplicato";
 "Not responding" = "Non risponde";
 "Active window" = "Finestra attiva";

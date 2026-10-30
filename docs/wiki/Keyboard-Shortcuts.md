@@ -31,7 +31,7 @@ Or drag the window near a corner.
 | Key | Action |
 |---|---|
 | Tab / ⇧Tab | Next / previous |
-| ← → | Move through the stack |
+| ← → ↑ ↓ | Move through the stack (→ and ↓ next, ← and ↑ previous) |
 | Type letters | Filter |
 | Return | Switch |
 | Esc | Clear the filter, or cancel |

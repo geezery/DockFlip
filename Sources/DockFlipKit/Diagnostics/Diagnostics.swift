@@ -1,5 +1,6 @@
 import AppKit
 import OSLog
+import UniformTypeIdentifiers
 
 /// Loggers by area. Messages go to the unified log (Console.app, `log show`) and
 /// into the exported debug log. Window titles are never logged — app names only.
@@ -124,19 +125,44 @@ enum Diagnostics {
         lines.append("== Log since launch ==")
         lines.append(contentsOf: logEntries())
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd-HHmmss"
-        let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
-            ?? URL(fileURLWithPath: NSHomeDirectory())
-        let url = desktop.appendingPathComponent("DockFlip-debug-\(formatter.string(from: Date())).txt")
-        do {
-            try lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
-            NSWorkspace.shared.activateFileViewerSelecting([url])
-            Log.app.notice("Debug log written")
-        } catch {
-            Log.app.error("Could not write the debug log: \(error.localizedDescription, privacy: .public)")
-            NSSound.beep()
+        save(lines.joined(separator: "\n"))
+    }
+
+    /// Asks where to save, Desktop first. Writing straight to ~/Desktop made macOS
+    /// ask for Desktop folder access, a second permission; a file the user picks in
+    /// a save panel needs none. The text is taken before the panel opens, so it
+    /// shows the moment the user chose Save Debug Log….
+    private static func save(_ text: String) {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = DebugLogFile.suggestedName(at: Date())
+        panel.directoryURL = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first
+        panel.allowedContentTypes = [.plainText]
+        panel.canCreateDirectories = true
+        // A panel the user asked for: like the share sheet, a place DockFlip comes forward.
+        NSApp.activate()
+        panel.begin { response in
+            MainActor.assumeIsolated {
+                guard response == .OK, let url = panel.url else { return }
+                do {
+                    try DebugLogFile.write(text, to: url)
+                    NSWorkspace.shared.activateFileViewerSelecting([url])
+                    Log.app.notice("Debug log written")
+                } catch {
+                    Log.app.error("Could not write the debug log: \(error.localizedDescription, privacy: .public)")
+                    showFailure(error, fileName: url.lastPathComponent)
+                }
+            }
         }
+        panel.orderFrontRegardless()
+    }
+
+    private static func showFailure(_ error: Error, fileName: String) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = L("Could Not Save the Debug Log")
+        alert.informativeText = DebugLogFile.failureText(for: error, fileName: fileName)
+        NSApp.activate()
+        _ = alert.runModal()
     }
 
     /// This process's own unified-log entries since launch. Reading one's own
