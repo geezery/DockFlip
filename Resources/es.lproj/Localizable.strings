@@ -47,6 +47,7 @@
 "Managed by your organization" = "Gestionado por tu organización";
 "Screen Recording is not allowed yet" = "La grabación de pantalla aún no está permitida";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Permite DockFlip en Ajustes del Sistema. Si ya está permitido, reinicia DockFlip.";
+"Window thumbnails are not shown" = "Las miniaturas de las ventanas no se muestran";
 "Show Setup Again" = "Volver a mostrar la configuración";
 "Accessibility: allowed" = "Accesibilidad: permitida";
 "Accessibility: not yet allowed" = "Accesibilidad: aún no permitida";
