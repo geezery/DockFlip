@@ -66,6 +66,7 @@
 "Restart DockFlip" = "Herstart DockFlip";
 "Turn Off macOS Edge Tiling" = "Zet tegelen aan schermranden van macOS uit";
 "Windows snap twice when dragged to an edge" = "Vensters worden twee keer uitgelijnd als je ze naar een rand sleept";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "Tegelen aan schermranden van macOS staat ook aan. Zet het uit in het DockFlip-menu.";
 "Window Layout" = "Vensterindeling";
 "Clean Up (%ld)…" = "Ruim op (%ld)…";
 "Clean Up…" = "Ruim op…";

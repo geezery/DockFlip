@@ -66,6 +66,7 @@
 "Restart DockFlip" = "Starta om DockFlip";
 "Turn Off macOS Edge Tiling" = "Stäng av macOS fönsterplacering vid kanter";
 "Windows snap twice when dragged to an edge" = "Fönster fästs två gånger när de dras till en kant";
+"macOS edge tiling is on too. Turn it off in the DockFlip menu." = "macOS fönsterplacering vid kanter är också på. Stäng av den i DockFlip-menyn.";
 "Window Layout" = "Fönsterlayout";
 "Clean Up (%ld)…" = "Städa upp (%ld)…";
 "Clean Up…" = "Städa upp…";

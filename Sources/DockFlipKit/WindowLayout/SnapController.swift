@@ -11,6 +11,7 @@ final class SnapController {
     private var monitors: [Any] = []
     private var drag: SnapDrag?
     private var dragZone: (region: SnapRegion, screen: NSScreen)?
+    private var tilingHint = EdgeTilingHint()
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -107,6 +108,7 @@ final class SnapController {
     private func mouseDown() {
         drag = SnapDrag(startMouse: NSEvent.mouseLocation)
         dragZone = nil
+        tilingHint.newDrag()
     }
 
     private func mouseDragged() {
@@ -126,7 +128,10 @@ final class SnapController {
         if let zone {
             let area = DisplayLayout.usableArea(of: zone.screen)
             let rect = SnapEngine.rect(for: zone.region, in: area)
-            overlay.show(Geometry.cocoaRect(fromAX: rect, primaryHeight: DisplayLayout.primaryHeight))
+            let hint = tilingHint.showsHint(tilingOn: { NativeEdgeTiling.isOn })
+                ? L("macOS edge tiling is on too. Turn it off in the DockFlip menu.")
+                : nil
+            overlay.show(Geometry.cocoaRect(fromAX: rect, primaryHeight: DisplayLayout.primaryHeight), hint: hint)
         } else {
             overlay.hide()
         }
