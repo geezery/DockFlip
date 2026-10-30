@@ -221,8 +221,42 @@ public final class WindowRegistry {
         element(for: id)?.set(kAXMinimizedAttribute, kCFBooleanTrue)
     }
 
-    /// Presses the window's close button, so the app can ask to save first.
+    /// Presses the window's close button, so the app can ask to save first — and
+    /// looks again shortly, to bring that question forward (`CloseFollowUp`).
     public func close(_ id: CGWindowID) {
-        element(for: id)?.element(kAXCloseButtonAttribute)?.perform(kAXPressAction)
+        guard let element = element(for: id),
+              element.element(kAXCloseButtonAttribute)?.perform(kAXPressAction) == true else { return }
+        followUpClose(of: id, element: element, isLastLook: false)
+    }
+
+    /// One-shot looks, never a repeating timer: a save sheet is there within a
+    /// fraction of a second, and a busy app gets one more second.
+    private func followUpClose(of id: CGWindowID, element: AXUIElement, isLastLook: Bool) {
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: isLastLook ? .seconds(1) : .milliseconds(400))
+            guard let self else { return }
+            switch CloseFollowUp.after(self.closeCheck(of: id, element: element), isLastLook: isLastLook) {
+            case .done:
+                break
+            case .bringForward:
+                let name = self.windows[id].flatMap { self.apps[$0.pid]?.app.localizedName } ?? "?"
+                Log.registry.notice("Close: bringing forward a window that asks first: \(name, privacy: .public)")
+                self.focus(id)
+            case .lookAgain:
+                self.followUpClose(of: id, element: element, isLastLook: true)
+            }
+        }
+    }
+
+    private func closeCheck(of id: CGWindowID, element: AXUIElement) -> CloseFollowUp.Check {
+        var role: CFTypeRef?
+        let error = AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
+        let answered = error != .cannotComplete
+        return CloseFollowUp.Check(
+            isGone: windows[id] == nil || error == .invalidUIElement,
+            answered: answered,
+            hasSheet: answered && element.elements(kAXChildrenAttribute).contains { $0.string(kAXRoleAttribute) == kAXSheetRole },
+            isMinimized: answered && element.bool(kAXMinimizedAttribute) == true
+        )
     }
 }

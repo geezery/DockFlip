@@ -54,6 +54,10 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         self.onDone = onDone
         super.init()
         model.onFinish = { [weak self] in self?.finish() }
+        let settings = Settings.shared
+        model.launchAtLogin = SetupEnd.initialLaunchAtLogin(
+            completedBefore: settings.onboardingCompleted, current: settings.launchAtLogin
+        )
     }
 
     func show() {
@@ -80,11 +84,9 @@ final class OnboardingController: NSObject, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         stopWatching()
         window = nil
-        // Closed early: if the permission is there, DockFlip still starts.
-        if Permissions.isAccessibilityTrusted {
-            Settings.shared.onboardingCompleted = true
-            onDone()
-        }
+        // Closed early: if the permission is there, DockFlip still starts, with the
+        // choices made so far (Launch at login stays on unless it was switched off).
+        if saveChoices() { onDone() }
     }
 
     private func startWatching() {
@@ -120,13 +122,22 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         }
     }
 
-    private func finish() {
-        guard Permissions.isAccessibilityTrusted else { return }
+    /// Saves what setup asked, the same way for Continue and for the close button.
+    /// False when Accessibility isn't allowed: nothing is saved and DockFlip doesn't start.
+    private func saveChoices() -> Bool {
         let settings = Settings.shared
-        settings.previewsEnabled = model.previews ?? false
-        if settings.previewsEnabled { PreviewProvider.requestPermission() }
-        if model.launchAtLogin != settings.launchAtLogin { settings.launchAtLogin = model.launchAtLogin }
-        settings.onboardingCompleted = true
+        let saved = SetupEnd.save(
+            previews: model.previews,
+            launchAtLogin: model.launchAtLogin,
+            trusted: Permissions.isAccessibilityTrusted,
+            to: settings
+        )
+        if saved, model.previews == true, settings.previewsEnabled { PreviewProvider.requestPermission() }
+        return saved
+    }
+
+    private func finish() {
+        guard saveChoices() else { return }
 
         stopWatching()
         window?.delegate = nil // windowWillClose must not run onDone a second time
