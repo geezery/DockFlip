@@ -4,7 +4,7 @@ import Testing
 @Suite("NativeEdgeTiling")
 struct NativeEdgeTilingTests {
     private func isOn(_ values: [String: Bool]) -> Bool {
-        NativeEdgeTiling.isOn { values[$0] }
+        NativeEdgeTiling.isOn(reading: { values[$0] })
     }
 
     @Test func neverWrittenMeansOn() {

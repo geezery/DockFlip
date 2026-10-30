@@ -13,7 +13,7 @@ enum NativeEdgeTiling {
         // first reads the current value, so a switch flipped in System Settings
         // (or reset by a macOS update) shows the next time the menu opens.
         CFPreferencesAppSynchronize(domain)
-        return isOn { CFPreferencesCopyAppValue($0 as CFString, domain) as? Bool }
+        return isOn(reading: { CFPreferencesCopyAppValue($0 as CFString, domain) as? Bool })
     }
 
     /// The rule behind `isOn`: a key macOS has never written means the default,
