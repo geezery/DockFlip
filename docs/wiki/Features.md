@@ -27,7 +27,7 @@ and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
 - Each site gets its own colour chip, and the same site always gets the same colour.
 - Duplicate tabs are marked "Duplicate", for the 14 tabs of the same doc we all
   have open.
-- Long lists fold after eight tabs; "Show all N tabs" unfolds them.
+- Long lists fold after eight tabs; "Show all N tabs" unfolds them and "Show fewer" folds them back.
 - Click a tab to go straight to it.
 
 Tabs are read from the browser's tab bar, never from page content.
