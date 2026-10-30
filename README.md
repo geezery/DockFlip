@@ -225,8 +225,9 @@ menu, where clicking one applies it.
 
 <img src="docs/assets/feature-privacy.gif" alt="DockFlip asks for Accessibility only: no Screen Recording, no network access, no third-party code" width="100%">
 
-Most Dock preview apps and window switchers ask for **Screen Recording** the
-moment you open them, because they're built around screenshots of your windows.
+Most Dock preview apps ask for **Screen Recording** the moment you open them,
+and window switchers need it for their thumbnails, because they're built around
+screenshots of your windows.
 DockFlip isn't. Its window cards, mini-maps and tab lists are drawn from what
 macOS already shares with it (titles, positions, icons, tabs), so it looks
 polished from the first second without ever seeing your screen.
