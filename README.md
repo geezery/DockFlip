@@ -123,7 +123,8 @@ front.
 - **Type to filter.** Hold ⌘ and type `team`, and only the windows with "team"
   in their title or app name are left. Press Return to switch.
 - **The usual keys.** Tab moves forward, ⇧ moves back, Esc cancels, and
-  releasing ⌘ switches. Arrow keys and clicking work too.
+  releasing ⌘ switches. Arrow keys and clicking work too. A quick ⌘Tab
+  switches without drawing the stack at all.
 - **Survives password fields.** It keeps working while another app holds
   secure keyboard input, which is exactly when lesser switchers give up.
 

@@ -48,7 +48,10 @@ main thread.
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
-in `Tests/DockFlipKitTests`.
+in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
+that acts on them: `SwitcherReveal`, `DockPress`, `HotKeyRegistration`,
+`ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`, `QuitFollowUp`,
+`UsageDates`, `SetupEnd`, `LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
