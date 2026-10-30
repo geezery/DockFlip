@@ -87,7 +87,8 @@ refuses for another reason, Settings shows macOS's own words.
 If windows jump around twice when you drag them to an edge, macOS's own tiling
 is also on. Setup offers to turn it off, and whenever it is back on (switched on
 again, or reset by a macOS update) the menu bar menu shows **Turn Off macOS Edge
-Tiling**. You can also switch off *Drag windows to screen edges to tile* in
+Tiling**; the first drag snap after DockFlip starts says so in its preview too.
+You can also switch off *Drag windows to screen edges to tile* in
 *System Settings → Desktop & Dock*.
 
 ## I picked a language I can't read
