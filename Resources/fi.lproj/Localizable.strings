@@ -97,6 +97,14 @@
 "Close Selected" = "Sulje valitut";
 "Keep" = "Säilytä";
 "Never suggest this app again" = "Älä enää ehdota tätä ohjelmaa";
+"Keep this window for now. It is suggested again after three more unused days." = "Säilytä tämä ikkuna toistaiseksi. Sitä ehdotetaan uudelleen, kun se on ollut käyttämättä vielä kolme päivää.";
+"Keep this app running for now. It is suggested again after another unused day." = "Pidä tämä ohjelma käynnissä toistaiseksi. Sitä ehdotetaan uudelleen, kun se on ollut käyttämättä vielä päivän.";
+"Kept Apps (%ld)" = "Säilytetyt ohjelmat (%ld)";
+"Apps Clean Up never suggests" = "Ohjelmat, joita Siivoa ei koskaan ehdota";
+"Kept apps" = "Säilytetyt ohjelmat";
+"Clean Up never suggests these apps or their windows." = "Siivoa ei koskaan ehdota näitä ohjelmia eikä niiden ikkunoita.";
+"Remove" = "Poista";
+"Suggest this app again" = "Ehdota tätä ohjelmaa taas";
 "Minimized" = "Pienennetty";
 "On another desktop" = "Toisella työpöydällä";
 "No windows match" = "Ei osuvia ikkunoita";

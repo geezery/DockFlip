@@ -97,6 +97,14 @@
 "Close Selected" = "Cerrar selección";
 "Keep" = "Conservar";
 "Never suggest this app again" = "No volver a sugerir esta app";
+"Keep this window for now. It is suggested again after three more unused days." = "Conservar esta ventana por ahora. Se volverá a sugerir tras tres días más sin usar.";
+"Keep this app running for now. It is suggested again after another unused day." = "Mantener esta app abierta por ahora. Se volverá a sugerir tras otro día sin usar.";
+"Kept Apps (%ld)" = "Apps conservadas (%ld)";
+"Apps Clean Up never suggests" = "Apps que Limpiar nunca sugiere";
+"Kept apps" = "Apps conservadas";
+"Clean Up never suggests these apps or their windows." = "Limpiar nunca sugiere estas apps ni sus ventanas.";
+"Remove" = "Quitar";
+"Suggest this app again" = "Volver a sugerir esta app";
 "Minimized" = "Minimizada";
 "On another desktop" = "En otro escritorio";
 "No windows match" = "Ninguna ventana coincide";
