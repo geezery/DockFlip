@@ -48,6 +48,8 @@
 "⌘Tab: not active" = "⌘Tab: nicht aktiv";
 "Windows tracked: %ld" = "Erfasste Fenster: %ld";
 "Restart DockFlip" = "DockFlip neu starten";
+"Turn Off macOS Edge Tiling" = "Kacheln am Bildschirmrand von macOS ausschalten";
+"Windows snap twice when dragged to an edge" = "Fenster rasten doppelt ein, wenn man sie an einen Rand zieht";
 "Window Layout" = "Fensteranordnung";
 "Clean Up (%ld)…" = "Aufräumen (%ld) …";
 "Clean Up…" = "Aufräumen …";

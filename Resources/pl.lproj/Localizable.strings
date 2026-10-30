@@ -48,6 +48,8 @@
 "⌘Tab: not active" = "⌘Tab: nieaktywny";
 "Windows tracked: %ld" = "Śledzone okna: %ld";
 "Restart DockFlip" = "Uruchom DockFlip ponownie";
+"Turn Off macOS Edge Tiling" = "Wyłącz kafelkowanie przy krawędziach w macOS";
+"Windows snap twice when dragged to an edge" = "Okna przyciągają się podwójnie po przeciągnięciu do krawędzi";
 "Window Layout" = "Układ okien";
 "Clean Up (%ld)…" = "Uporządkuj (%ld)…";
 "Clean Up…" = "Uporządkuj…";

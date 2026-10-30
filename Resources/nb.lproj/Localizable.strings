@@ -48,6 +48,8 @@
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
 "Windows tracked: %ld" = "Overvåkede vinduer: %ld";
 "Restart DockFlip" = "Start DockFlip på nytt";
+"Turn Off macOS Edge Tiling" = "Slå av macOS-plassering av vinduer ved kantene";
+"Windows snap twice when dragged to an edge" = "Vinduer festes to ganger når de dras til en kant";
 "Window Layout" = "Vindusoppsett";
 "Clean Up (%ld)…" = "Rydd opp (%ld)…";
 "Clean Up…" = "Rydd opp…";
