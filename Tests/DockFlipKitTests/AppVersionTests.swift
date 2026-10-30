@@ -15,4 +15,9 @@ struct AppVersionTests {
         #expect(AppVersion.cleaned("") == nil)
         #expect(AppVersion.cleaned(nil) == nil)
     }
+
+    @Test func aDirtyBuildKeepsItsMark() {
+        #expect(AppVersion.cleaned("c79a704-dirty") == "c79a704-dirty")
+        #expect(AppVersion.format(version: "0.3.0", commit: AppVersion.cleaned("c79a704-dirty")) == "0.3.0 (c79a704-dirty)")
+    }
 }
