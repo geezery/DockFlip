@@ -5,7 +5,8 @@
 The first line of the menu bar menu says it, for example *DockFlip 0.3.0
 (c79a704)*. The part in brackets is the commit the app was built from. Builds
 from source all carry the same version number, so the commit tells you whether
-yours has a fix. Settings and **Save Debug Log…** show the same.
+yours has a fix. A build made with changes that commit doesn't hold says so:
+*DockFlip 0.3.0 (c79a704-dirty)*. Settings and **Save Debug Log…** show the same.
 
 ## ⌘Tab does nothing after a rebuild
 
