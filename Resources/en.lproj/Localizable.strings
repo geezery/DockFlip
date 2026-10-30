@@ -48,6 +48,7 @@
 "Continue Setup…" = "Continue Setup…";
 "⌘Tab: active" = "⌘Tab: active";
 "⌘Tab: not active" = "⌘Tab: not active";
+"⌘Tab: used by another app" = "⌘Tab: used by another app";
 "Windows tracked: %ld" = "Windows tracked: %ld";
 "Restart DockFlip" = "Restart DockFlip";
 "Turn Off macOS Edge Tiling" = "Turn Off macOS Edge Tiling";

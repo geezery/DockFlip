@@ -48,6 +48,7 @@
 "Continue Setup…" = "설정 계속하기…";
 "⌘Tab: active" = "⌘Tab: 활성";
 "⌘Tab: not active" = "⌘Tab: 비활성";
+"⌘Tab: used by another app" = "⌘Tab: 다른 앱이 사용 중";
 "Windows tracked: %ld" = "추적 중인 윈도우: %ld";
 "Restart DockFlip" = "DockFlip 다시 시작";
 "Turn Off macOS Edge Tiling" = "macOS 가장자리 타일 정렬 끄기";

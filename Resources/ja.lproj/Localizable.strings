@@ -48,6 +48,7 @@
 "Continue Setup…" = "セットアップを続ける…";
 "⌘Tab: active" = "⌘Tab：有効";
 "⌘Tab: not active" = "⌘Tab：無効";
+"⌘Tab: used by another app" = "⌘Tab：別のアプリが使用中";
 "Windows tracked: %ld" = "追跡中のウインドウ：%ld";
 "Restart DockFlip" = "DockFlipを再起動";
 "Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";

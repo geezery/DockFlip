@@ -48,6 +48,7 @@
 "Continue Setup…" = "Continuar Configuração…";
 "⌘Tab: active" = "⌘Tab: ativo";
 "⌘Tab: not active" = "⌘Tab: inativo";
+"⌘Tab: used by another app" = "⌘Tab: em uso por outro app";
 "Windows tracked: %ld" = "Janelas monitoradas: %ld";
 "Restart DockFlip" = "Reiniciar o DockFlip";
 "Turn Off macOS Edge Tiling" = "Desativar o mosaico nas bordas do macOS";
