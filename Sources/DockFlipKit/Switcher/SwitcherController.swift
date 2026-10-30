@@ -176,9 +176,10 @@ final class SwitcherController {
         revealTask = nil
         guard isActive, !isDrawn, let panel else { return }
         isDrawn = true
+        // Pictures memory holds go in first, so the stack appears with them.
+        loadPreviews(lookAhead: true)
         panel.ignoresMouseEvents = false
         panel.alphaValue = 1
-        loadPreviews(lookAhead: true)
     }
 
     private func showSelection(_ index: Int, animated: Bool) {
