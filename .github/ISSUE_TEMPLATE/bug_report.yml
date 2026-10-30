@@ -40,6 +40,7 @@ body:
     id: version
     attributes:
       label: DockFlip version or commit
+      description: The first line of the menu bar menu, e.g. "DockFlip 0.3.0 (c79a704)".
   - type: textarea
     id: log
     attributes:
