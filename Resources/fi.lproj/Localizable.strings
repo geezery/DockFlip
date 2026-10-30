@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip on jo päällä listassa, mutta mikään ei muutu?";
 "Reset Permission" = "Nollaa lupa";
 "Launch at login" = "Avaa sisäänkirjautuessa";
+"DockFlip is switched off in Login Items" = "DockFlip on poistettu käytöstä kirjautumiskohteissa";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Avaa kirjautumiskohteet ja kytke DockFlip siellä päälle, niin se avautuu sisäänkirjautuessa.";
+"Launch at login could not be changed" = "Sisäänkirjautuessa avaamista ei voitu muuttaa";
+"macOS did not accept the change." = "macOS ei hyväksynyt muutosta.";
+"Open Login Items" = "Avaa kirjautumiskohteet";
 "Done" = "Valmis";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Pidä osoitinta kuvakkeen päällä nähdäksesi sen ikkunat ja välilehdet. Klikkaa pienentääksesi ja palauttaaksesi.";
