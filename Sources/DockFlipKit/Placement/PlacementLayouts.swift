@@ -27,6 +27,16 @@ struct PlacementLayouts: Equatable {
         }
     }
 
+    /// Whether starting with `signature` connected follows a display change these layouts
+    /// haven't seen: the last save was for another display set. Saving pauses during a
+    /// change, so a restart in the middle of one leaves the old set as the last saved; the
+    /// windows are then where macOS moved them, not where the user put them.
+    /// No layouts (first launch, a new boot) is no change.
+    func isDisplayChange(to signature: String) -> Bool {
+        guard let lastSaved = order.last else { return false }
+        return lastSaved != signature
+    }
+
     /// Forgets windows that no longer exist, in every display set's layout: their ids
     /// would otherwise pile up in the saved form until the Mac restarts.
     mutating func keepOnly(_ alive: Set<CGWindowID>) {
