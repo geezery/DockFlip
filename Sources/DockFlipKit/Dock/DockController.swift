@@ -21,6 +21,8 @@ final class DockController: WindowListSource {
         let bundleID: String
         /// Icon frame in screen (Cocoa) coordinates.
         let anchor: NSRect
+        /// The same frame in AX coordinates, as the click tap sees the mouse.
+        let axFrame: CGRect
     }
 
     private let registry: WindowRegistry
@@ -44,7 +46,7 @@ final class DockController: WindowListSource {
         var press: DockPress
         /// A copy of the mouse-down, posted to the Dock if the press turns out to be its.
         let down: CGEvent
-        let item: WindowListItem
+        let bundleID: String
     }
 
     /// Marks the events DockFlip posts on to the Dock, so its own tap lets them through.
@@ -149,11 +151,16 @@ final class DockController: WindowListSource {
 
     /// The app behind a Dock icon, or nil for folders, the Trash and separators.
     private static func appIcon(_ element: AXUIElement) -> HoveredIcon? {
+        guard let bundleID = appBundleID(element), let frame = element.frame else { return nil }
+        let anchor = Geometry.cocoaRect(fromAX: frame, primaryHeight: DisplayLayout.primaryHeight)
+        return HoveredIcon(bundleID: bundleID, anchor: anchor, axFrame: frame)
+    }
+
+    /// The bundle ID behind a Dock icon, or nil for folders, the Trash and separators.
+    private static func appBundleID(_ element: AXUIElement) -> String? {
         guard element.string(kAXSubroleAttribute) == "AXApplicationDockItem",
-              let url = element.copyAttribute(kAXURLAttribute) as? URL,
-              let bundleID = Bundle(url: url)?.bundleIdentifier,
-              let frame = element.frame else { return nil }
-        return HoveredIcon(bundleID: bundleID, anchor: Geometry.cocoaRect(fromAX: frame, primaryHeight: DisplayLayout.primaryHeight))
+              let url = element.copyAttribute(kAXURLAttribute) as? URL else { return nil }
+        return Bundle(url: url)?.bundleIdentifier
     }
 
     // MARK: - Mouse leaving
@@ -261,6 +268,9 @@ final class DockController: WindowListSource {
     /// A press on an icon of an app with windows is held back (`DockPress`): a quick
     /// click in place is DockFlip's, while a drag or a press-and-hold is posted on
     /// to the Dock, so reordering, removing and the icon's menu keep working.
+    ///
+    /// Every left click on the Mac waits for this answer, so it comes from memory
+    /// (`DockClick`); the click's work runs after the tap has answered.
     fileprivate func click(type: CGEventType, event: CGEvent) -> Bool {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
@@ -275,12 +285,8 @@ final class DockController: WindowListSource {
             // Cheap checks first: clicks outside the Dock pass straight through.
             let location = event.location
             guard let listFrame = dockListAXFrame, listFrame.contains(location),
-                  event.flags.isDisjoint(with: [.maskCommand, .maskAlternate, .maskControl, .maskShift]),
-                  let item = Perf.shared.measure("dock.click", { iconItem(at: location) }),
-                  let down = event.copy() else { return false }
-            popup.hideNow()
-            hold(down, item: item)
-            return true
+                  event.flags.isDisjoint(with: [.maskCommand, .maskAlternate, .maskControl, .maskShift]) else { return false }
+            return Perf.shared.measure("dock.click") { pressOnDock(event, at: location) }
         case .leftMouseDragged, .leftMouseUp:
             guard var current = held else { return false }
             let now = ProcessInfo.processInfo.systemUptime
@@ -293,7 +299,9 @@ final class DockController: WindowListSource {
                 // Small wobble before the press is decided: the Dock has not seen a press yet.
                 return true
             case .click:
-                activate(current.item)
+                // Answer the tap first: the click's work may wait on its app.
+                let up = event.copy()
+                Task { @MainActor [weak self, current] in self?.clicked(current, up: up) }
                 return true
             case .handToDock:
                 // The Dock gets the held mouse-down first, then this event, in order.
@@ -309,22 +317,36 @@ final class DockController: WindowListSource {
         }
     }
 
-    /// The window list item of the app icon at `location` (AX coordinates), or nil
-    /// for folders, the Trash, separators and apps without windows.
-    private func iconItem(at location: CGPoint) -> WindowListItem? {
+    /// A mouse-down on the Dock's icon list: held back when it is on an icon of
+    /// an app DockFlip knows windows of. No window-server read and no call to
+    /// that app here — a hung app would hold up every click on the Mac.
+    private func pressOnDock(_ event: CGEvent, at location: CGPoint) -> Bool {
+        guard let bundleID = iconBundleID(at: location), registry.hasWindows(bundleID: bundleID),
+              let down = event.copy() else { return false }
+        popup.hideNow()
+        hold(down, bundleID: bundleID)
+        return true
+    }
+
+    /// The app behind the Dock icon at `location` (AX coordinates), or nil for
+    /// folders, the Trash and separators. The highlighted icon answers from
+    /// memory; only a press elsewhere asks the Dock (never a hung app: the Dock).
+    private func iconBundleID(at location: CGPoint) -> String? {
+        let highlighted = hovered.map { (bundleID: $0.bundleID, frame: $0.axFrame) }
+        if let bundleID = DockClick.hoveredBundleID(highlighted, at: location) { return bundleID }
         guard let dockApp else { return nil }
         var hit: AXUIElement?
         guard AXUIElementCopyElementAtPosition(dockApp, Float(location.x), Float(location.y), &hit) == .success,
-              let element = hit, let icon = Self.appIcon(element) else { return nil }
-        return windowListItem(for: icon.bundleID)
+              let element = hit else { return nil }
+        return Self.appBundleID(element)
     }
 
     /// Holds `down` back from the Dock. A one-shot timer hands it over if the
     /// button is still down after `DockPress.holdLimit`, so the Dock's
     /// press-and-hold menu still opens while the mouse stays put.
-    private func hold(_ down: CGEvent, item: WindowListItem) {
+    private func hold(_ down: CGEvent, bundleID: String) {
         let press = DockPress(start: down.location, startTime: ProcessInfo.processInfo.systemUptime)
-        held = HeldPress(press: press, down: down, item: item)
+        held = HeldPress(press: press, down: down, bundleID: bundleID)
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(DockPress.holdLimit))
             self?.holdTimerFired(startTime: press.startTime)
@@ -351,20 +373,41 @@ final class DockController: WindowListSource {
         event.post(tap: .cgSessionEventTap)
     }
 
-    /// The Windows taskbar click: the front app's active window minimizes, and
-    /// the next click brings that same window back; otherwise the app's most
-    /// recent window comes forward (restored if minimized).
-    private func activate(_ item: WindowListItem) {
-        if let last = minimizedByClick, last.bundleID == item.bundleID,
-           let window = item.windows.first(where: { $0.id == last.windowID }), window.isMinimized {
+    /// A click on an app's icon, run just after the tap has answered: the window
+    /// list is read here, and the registry's actions wait on the app off the main thread.
+    private func clicked(_ press: HeldPress, up: CGEvent?) {
+        let windows = registry.switcherWindows().filter { $0.bundleID == press.bundleID }
+        let next = action(for: windows, bundleID: press.bundleID)
+        if next == .handToDock, let up {
+            // Its windows were gone after all (closed on another Space without
+            // a word): the Dock gets the click it would have had.
+            repost(press.down)
+            repost(up)
+        } else {
+            perform(next, bundleID: press.bundleID)
+        }
+    }
+
+    /// The Windows taskbar click on the app's windows (`DockClick.action`).
+    private func action(for windows: [WindowSnapshot], bundleID: String) -> DockClick.Action {
+        DockClick.action(
+            windows: windows.map { DockClick.Window(id: $0.id, isMinimized: $0.isMinimized) },
+            bundleID: bundleID,
+            active: registry.activeWindowID(),
+            minimizedByClick: minimizedByClick
+        )
+    }
+
+    private func perform(_ action: DockClick.Action, bundleID: String) {
+        switch action {
+        case .restore(let id), .focus(let id):
             minimizedByClick = nil
-            registry.focus(window.id)
-        } else if let active = registry.activeWindowID(), item.windows.contains(where: { $0.id == active }) {
-            registry.minimize(active)
-            minimizedByClick = (item.bundleID, active)
-        } else if let first = item.windows.first {
-            minimizedByClick = nil
-            registry.focus(first.id)
+            registry.focus(id)
+        case .minimize(let id):
+            registry.minimize(id)
+            minimizedByClick = (bundleID, id)
+        case .handToDock:
+            break
         }
     }
 
@@ -375,7 +418,7 @@ final class DockController: WindowListSource {
         guard apps.indices.contains(index) else { return }
         let bundleID = apps[index].bundleID
         if let item = windowListItem(for: bundleID) {
-            activate(item)
+            perform(action(for: item.windows, bundleID: bundleID), bundleID: bundleID)
         } else if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
             NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
         }
