@@ -42,16 +42,17 @@ main thread.
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
-| `Cleanup/` | Usage tracking and the Clean Up window. |
+| `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
-that acts on them: `SwitcherReveal`, `DockPress`, `HotKeyRegistration`,
-`ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`, `QuitFollowUp`,
-`UsageDates`, `SetupEnd`, `LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
+that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
+`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
+`QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
+`LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
