@@ -74,8 +74,8 @@ of date, [tell us](https://github.com/geezery/DockFlip/issues).
 | Runs on | macOS 26 and later | macOS 12 and later | macOS 13 and later | macOS 14.6 and later | – |
 
 **Where DockFlip stands out:** it is the one app here that does all three jobs
-for free without Screen Recording, it lists browser tabs, it has three settings
-instead of a preferences window, and IT can roll it out with no prompts at all.
+for free without Screen Recording, it lists browser tabs, it has three settings,
+all sensible by default, and IT can roll it out with no prompts at all.
 
 **Where the others do more:** DockDoor Pro replaces the Dock outright, with
 profiles, widgets and a Dock per display. AltTab and DockDoor run on older
