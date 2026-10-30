@@ -26,9 +26,11 @@ public final class WindowRegistry {
     var windows: [CGWindowID: WindowSnapshot] = [:]
     var mru = MRUList<CGWindowID>()
     var tokens: [NSObjectProtocol] = []
-    /// Accessibility calls that wait on an app (actions, the hover probe) run
+    /// Accessibility calls that wait on an app (actions, the hover probe, window reads) run
     /// here, off the main thread, so a hung app never stalls the event taps.
     let appQueues = AppQueues()
+    /// Apps whose first windows read at launch has not answered yet.
+    var launchReads = Set<pid_t>()
     /// Apps with a probe on its way, so hovering a hung app's icon asks it once.
     private var probing = Set<pid_t>()
     /// Counts focus requests: an app that answers late is not brought forward over a newer one.
@@ -64,6 +66,8 @@ public final class WindowRegistry {
         for app in NSWorkspace.shared.runningApplications where shouldTrack(app) {
             track(app)
         }
+        // Their windows arrive as each app answers (`launchReadFinished`).
+        launchReads = Set(apps.keys)
         seedMRUFromZOrder()
         observeWorkspace()
         notifyChange()

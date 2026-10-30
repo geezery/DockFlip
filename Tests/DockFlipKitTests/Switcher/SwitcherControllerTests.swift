@@ -168,6 +168,43 @@ struct SwitcherControllerTests {
         #expect(mac.focused == [30])
     }
 
+    @Test func modifierAfterClearingTheFilterDoesNotSwitch() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, presenter) = makeSwitcher(mac)
+        switcher.handle(.commandTab(shift: false))
+        switcher.handle(.text("20"))
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)   // ⌘ up while filtering: no switch
+        #expect(switcher.handle(.escape))    // filter cleared, the stack stays open
+
+        // ⇧, ⌃ or ⌥ pressed now sends a flags change without ⌘, like a release.
+        switcher.handle(.commandReleased)
+        #expect(switcher.isActive)
+        #expect(mac.focused.isEmpty)
+        #expect(presenter.hidden.isEmpty)
+
+        #expect(switcher.handle(.commandTab(shift: true))) // ⇧Tab: from 10 back to 30
+        switcher.handle(.commandReleased)                  // ⇧ let go
+        #expect(mac.focused.isEmpty)
+        #expect(switcher.handle(.enter))
+        #expect(mac.focused == [30])
+    }
+
+    @Test func modifierAfterBackspacingTheFilterDoesNotSwitch() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, _) = makeSwitcher(mac)
+        switcher.handle(.commandTab(shift: false))
+        switcher.handle(.text("2"))
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+        #expect(switcher.handle(.deleteBackward))
+
+        switcher.handle(.commandReleased)
+
+        #expect(switcher.isActive)
+        #expect(mac.focused.isEmpty)
+    }
+
     @Test func escapeClearsTheFilterFirstThenGoesBack() {
         let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
         let (switcher, presenter) = makeSwitcher(mac)

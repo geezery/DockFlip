@@ -18,11 +18,13 @@ extension WindowRegistry {
             Task { @MainActor [weak self] in
                 try? await Task.sleep(for: .milliseconds(150))
                 guard let self, self.apps[tracked.pid] === tracked else { return }
+                tracked.bringFocusedForward = true
                 self.refreshWindows(of: tracked)
-                if tracked.app.isActive { self.bringFocusedWindowToFront(of: tracked) }
             }
 
         case kAXUIElementDestroyedNotification:
+            // A read on its way may still list the window: read once more after it.
+            if tracked.isReading { tracked.readAgain = true }
             guard let id = tracked.id(of: element) else { return }
             tracked.windowElements[id] = nil
             windows[id] = nil
@@ -34,6 +36,8 @@ extension WindowRegistry {
 
         case kAXWindowMiniaturizedNotification, kAXWindowDeminiaturizedNotification,
              kAXTitleChangedNotification, kAXMovedNotification, kAXResizedNotification:
+            // A read on its way may carry the state from before: read once more after it.
+            if tracked.isReading { tracked.readAgain = true }
             guard let id = tracked.id(of: element), let stored = tracked.windowElements[id] else { return }
             update(id: id, element: stored, tracked: tracked)
             notifyChange()
@@ -67,11 +71,14 @@ extension WindowRegistry {
                 guard let self else { return }
                 if let tracked = self.apps[active.processIdentifier] {
                     // Windows missed earlier because the app was busy: read them now.
+                    // Its focused window comes forward once they are read.
                     if tracked.windowElements.isEmpty || tracked.observer == nil {
                         tracked.retryCount = 0
+                        tracked.bringFocusedForward = true
                         self.refreshWindows(of: tracked)
+                    } else {
+                        self.bringFocusedWindowToFront(of: tracked)
                     }
-                    self.bringFocusedWindowToFront(of: tracked)
                 } else if self.shouldTrack(active) {
                     // It refused Accessibility at launch; it answers now that it is in use.
                     self.track(active)
