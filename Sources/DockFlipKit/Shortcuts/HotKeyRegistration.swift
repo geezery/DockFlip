@@ -30,6 +30,11 @@ struct HotKeyRegistration: Equatable {
         Self.commandTab.allSatisfy { registered.contains($0) }
     }
 
+    /// True when ⌘Tab or ⌘⇧Tab failed: another app holds ⌘Tab.
+    var commandTabFailed: Bool {
+        failed.contains { Self.commandTab.contains($0) }
+    }
+
     /// The ⌘Tab bindings DockFlip got but must let go of, because it does not own ⌘Tab.
     var commandTabToRelease: [HotkeyCommand] {
         ownsCommandTab ? [] : registered.filter { Self.commandTab.contains($0) }

@@ -58,6 +58,11 @@ final class Services {
         Settings.shared.shortcutsEnabled && hotKeys.ownsCommandTab && tapsRunning
     }
 
+    /// True when DockFlip wants ⌘Tab but another app (AltTab) holds it.
+    var commandTabHeldElsewhere: Bool {
+        Settings.shared.shortcutsEnabled && hotKeys.registration.commandTabFailed
+    }
+
     /// The one later attempt at ⌘Tab after another app held it.
     private var commandTabRetry: Task<Void, Never>?
 

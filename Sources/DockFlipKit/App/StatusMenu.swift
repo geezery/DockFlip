@@ -43,7 +43,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         }
         addEdgeTilingWarning(to: menu)
         if let services {
-            addStatus(services.shortcutsActive ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
+            addStatus(commandTabStatus(services), to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), services.registry.trackedWindowCount), to: menu)
             if !services.tapsRunning {
                 menu.addItem(ClosureMenuItem(L("Restart DockFlip"), handler: actions.relaunch))
@@ -87,6 +87,13 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         item.isEnabled = false
         menu.addItem(item)
+    }
+
+    /// Says why ⌘Tab isn't DockFlip's when another app (AltTab) holds it: then
+    /// ⌘Tab still opens macOS's own switcher, and quitting that app is the fix.
+    private func commandTabStatus(_ services: Services) -> String {
+        if services.shortcutsActive { return L("⌘Tab: active") }
+        return services.commandTabHeldElsewhere ? L("⌘Tab: used by another app") : L("⌘Tab: not active")
     }
 
     /// macOS's own edge tiling can come back on after setup turned it off (System

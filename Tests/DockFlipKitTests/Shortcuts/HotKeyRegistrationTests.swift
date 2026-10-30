@@ -30,6 +30,15 @@ struct HotKeyRegistrationTests {
         #expect(held.failed == [commandTab, commandShiftTab])
         #expect(held.registered == [.snap(.left), .showDesktop])
         #expect(held.commandTabToRelease.isEmpty)
+        #expect(held.commandTabFailed)
+    }
+
+    @Test func otherShortcutsFailingDoNotBlameCommandTab() {
+        // Rectangle holds ⌃⌥←: ⌘Tab is still DockFlip's.
+        let snapHeld = registration([(commandTab, true), (commandShiftTab, true), (.snap(.left), false)])
+        #expect(snapHeld.ownsCommandTab)
+        #expect(!snapHeld.commandTabFailed)
+        #expect(snapHeld.failed == [.snap(.left)])
     }
 
     @Test func halfOfCommandTabIsLetGo() {
@@ -40,6 +49,7 @@ struct HotKeyRegistrationTests {
         #expect(half.registered == [.showDesktop])
         #expect(half.commandTabToRelease.isEmpty)
         #expect(!half.ownsCommandTab)
+        #expect(half.commandTabFailed)
 
         let otherHalf = registration([(commandTab, false), (commandShiftTab, true)])
         #expect(otherHalf.commandTabToRelease == [commandShiftTab])

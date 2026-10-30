@@ -46,6 +46,7 @@
 "Continue Setup…" = "Jatka käyttöönottoa…";
 "⌘Tab: active" = "⌘Tab: käytössä";
 "⌘Tab: not active" = "⌘Tab: ei käytössä";
+"⌘Tab: used by another app" = "⌘Tab: toisen ohjelman käytössä";
 "Windows tracked: %ld" = "Seurattavia ikkunoita: %ld";
 "Restart DockFlip" = "Käynnistä DockFlip uudelleen";
 "Turn Off macOS Edge Tiling" = "Laita macOS:n reunajärjestys pois";

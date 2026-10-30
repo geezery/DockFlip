@@ -46,6 +46,7 @@
 "Continue Setup…" = "Fortsæt konfigurationen…";
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
+"⌘Tab: used by another app" = "⌘Tab: bruges af en anden app";
 "Windows tracked: %ld" = "Overvågede vinduer: %ld";
 "Restart DockFlip" = "Genstart DockFlip";
 "Turn Off macOS Edge Tiling" = "Slå macOS' kantplacering af vinduer fra";

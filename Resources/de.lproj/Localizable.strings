@@ -46,6 +46,7 @@
 "Continue Setup…" = "Einrichtung fortsetzen …";
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: nicht aktiv";
+"⌘Tab: used by another app" = "⌘Tab: von einer anderen App belegt";
 "Windows tracked: %ld" = "Erfasste Fenster: %ld";
 "Restart DockFlip" = "DockFlip neu starten";
 "Turn Off macOS Edge Tiling" = "Kacheln am Bildschirmrand von macOS ausschalten";
