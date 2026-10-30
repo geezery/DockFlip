@@ -47,11 +47,15 @@ struct SettingsView: View {
                     )) {
                         Text("Window thumbnails")
                         Text("Needs the Screen & System Audio Recording permission.")
+                        if settings.previewsManaged { Text("Managed by your organization") }
                     }
+                    .disabled(settings.previewsManaged)
                     Toggle(isOn: $settings.shortcutsEnabled) {
                         Text("Keyboard shortcuts")
                         Text("⌘Tab and the ⌃⌥ snapping shortcuts")
+                        if settings.shortcutsManaged { Text("Managed by your organization") }
                     }
+                    .disabled(settings.shortcutsManaged)
                 }
             }
             .formStyle(.grouped)
@@ -60,7 +64,7 @@ struct SettingsView: View {
             HStack {
                 Button("Show Setup Again", action: showSetup)
                 Spacer()
-                Text(verbatim: "DockFlip \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "") · GPL-3.0")
+                Text(verbatim: "DockFlip \(AppVersion.display) · GPL-3.0")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
             }

@@ -71,7 +71,9 @@ final class SwitcherController {
             }
             return true
         case .commandReleased:
-            if let selection, query.isEmpty { commit(at: selection.index) }
+            if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: false) {
+                commit(at: index)
+            }
             return false
         case .text(let text):
             guard isActive else { return false }
@@ -125,6 +127,16 @@ final class SwitcherController {
         transaction.disablesAnimations = true
         withTransaction(transaction) { model.selection = selection.index }
         self.selection = selection
+
+        // A quick ⌘Tab can let go of ⌘ before this hot key is handled; no release
+        // follows then. Switch at once, without drawing the switcher. A release
+        // after this check still arrives as `.commandReleased`.
+        let commandHeld = NSEvent.modifierFlags.contains(.command)
+        if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: commandHeld) {
+            Log.keys.debug("⌘ already released when the switcher opened; switching at once")
+            commit(at: index)
+            return true
+        }
 
         show()
         onActiveChanged?(true)
