@@ -47,6 +47,7 @@
 "Managed by your organization" = "Organisaatiosi hallinnoima";
 "Screen Recording is not allowed yet" = "Näytön tallennusta ei ole vielä sallittu";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Salli DockFlip Järjestelmäasetuksissa. Jos se on jo sallittu, käynnistä DockFlip uudelleen.";
+"Window thumbnails are not shown" = "Ikkunoiden pikkukuvia ei näytetä";
 "Show Setup Again" = "Näytä käyttöönotto uudelleen";
 "Accessibility: allowed" = "Käyttöapu: sallittu";
 "Accessibility: not yet allowed" = "Käyttöapu: ei vielä sallittu";

@@ -47,6 +47,7 @@
 "Managed by your organization" = "由你的组织管理";
 "Screen Recording is not allowed yet" = "尚未允许录屏";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "请在系统设置中允许 DockFlip。如果已经允许，请重新启动 DockFlip。";
+"Window thumbnails are not shown" = "不显示窗口缩略图";
 "Show Setup Again" = "再次显示设置助理";
 "Accessibility: allowed" = "辅助功能：已允许";
 "Accessibility: not yet allowed" = "辅助功能：尚未允许";
