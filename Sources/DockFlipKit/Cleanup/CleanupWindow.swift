@@ -157,9 +157,14 @@ final class CleanupController {
 
     func reload() {
         let (windowRows, appRows) = candidates()
+        let previouslyListed = Set(model.windows.map(\.id) + model.apps.map(\.id))
         model.windows = windowRows
         model.apps = appRows
-        model.selected = Set(windowRows.map(\.id) + appRows.map(\.id))
+        model.selected = CleanupSelection.afterReload(
+            listed: windowRows.map(\.id) + appRows.map(\.id),
+            previouslyListed: previouslyListed,
+            selected: model.selected
+        )
         model.kept = keptRows()
         if model.kept.isEmpty { model.showsKept = false }
     }
