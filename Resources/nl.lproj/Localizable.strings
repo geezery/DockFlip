@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Toetscombinaties";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab en de ⌃⌥-toetscombinaties voor uitlijnen";
 "Managed by your organization" = "Beheerd door je organisatie";
+"Screen Recording is not allowed yet" = "Schermopname is nog niet toegestaan";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Sta DockFlip toe in Systeeminstellingen. Is het al toegestaan, herstart DockFlip dan.";
 "Show Setup Again" = "Toon configuratie opnieuw";
 "Accessibility: allowed" = "Toegankelijkheid: toegestaan";
 "Grant Accessibility…" = "Sta toegankelijkheid toe…";

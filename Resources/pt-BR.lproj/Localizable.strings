@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Atalhos de teclado";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab e os atalhos de encaixe ⌃⌥";
 "Managed by your organization" = "Gerenciado pela sua organização";
+"Screen Recording is not allowed yet" = "A Gravação de Tela ainda não foi permitida";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Permita o DockFlip nos Ajustes do Sistema. Se já estiver permitido, reinicie o DockFlip.";
 "Show Setup Again" = "Mostrar Configuração Novamente";
 "Accessibility: allowed" = "Acessibilidade: permitida";
 "Grant Accessibility…" = "Permitir Acessibilidade…";
