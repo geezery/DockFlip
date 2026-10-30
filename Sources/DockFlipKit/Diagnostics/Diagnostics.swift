@@ -107,6 +107,12 @@ enum Diagnostics {
         lines.append("nativeEdgeTiling=\(NativeEdgeTiling.isOn) language=\(AppLanguage.current) chosenLanguage=\(AppLanguage.chosen ?? "system")")
         lines.append("")
 
+        // The private calls and the Dock hook a new macOS can break without a
+        // word: read even before Accessibility is allowed (then "not tried yet").
+        lines.append("== Self-check ==")
+        lines.append(contentsOf: SelfCheck.current.lines(commandTabSwitchFound: NativeCommandTab.isAvailable))
+        lines.append("")
+
         if let state = stateProvider?() {
             lines.append("== State ==")
             lines.append(contentsOf: state)
