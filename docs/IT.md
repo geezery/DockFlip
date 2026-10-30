@@ -16,6 +16,23 @@ Every [release](https://github.com/geezery/DockFlip/releases/latest) has:
 | `DockFlip-<version>.pkg` | Installs `DockFlip.app` into `/Applications` |
 | `DockFlip-Accessibility.mobileconfig` | Pre-approves the Accessibility permission (PPPC) |
 | `DockFlip.dmg` | Manual installs |
+| `*.sha256` | A SHA-256 checksum for each of the files above |
+
+## Verify the files
+
+Every release is built by GitHub Actions from the tagged source. The `.pkg`,
+the profile and the disk image each come with a build-provenance attestation
+and a SHA-256 checksum, so you can check what you upload to your MDM is exactly
+what that build made. With the [GitHub CLI](https://cli.github.com):
+
+```sh
+gh attestation verify DockFlip-<version>.pkg --repo geezery/DockFlip
+gh attestation verify DockFlip-Accessibility.mobileconfig --repo geezery/DockFlip
+shasum -a 256 -c DockFlip-<version>.pkg.sha256
+shasum -a 256 -c DockFlip-Accessibility.mobileconfig.sha256
+```
+
+Keep the `.sha256` file in the same folder as the file it names.
 
 ## Rollout in three steps
 
