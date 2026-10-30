@@ -47,7 +47,7 @@ main thread.
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SwitcherSelection`,
-`SwitcherFilter`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
+`SwitcherFilter`, `SwitcherRelease`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`.
 
 ## Key ideas
