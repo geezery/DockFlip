@@ -78,8 +78,42 @@ struct WindowListLayoutTests {
     }
 
     @Test func listCountsAtMostTenRows() {
+        // Ten rows, and room for "2 more windows" under them instead of the 10-point margin.
         let size = WindowListLayout.size(rows: (1...12).map { row($0) }, expanded: [], previews: false)
-        #expect(size.height == 46 + 10 * 48)
+        #expect(size.height == 36 + 10 * 48 + 24)
+    }
+
+    @Test func fourteenWindowsSayFourMoreBelow() {
+        let rows = (1...14).map { row($0) }
+        let top = WindowListLayout.listHeight(rows: rows, expanded: [], previews: false)
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top) == 4)
+        // Scrolled two windows down, two are left; at the end, none.
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top + 2 * 48) == 2)
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: 14 * 48) == 0)
+    }
+
+    @Test func tenWindowsFitWithNothingBelow() {
+        let rows = (1...10).map { row($0) }
+        let top = WindowListLayout.listHeight(rows: rows, expanded: [], previews: false)
+        #expect(top == 10 + 10 * 48)
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top) == 0)
+    }
+
+    @Test func partlyShownWindowCountsAsBelow() {
+        let rows = (1...3).map { row($0) }
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: 2 * 48 + 20) == 1)
+        // A fractional offset a hair short of the end still counts as the end.
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: 3 * 48 - 0.3) == 0)
+    }
+
+    @Test func tabsCountTowardsWhatIsBelow() {
+        // Three windows of twelve tabs overflow the capped list well before ten rows.
+        let rows = (1...3).map { row($0, tabs: tabs(12, window: $0)) }
+        let top = WindowListLayout.listHeight(rows: rows, expanded: [], previews: true)
+        #expect(top == 370 - 36)
+        // Each window with its folded tabs is 48 + 8 * 28 + 6 = 278 high: the second is cut, the third unseen.
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top) == 2)
+        #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [1], visibleBottom: top) == 3)
     }
 
     @Test func tabListSize() {
