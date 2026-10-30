@@ -120,8 +120,8 @@ extension SwitcherInput {
         case KeyCode.escape: return .escape
         // ↓ steps on like Tab and →, ↑ back like ⇧Tab and ←. Arrow keys type no
         // text, so without these lines they would be swallowed doing nothing.
-        case KeyCode.left, KeyCode.up: return .left
-        case KeyCode.right, KeyCode.down: return .right
+        case KeyCode.left, KeyCode.up: return .previous
+        case KeyCode.right, KeyCode.down: return .next
         case KeyCode.returnKey, KeyCode.keypadEnter: return .enter
         case KeyCode.delete: return .deleteBackward
         default: return text().map { .text($0) }

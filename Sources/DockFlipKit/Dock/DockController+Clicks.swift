@@ -115,7 +115,8 @@ extension DockController {
         var hit: AXUIElement?
         guard AXUIElementCopyElementAtPosition(dockApp, Float(location.x), Float(location.y), &hit) == .success,
               let element = hit else { return nil }
-        return Self.appBundleID(element)
+        // ⌃⌥1…9's reader: one call to the Dock, and each app's Info.plist read only once.
+        return dockItemBundleID(element)
     }
 
     /// Holds `down` back from the Dock. A one-shot timer hands it over if the

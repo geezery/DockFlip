@@ -42,16 +42,17 @@ main thread.
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
-| `Cleanup/` | Usage tracking and the Clean Up window. |
+| `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
-that acts on them: `SwitcherReveal`, `DockPress`, `HotKeyRegistration`,
-`ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`, `QuitFollowUp`,
-`UsageDates`, `SetupEnd`, `LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
+that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
+`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
+`QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
+`LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
@@ -79,11 +80,13 @@ it gets its windows, focusing and the ⌘ state as closures and draws through a
   Dock or the list, to notice it leaving.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
-  and asks the window's app for its frame once the mouse has moved 8 points.
+  once the mouse has moved 8 points, and takes the window's frame from the
+  registry, which the moved and resized notifications keep current.
 - **No tap waits on an app.** The Dock click tap answers from memory
   (`DockClick`: the highlighted icon, the registry's windows) and does the
   click's work after it has answered. The registry's calls to an app (focus,
-  minimize, the hover probe) run on that app's own queue (`AppQueues`), so a
+  minimize, close and its follow-up looks, moving and resizing, the hover probe)
+  run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 
 ## Strings and languages

@@ -22,7 +22,9 @@ final class TrackedApp {
     }
 
     func id(of element: AXUIElement) -> CGWindowID? {
-        if let id = element.windowID, windowElements[id] != nil { return id }
+        // Often a window that is already gone (its destroyed notification): kept
+        // out of the self-check, where its failed lookup would read as macOS's.
+        if let id = element.windowIDOfAnyElement, windowElements[id] != nil { return id }
         return windowElements.first { CFEqual($0.value, element) }?.key
     }
 }
