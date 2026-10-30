@@ -71,7 +71,21 @@ extension AXUIElement {
         return CGRect(origin: origin, size: extent)
     }
 
+    /// The window's id. Every answer also goes to the self-check: on a window
+    /// this private call should always work, and a macOS where it stops working
+    /// shows DockFlip no windows at all.
     var windowID: CGWindowID? {
+        var id: CGWindowID = 0
+        let status = _AXUIElementGetWindow(self, &id)
+        let worked = status == .success && id != 0
+        SelfCheck.record { $0.windowIDs.record(worked, error: status.rawValue) }
+        return worked ? id : nil
+    }
+
+    /// `windowID` kept out of the self-check, for elements that need not be
+    /// windows (the search for windows on other Spaces tries every element id)
+    /// or may be gone (a window's destroyed notification).
+    var windowIDOfAnyElement: CGWindowID? {
         var id: CGWindowID = 0
         guard _AXUIElementGetWindow(self, &id) == .success, id != 0 else { return nil }
         return id
