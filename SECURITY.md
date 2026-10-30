@@ -28,8 +28,17 @@ yourself.
 | Focus, move, resize, minimize and close windows, when you ask | Switching, snapping and Clean Up work |
 | Browser tab titles, from the tab bar only, never page content | Tabs show under their window |
 | The Dock's hovered icon | The window list opens above the right app |
+| Left mouse clicks and drags, anywhere on the Mac (the pointer's position only) | A click on a Dock icon brings its window forward or minimizes it, and dragging a window to a screen edge snaps it |
+| Pointer movement, **only while it's over the Dock or a window list** | The list closes when you move away |
 | Modifier keys (⌘, ⌃, ⌥, ⇧) | It notices when you let go of ⌘ |
 | Other keys, **only while the ⌘Tab switcher is open** | Type-to-filter works |
+
+Clicks and drags outside the Dock pass through untouched. DockFlip uses only
+where the pointer went down and moved, to tell a Dock icon click from a window
+drag, never what you clicked inside an app, and it never sees right clicks or
+scrolling. The only clicks it takes over are plain clicks on an
+app icon in the Dock; ⌘, ⌥, ⌃ and ⇧ clicks, dragging an icon and press-and-hold
+still go to the Dock. Nothing about your clicks is recorded or logged.
 
 The rest of the time DockFlip doesn't see what you type. Its shortcuts are
 registered as system hot keys, so macOS only tells DockFlip when one of them is
