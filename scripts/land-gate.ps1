@@ -17,6 +17,8 @@
 #     api.github.com:443 GitHub API
 #
 # By hand: powershell -File scripts/land-gate.ps1 [-Rev <commit>] from the repository root.
+# PowerShell, not sh like the other scripts: the farm runs a check through cmd, where `bash` is
+# WSL's, without git's or gh's login.
 
 param(
     [string]$Rev = 'HEAD',
@@ -24,8 +26,8 @@ param(
     [string]$Workflow = 'ci.yml',
     # Under Hogherd's landing check timeout (30 min), so the gate says why and deletes its branch
     # before the farm stops it.
-    [int]$TimeoutMinutes = 25,
-    [int]$PollSeconds = 15
+    [ValidateRange(1, 240)][int]$TimeoutMinutes = 25,
+    [ValidateRange(5, 300)][int]$PollSeconds = 15
 )
 
 $ErrorActionPreference = 'Stop'
@@ -44,6 +46,9 @@ function Stop-Gate([int]$Code, [string]$Why) {
 # A native command's stdout lines and exit code. Its stderr goes straight to the log: redirecting
 # it makes Windows PowerShell 5.1 turn each line into an error.
 function Invoke-Tool([string]$Exe, [string[]]$Argv) {
+    if (-not (Get-Command $Exe -CommandType Application -ErrorAction SilentlyContinue)) {
+        Stop-Gate 2 "$Exe is not installed or not on PATH"
+    }
     $out = @(& $Exe @Argv)
     [pscustomobject]@{ Code = $LASTEXITCODE; Out = $out }
 }
