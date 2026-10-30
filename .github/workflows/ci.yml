@@ -52,3 +52,6 @@ jobs:
 
       - name: Release workflow tests
         run: pwsh -NoProfile -File scripts/release-workflow-tests.ps1
+
+      - name: Privacy docs tests
+        run: pwsh -NoProfile -File scripts/privacy-docs-tests.ps1
