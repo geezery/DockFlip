@@ -66,6 +66,9 @@ public final class WindowRegistry {
 
     var trackedWindowCount: Int { windows.count }
 
+    /// Every tracked window's id, on any Space, without asking the window server.
+    var trackedWindowIDs: Dictionary<CGWindowID, WindowSnapshot>.Keys { windows.keys }
+
     /// Every window in MRU order, for ⌘Tab and the Dock: windows on the current
     /// Space, minimized windows, windows of hidden apps, and windows on other
     /// Spaces — on a Mac, full-screen apps live in Spaces of their own, and a
