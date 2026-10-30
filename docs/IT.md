@@ -64,6 +64,10 @@ domain. You can set them with a custom settings or managed preferences payload:
 | `previewsEnabled` | Boolean | `false` | Real window thumbnails (needs Screen Recording) |
 | `shortcutsEnabled` | Boolean | `true` | ⌘Tab switcher and ⌃⌥ shortcuts |
 
+A key your profile manages is locked: DockFlip's Settings greys out its switch
+and shows "Managed by your organization" under it, and DockFlip keeps following
+the managed value.
+
 Launch at login is turned on during the user's first setup.
 
 ## Building the profile yourself
