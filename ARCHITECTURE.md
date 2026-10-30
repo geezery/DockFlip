@@ -79,11 +79,13 @@ it gets its windows, focusing and the ⌘ state as closures and draws through a
   Dock or the list, to notice it leaving.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
-  and asks the window's app for its frame once the mouse has moved 8 points.
+  once the mouse has moved 8 points, and takes the window's frame from the
+  registry, which the moved and resized notifications keep current.
 - **No tap waits on an app.** The Dock click tap answers from memory
   (`DockClick`: the highlighted icon, the registry's windows) and does the
   click's work after it has answered. The registry's calls to an app (focus,
-  minimize, the hover probe) run on that app's own queue (`AppQueues`), so a
+  minimize, close and its follow-up looks, moving and resizing, the hover probe)
+  run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 
 ## Strings and languages

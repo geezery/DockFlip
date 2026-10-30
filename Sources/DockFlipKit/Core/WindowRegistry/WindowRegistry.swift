@@ -108,14 +108,6 @@ public final class WindowRegistry {
         windows.values.contains { $0.bundleID == bundleID }
     }
 
-    /// The focused window of the frontmost app, if DockFlip tracks it.
-    func focusedWindowID() -> CGWindowID? {
-        guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier,
-              let tracked = apps[pid],
-              let focused = tracked.element.element(kAXFocusedWindowAttribute) else { return nil }
-        return tracked.id(of: focused)
-    }
-
     /// The most recently used, not minimized window of the frontmost app.
     func activeWindowID() -> CGWindowID? {
         guard let pid = NSWorkspace.shared.frontmostApplication?.processIdentifier else { return nil }
@@ -130,15 +122,40 @@ public final class WindowRegistry {
         element(for: id)?.frame
     }
 
-    /// Moves and resizes a window. Size–position–size, because some apps clamp
-    /// the size against the old position.
+    /// The frame the window last reported (AX space), from memory only: the moved
+    /// and resized notifications keep it current, so snapping asks the app nothing.
+    /// Nil for a minimized window or one whose frame was never read.
+    func knownFrame(of id: CGWindowID) -> CGRect? {
+        guard let window = windows[id], !window.isMinimized, !window.frame.isEmpty else { return nil }
+        return window.frame
+    }
+
+    /// Moves and resizes a window (`FrameSetter`). Returns before the app is
+    /// asked: the calls run on the app's queue, and where the window ended up
+    /// comes back into the registry.
     func setFrame(of id: CGWindowID, to rect: CGRect) {
-        guard let element = element(for: id) else { return }
-        var origin = rect.origin
-        var size = rect.size
-        if let sizeValue = AXValueCreate(.cgSize, &size) { element.set(kAXSizeAttribute, sizeValue) }
-        if let originValue = AXValueCreate(.cgPoint, &origin) { element.set(kAXPositionAttribute, originValue) }
-        if let sizeValue = AXValueCreate(.cgSize, &size) { element.set(kAXSizeAttribute, sizeValue) }
+        guard let pid = windows[id]?.pid, let element = element(for: id) else { return }
+        let target = SendableElement(element: element)
+        let start = Perf.now()
+        appQueues.run(for: pid, { FrameSetter.set(rect, on: target.element) }, then: { [weak self] answer in
+            self?.frameSet(of: id, pid: pid, answer: answer, start: start)
+        })
+    }
+
+    private func frameSet(of id: CGWindowID, pid: pid_t, answer: FrameSetter.Answer, start: UInt64) {
+        guard let tracked = apps[pid] else { return }
+        Perf.shared.record("ax.setFrame", since: start, detail: tracked.app.localizedName ?? "")
+        markResponsiveness(of: tracked, error: answer.error)
+        if let frame = answer.frame { remember(frame, of: id) }
+    }
+
+    /// Keeps a frame read off the main thread. The moved and resized notifications
+    /// usually bring it too, but not from an app that sends none, and a second
+    /// snap key pressed right after the first must see where the window went.
+    func remember(_ frame: CGRect, of id: CGWindowID) {
+        guard windows[id] != nil, windows[id]?.frame != frame else { return }
+        windows[id]?.frame = frame
+        notifyChange()
     }
 
     /// The Accessibility element of a window (for reading its tabs).
