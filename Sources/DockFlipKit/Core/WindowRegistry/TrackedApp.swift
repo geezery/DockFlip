@@ -12,6 +12,15 @@ final class TrackedApp {
     /// A re-read is scheduled because the app did not answer in time.
     var retryPending = false
     var retryCount = 0
+    /// A read of its windows is on the app's queue.
+    var isReading = false
+    /// Something changed while it was reading: read once more after it.
+    var readAgain = false
+    /// Once its windows are read, put its focused window first in the MRU order
+    /// if it is the active app: a new window is known only after the read.
+    var bringFocusedForward = false
+    /// Reads the app's windows on its queue; tests stand in an app of their own.
+    var readWindows: @Sendable (AXUIElement) -> WindowsRead = { WindowsRead.read(app: $0) }
 
     var pid: pid_t { app.processIdentifier }
 

@@ -25,9 +25,10 @@ this says where things are and how they fit.
 ```
 
 Everything runs on the main thread (`@MainActor`), driven by events. Nothing
-polls. The few things done off the main thread — reading browser tabs, finding
-windows on other Spaces, capturing thumbnails — hand their results back to the
-main thread.
+polls. The few things done off the main thread — reading an app's windows
+(`WindowsRead`, on the app's own queue), reading browser tabs, finding windows
+on other Spaces, capturing thumbnails — hand their results back to the main
+thread.
 
 ## Folders (`Sources/DockFlipKit`)
 
