@@ -60,6 +60,9 @@ final class WindowListModel: ObservableObject {
     /// The lowest point of the list on screen, measured from the list's top, as
     /// the scroll view last reported it; nil until it has. Decides "N more windows".
     @Published var listBottom: CGFloat?
+    /// The scroll view's identity: a new one each time a list starts, so it
+    /// opens at its top, not where the last app's list was scrolled to.
+    @Published private(set) var listID = 0
 
     var hasTabs: Bool { rows.contains { $0.tabs.count > 1 } }
     var usesCards: Bool { WindowListLayout.usesCards(rows: rows, previews: showsPreviews) }
@@ -68,6 +71,18 @@ final class WindowListModel: ObservableObject {
     var windowsBelow: Int {
         let bottom = listBottom ?? WindowListLayout.listHeight(rows: rows, expanded: expanded, previews: showsPreviews)
         return WindowListLayout.windowsBelow(rows: rows, expanded: expanded, visibleBottom: bottom)
+    }
+
+    /// Another app's list, or the list opened again: the popup keeps one panel
+    /// and one scroll view for every app, so nothing of the last list may carry
+    /// over, least of all its scroll offset, which would hide the most recent windows.
+    func startNewList() {
+        expanded = []
+        peekWindow = nil
+        hoveringPeek = false
+        thumbnails = [:]
+        listBottom = nil
+        listID += 1
     }
 
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
