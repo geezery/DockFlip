@@ -65,17 +65,24 @@ enum WindowServer {
         memcpy(bytes + 8, &magic, 4)
 
         var found: [CGWindowID: AXUIElement] = [:]
+        // Elements that answered with a window id: none at all in a search is the
+        // private call no longer working (the self-check reports it).
+        var answered = 0
         let deadline = ProcessInfo.processInfo.systemUptime + budget
         var elementID: UInt64 = 0
         while found.count < ids.count, ProcessInfo.processInfo.systemUptime < deadline {
             memcpy(bytes + 12, &elementID, 8)
             elementID += 1
             guard let element = _AXUIElementCreateWithRemoteToken(token)?.takeRetainedValue(),
-                  let windowID = element.windowID, ids.contains(windowID), found[windowID] == nil,
+                  let windowID = element.windowIDOfAnyElement else { continue }
+            answered += 1
+            guard ids.contains(windowID), found[windowID] == nil,
                   // Elements inside a window report the window's id too: keep the window itself.
                   element.string(kAXRoleAttribute) == kAXWindowRole else { continue }
             found[windowID] = element
         }
+        let foundCount = found.count
+        SelfCheck.record { $0.walk.record(sought: ids.count, found: foundCount, answered: answered) }
         return found
     }
 }

@@ -83,22 +83,26 @@ final class DockController: WindowListSource {
 
         guard let dock = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.dock").first else {
             Log.app.error("Dock not running")
+            SelfCheck.record { $0.recordDock(.failed("Dock not running")) }
             return
         }
         let app = AXUIElementCreateApplication(dock.processIdentifier)
         guard let list = app.elements(kAXChildrenAttribute).first(where: { $0.string(kAXRoleAttribute) == kAXListRole }) else {
             Log.app.error("Dock list not found")
+            SelfCheck.record { $0.recordDock(.failed("Dock list not found")) }
             return
         }
         var newObserver: AXObserver?
         guard AXObserverCreate(dock.processIdentifier, dockObserverCallback, &newObserver) == .success, let newObserver else {
             Log.app.error("Could not observe the Dock")
+            SelfCheck.record { $0.recordDock(.failed("could not observe the Dock")) }
             return
         }
         let refcon = Unmanaged.passUnretained(self).toOpaque()
         let status = AXObserverAddNotification(newObserver, list, kAXSelectedChildrenChangedNotification as CFString, refcon)
         guard status == .success else {
             Log.app.error("Could not subscribe to Dock hover (\(status.rawValue, privacy: .public))")
+            SelfCheck.record { $0.recordDock(.failed("could not subscribe to Dock hover (error \(status.rawValue))")) }
             return
         }
         CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(newObserver), .commonModes)
@@ -108,11 +112,15 @@ final class DockController: WindowListSource {
         dockListAXFrame = list.frame
         let orientation = CFPreferencesCopyAppValue("orientation" as CFString, "com.apple.dock" as CFString) as? String
         dockEdge = orientation == "left" ? .left : orientation == "right" ? .right : .bottom
+        SelfCheck.record { $0.recordDock(.attached) }
         Log.app.notice("Attached to the Dock")
     }
 
     /// The Dock's highlighted icon changed: the mouse moved onto an icon or off the Dock.
     fileprivate func hoverChanged() {
+        // Counted for the self-check: an attached observer that never hears from
+        // the Dock is a Dock whose Accessibility tree changed.
+        SelfCheck.record { $0.dockHovers += 1 }
         Perf.shared.measure("dock.hover", quiet: true) { hoverChangedUnmeasured() }
     }
 
