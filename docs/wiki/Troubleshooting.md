@@ -36,6 +36,16 @@ working. Quit the other app (and remove it from *Login Items*), then turn
 *⌘Tab: not active* with **Restart DockFlip** below it means macOS refused
 DockFlip's key taps: choose **Restart DockFlip**.
 
+## ⌃⌥← does another app's thing, or nothing
+
+Rectangle's and Magnet's default shortcuts are ⌃⌥ with the arrows, D and E,
+the same keys as DockFlip's, and whichever app starts first gets them. The menu
+bar menu then shows a line such as *⌃⌥← ⌃⌥→ ⌃⌥D: used by another app*, naming
+Rectangle, Rectangle Pro, Magnet or Spectacle below it when one of them is
+running (macOS doesn't say which app holds a key). Quit that app or change its
+shortcuts, then click the line: DockFlip asks for the shortcuts again. AltTab
+is named the same way under *⌘Tab: used by another app*.
+
 ## An app's windows don't show up
 
 - **Is a window actually open?** The dot under a Dock icon means the app is
