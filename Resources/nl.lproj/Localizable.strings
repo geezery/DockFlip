@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Toetscombinaties";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab en de ⌃⌥-toetscombinaties voor uitlijnen";
 "Managed by your organization" = "Beheerd door je organisatie";
+"Screen Recording is not allowed yet" = "Schermopname is nog niet toegestaan";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Sta DockFlip toe in Systeeminstellingen. Is het al toegestaan, herstart DockFlip dan.";
 "Show Setup Again" = "Toon configuratie opnieuw";
 "Accessibility: allowed" = "Toegankelijkheid: toegestaan";
 "Grant Accessibility…" = "Sta toegankelijkheid toe…";
@@ -48,6 +50,8 @@
 "⌘Tab: not active" = "⌘Tab: niet actief";
 "Windows tracked: %ld" = "Gevolgde vensters: %ld";
 "Restart DockFlip" = "Herstart DockFlip";
+"Turn Off macOS Edge Tiling" = "Zet tegelen aan schermranden van macOS uit";
+"Windows snap twice when dragged to an edge" = "Vensters worden twee keer uitgelijnd als je ze naar een rand sleept";
 "Window Layout" = "Vensterindeling";
 "Clean Up (%ld)…" = "Ruim op (%ld)…";
 "Clean Up…" = "Ruim op…";

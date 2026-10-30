@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "キーボードショートカット";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tabと⌃⌥のスナップショートカット";
 "Managed by your organization" = "組織によって管理されています";
+"Screen Recording is not allowed yet" = "画面収録はまだ許可されていません";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "システム設定でDockFlipを許可してください。すでに許可している場合は、DockFlipを再起動してください。";
 "Show Setup Again" = "セットアップを再表示";
 "Accessibility: allowed" = "アクセシビリティ：許可済み";
 "Grant Accessibility…" = "アクセシビリティを許可…";
@@ -48,6 +50,8 @@
 "⌘Tab: not active" = "⌘Tab：無効";
 "Windows tracked: %ld" = "追跡中のウインドウ：%ld";
 "Restart DockFlip" = "DockFlipを再起動";
+"Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";
+"Windows snap twice when dragged to an edge" = "端にドラッグしたウインドウが二重にスナップします";
 "Window Layout" = "ウインドウレイアウト";
 "Clean Up (%ld)…" = "整理（%ld）…";
 "Clean Up…" = "整理…";

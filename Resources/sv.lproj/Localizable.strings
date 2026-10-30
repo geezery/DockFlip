@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Kortkommandon";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab och kortkommandona ⌃⌥ för att fästa fönster";
 "Managed by your organization" = "Hanteras av din organisation";
+"Screen Recording is not allowed yet" = "Skärminspelning är inte tillåten än";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillåt DockFlip i Systeminställningar. Om det redan är tillåtet, starta om DockFlip.";
 "Show Setup Again" = "Visa konfigurationen igen";
 "Accessibility: allowed" = "Hjälpmedel: tillåtet";
 "Grant Accessibility…" = "Tillåt Hjälpmedel…";
@@ -48,6 +50,8 @@
 "⌘Tab: not active" = "⌘Tab: inte aktivt";
 "Windows tracked: %ld" = "Spårade fönster: %ld";
 "Restart DockFlip" = "Starta om DockFlip";
+"Turn Off macOS Edge Tiling" = "Stäng av macOS fönsterplacering vid kanter";
+"Windows snap twice when dragged to an edge" = "Fönster fästs två gånger när de dras till en kant";
 "Window Layout" = "Fönsterlayout";
 "Clean Up (%ld)…" = "Städa upp (%ld)…";
 "Clean Up…" = "Städa upp…";

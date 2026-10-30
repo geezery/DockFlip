@@ -98,6 +98,20 @@ quit. ⌘` stays the macOS way.
 - **Window Layout** in the menu bar menu lists every shortcut; clicking one
   applies it.
 
+## Compared with AltTab, DockDoor and macOS 27
+
+Checked on 30 October 2026; the full table with sources is in the
+[README](https://github.com/geezery/DockFlip#how-it-compares).
+
+- **Only DockFlip** does all three jobs (Dock window lists, a window switcher
+  with search, snapping) for free without Screen Recording, lists browser tabs
+  under each window, and comes with an [IT kit](https://github.com/geezery/DockFlip/blob/main/docs/IT.md).
+- **AltTab** switches windows; its type-to-search is in AltTab Pro.
+- **DockDoor** shows Dock previews, has a switcher with search and snaps by
+  title-bar swipes, and requires Screen Recording. **DockDoor Pro** ($20)
+  replaces the Dock with its own.
+- **macOS 27** tiles windows by itself, but its ⌘Tab still switches apps.
+
 ## What DockFlip deliberately doesn't do
 
 - Replace the Dock. (We built our own taskbar once. The real Dock won.)

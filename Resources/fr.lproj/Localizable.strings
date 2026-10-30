@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Raccourcis clavier";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab et les raccourcis d’ancrage ⌃⌥";
 "Managed by your organization" = "Géré par votre organisation";
+"Screen Recording is not allowed yet" = "L’enregistrement de l’écran n’est pas encore autorisé";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Autorisez DockFlip dans Réglages Système. S’il est déjà autorisé, relancez DockFlip.";
 "Show Setup Again" = "Afficher à nouveau la configuration";
 "Accessibility: allowed" = "Accessibilité : autorisée";
 "Grant Accessibility…" = "Autoriser l’accessibilité…";
@@ -48,6 +50,8 @@
 "⌘Tab: not active" = "⌘Tab : inactif";
 "Windows tracked: %ld" = "Fenêtres suivies : %ld";
 "Restart DockFlip" = "Relancer DockFlip";
+"Turn Off macOS Edge Tiling" = "Désactiver la mosaïque sur les bords de macOS";
+"Windows snap twice when dragged to an edge" = "Les fenêtres s’ancrent deux fois quand on les glisse vers un bord";
 "Window Layout" = "Disposition des fenêtres";
 "Clean Up (%ld)…" = "Nettoyer (%ld)…";
 "Clean Up…" = "Nettoyer…";
