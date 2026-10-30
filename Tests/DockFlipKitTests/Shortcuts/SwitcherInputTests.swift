@@ -8,13 +8,13 @@ struct SwitcherInputTests {
     }
 
     @Test func arrowsMoveThroughTheStack() {
-        #expect(input(KeyCode.right) == .right)
-        #expect(input(KeyCode.left) == .left)
+        #expect(input(KeyCode.right) == .next)
+        #expect(input(KeyCode.left) == .previous)
         // ↓ and ↑ step like → and ←, with or without ⌘ held.
-        #expect(input(KeyCode.down) == .right)
-        #expect(input(KeyCode.up) == .left)
-        #expect(input(KeyCode.down, command: false) == .right)
-        #expect(input(KeyCode.up, command: false) == .left)
+        #expect(input(KeyCode.down) == .next)
+        #expect(input(KeyCode.up) == .previous)
+        #expect(input(KeyCode.down, command: false) == .next)
+        #expect(input(KeyCode.up, command: false) == .previous)
     }
 
     @Test func otherKeys() {

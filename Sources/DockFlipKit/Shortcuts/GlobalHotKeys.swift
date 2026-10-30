@@ -7,8 +7,10 @@ import Carbon.HIToolbox
 public enum SwitcherInput: Equatable {
     case commandTab(shift: Bool)
     case escape
-    case left
-    case right
+    /// Step back one window (← or ↑).
+    case previous
+    /// Step on one window (→ or ↓).
+    case next
     case enter
     case commandReleased
     /// Typed text: filters the switcher's windows.
