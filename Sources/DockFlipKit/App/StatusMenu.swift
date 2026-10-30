@@ -50,6 +50,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
                 commandTab.subtitle = String(format: L("Probably %@"), app)
             }
             addLayoutShortcutConflict(services, to: menu)
+            addUnavailableFeatures(services, to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), services.registry.trackedWindowCount), to: menu)
             if !services.tapsRunning {
                 menu.addItem(ClosureMenuItem(L("Restart DockFlip"), handler: actions.relaunch))
@@ -126,6 +127,39 @@ final class StatusMenu: NSObject, NSMenuDelegate {
 
     private static func runningBundleIDs() -> [String] {
         NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
+    }
+
+    /// A new macOS can break a private call or the Dock hook without a crash or a
+    /// word, and then a feature just "doesn't work". One line per feature lost,
+    /// read from the self-check on every open; the debug log says more.
+    private func addUnavailableFeatures(_ services: Services, to menu: NSMenu) {
+        let features = UnavailableFeature.list(SelfCheck.current,
+                                               accessibilityAllowed: Permissions.isAccessibilityTrusted,
+                                               commandTabSwitchFound: NativeCommandTab.isAvailable,
+                                               ownsCommandTab: services.shortcutsActive)
+        for item in Self.unavailableItems(features) {
+            menu.addItem(item)
+        }
+    }
+
+    /// Status lines like "⌘Tab: not active", not buttons: no click brings a macOS
+    /// call back. The triangle marks them as the menu's other warnings are marked.
+    static func unavailableItems(_ features: [UnavailableFeature]) -> [NSMenuItem] {
+        features.map { feature in
+            let item = NSMenuItem(title: unavailableTitle(feature), action: nil, keyEquivalent: "")
+            item.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
+            item.isEnabled = false
+            return item
+        }
+    }
+
+    static func unavailableTitle(_ feature: UnavailableFeature) -> String {
+        switch feature {
+        case .commandTabSwitchOff: return L("Turning off macOS's own ⌘Tab: not available on this macOS version")
+        case .windowTracking: return L("Window tracking: not available on this macOS version")
+        case .otherSpaces: return L("Windows on other Spaces: not available on this macOS version")
+        case .dockLists: return L("Dock lists: not available on this macOS version")
+        }
     }
 
     /// macOS's own edge tiling can come back on after setup turned it off (System

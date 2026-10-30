@@ -58,6 +58,10 @@
 "⌘Tab: active" = "⌘Tab: 활성";
 "⌘Tab: not active" = "⌘Tab: 비활성";
 "⌘Tab: used by another app" = "⌘Tab: 다른 앱이 사용 중";
+"Turning off macOS's own ⌘Tab: not available on this macOS version" = "macOS 기본 ⌘Tab 끄기: 이 macOS 버전에서는 사용할 수 없음";
+"Window tracking: not available on this macOS version" = "윈도우 추적: 이 macOS 버전에서는 사용할 수 없음";
+"Windows on other Spaces: not available on this macOS version" = "다른 데스크탑의 윈도우: 이 macOS 버전에서는 사용할 수 없음";
+"Dock lists: not available on this macOS version" = "Dock 목록: 이 macOS 버전에서는 사용할 수 없음";
 "Probably %@" = "아마도 %@";
 "%@: used by another app" = "%@: 다른 앱이 사용 중";
 "Probably %@. Quit it or change its shortcuts, then click to try again." = "아마도 %@입니다. 앱을 종료하거나 단축키를 변경한 후 클릭하여 다시 시도하세요.";
