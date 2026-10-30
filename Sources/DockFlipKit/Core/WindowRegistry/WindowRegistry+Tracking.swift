@@ -74,6 +74,7 @@ extension WindowRegistry {
         appOrder.removeAll { $0 == pid }
         unresponsive.remove(pid)
         searchedElsewhere[pid] = nil
+        appQueues.forget(pid)
         guard let tracked = apps.removeValue(forKey: pid) else { return }
         if let observer = tracked.observer {
             CFRunLoopRemoveSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)

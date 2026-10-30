@@ -69,8 +69,9 @@ is named the same way under *⌘Tab: used by another app*.
 
 ## Thumbnails are on but no pictures show
 
-Thumbnails need *Screen & System Audio Recording*. While it isn't allowed,
-Settings says so under **Window thumbnails**: press **Open System Settings**,
+Thumbnails need *Screen & System Audio Recording*. While it isn't allowed, the
+menu bar menu shows *Screen Recording is not allowed yet*; click it for Settings,
+which says so under **Window thumbnails**: press **Open System Settings**,
 allow DockFlip there, then press **Restart DockFlip**, because macOS often
 applies the permission only after a restart.
 

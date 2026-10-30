@@ -34,7 +34,14 @@ final class PlacementMemory {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.displaysChanged() }
         })
-        saveNow()
+        // Started with other displays than the last save was for (restarted mid-change, or
+        // the displays changed while DockFlip wasn't running): treat it as the change, so
+        // macOS's shuffle isn't saved over the layout remembered for these displays.
+        if layouts.isDisplayChange(to: currentSignature) {
+            Log.app.notice("Started after a display change")
+            settle()
+        }
+        saveNow() // waits out the pause by itself
     }
 
     // MARK: - Display changes
@@ -45,6 +52,13 @@ final class PlacementMemory {
         let screenCount = NSScreen.screens.count
         Log.app.notice("Displays changed: \(screenCount, privacy: .public) screen(s)")
         currentSignature = signature
+        settle()
+    }
+
+    /// Pauses saving while macOS moves windows for the displays now connected, then puts
+    /// back the layout remembered for them.
+    private func settle() {
+        let signature = currentSignature
         pausedUntil = Date().addingTimeInterval(4)
         saveTask?.cancel()
         saveTask = nil

@@ -42,6 +42,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
             menu.addItem(ClosureMenuItem(L("Continue Setup…"), handler: actions.showSetup))
         }
         addEdgeTilingWarning(to: menu)
+        addScreenRecordingWarning(to: menu)
         if let services {
             let commandTab = addStatus(commandTabStatus(services), to: menu)
             if services.commandTabHeldElsewhere,
@@ -139,6 +140,28 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         item.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
         item.subtitle = L("Windows snap twice when dragged to an edge")
         menu.addItem(item)
+    }
+
+    /// Thumbnails switched on but Screen Recording not allowed (a denied prompt, or
+    /// the restart macOS wants after allowing it): the Dock lists just show no
+    /// pictures, and only Settings said why, to someone who never opens it again.
+    /// Read on every open, like the rest of the menu; no timer.
+    private func addScreenRecordingWarning(to menu: NSMenu) {
+        let access = ThumbnailAccess(enabled: Settings.shared.previewsEnabled,
+                                     screenRecordingAllowed: CGPreflightScreenCaptureAccess())
+        if let item = Self.screenRecordingWarning(access, openSettings: actions.showSettings) {
+            menu.addItem(item)
+        }
+    }
+
+    /// The warning item for `access`, or nil when thumbnails are off or shown.
+    /// It opens Settings, whose warning row offers System Settings and a restart.
+    static func screenRecordingWarning(_ access: ThumbnailAccess, openSettings: @escaping () -> Void) -> NSMenuItem? {
+        guard access == .waitingForPermission else { return nil }
+        let item = ClosureMenuItem(L("Screen Recording is not allowed yet"), handler: openSettings)
+        item.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
+        item.subtitle = L("Window thumbnails are not shown")
+        return item
     }
 
     // MARK: - Window Layout

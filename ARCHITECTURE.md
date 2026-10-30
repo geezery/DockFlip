@@ -37,7 +37,7 @@ main thread.
 | `Core/` | `WindowRegistry` — all windows, their state and most-recently-used order; `WindowServer` — the window server's view (all Spaces); Accessibility helpers; geometry and displays. |
 | `Shortcuts/` | `GlobalHotKeys` (Carbon hot keys: ⌘Tab, ⌃⌥…), `SwitcherKeyTaps` (the two event taps a ⌘Tab session needs), `NativeCommandTab` (turns macOS's own ⌘Tab off while DockFlip runs). |
 | `Switcher/` | The ⌘Tab switcher: controller, Flip 3D view, selection and type-to-filter rules, `SwitcherStack` (which cards are drawn). |
-| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock. |
+| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it. |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
@@ -74,6 +74,11 @@ The Dock list's sizing rules (`WindowListLayout`) are tested there too.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
   and asks the window's app for its frame once the mouse has moved 8 points.
+- **No tap waits on an app.** The Dock click tap answers from memory
+  (`DockClick`: the highlighted icon, the registry's windows) and does the
+  click's work after it has answered. The registry's calls to an app (focus,
+  minimize, the hover probe) run on that app's own queue (`AppQueues`), so a
+  hung app, which answers only after the 1 s timeout, never holds up a click.
 
 ## Strings and languages
 

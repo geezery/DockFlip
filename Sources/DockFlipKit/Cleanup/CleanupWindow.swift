@@ -157,9 +157,14 @@ final class CleanupController {
 
     func reload() {
         let (windowRows, appRows) = candidates()
+        let previouslyListed = Set(model.windows.map(\.id) + model.apps.map(\.id))
         model.windows = windowRows
         model.apps = appRows
-        model.selected = Set(windowRows.map(\.id) + appRows.map(\.id))
+        model.selected = CleanupSelection.afterReload(
+            listed: windowRows.map(\.id) + appRows.map(\.id),
+            previouslyListed: previouslyListed,
+            selected: model.selected
+        )
         model.kept = keptRows()
         if model.kept.isEmpty { model.showsKept = false }
     }
@@ -244,140 +249,5 @@ enum ProcessInfoReader {
             }
         }
         return result == 0 ? Int64(info.ri_phys_footprint) : nil
-    }
-}
-
-// MARK: - View
-
-struct CleanupView: View {
-    @ObservedObject var model: CleanupModel
-    let controller: CleanupController
-
-    var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Clean Up").font(.system(size: 22, weight: .bold))
-                Text("Windows you have not used for three days and apps left running without windows. Nothing is closed without you, and apps still ask to save your work.")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
-
-            if model.isEmpty {
-                VStack(spacing: 10) {
-                    Image(systemName: "sparkles").font(.system(size: 32)).foregroundStyle(Color.accentColor)
-                    Text("Nothing to clean up").font(.system(size: 15, weight: .semibold))
-                    Text("Everything open has been used recently.").font(.system(size: 12)).foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                List {
-                    if !model.windows.isEmpty {
-                        Section("Unused windows") {
-                            ForEach(model.windows) { row in
-                                CleanupRowView(row: row, model: model, controller: controller)
-                            }
-                        }
-                    }
-                    if !model.apps.isEmpty {
-                        Section("Apps without windows") {
-                            ForEach(model.apps) { row in
-                                CleanupRowView(row: row, model: model, controller: controller)
-                            }
-                        }
-                    }
-                }
-                .listStyle(.inset)
-            }
-
-            HStack {
-                Text(String(format: L("%ld selected"), model.selected.count))
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                if !model.kept.isEmpty {
-                    Button(String(format: L("Kept Apps (%ld)"), model.kept.count)) { model.showsKept = true }
-                        .buttonStyle(.borderless)
-                        .font(.system(size: 12))
-                        .help(Text("Apps Clean Up never suggests"))
-                        .popover(isPresented: $model.showsKept) {
-                            KeptAppsView(model: model, controller: controller)
-                        }
-                        .padding(.leading, 8)
-                }
-                Spacer()
-                Button("Close Selected") { controller.closeSelected() }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .disabled(model.selected.isEmpty)
-            }
-            .padding(16)
-            .overlay(alignment: .top) { Divider() }
-        }
-        .frame(minWidth: 480, minHeight: 360)
-    }
-}
-
-struct CleanupRowView: View {
-    let row: CleanupRow
-    @ObservedObject var model: CleanupModel
-    let controller: CleanupController
-
-    private var detail: String {
-        let relative = RelativeDateTimeFormatter()
-        relative.unitsStyle = .full
-        var parts = [String(format: L("used %@"), relative.localizedString(for: row.lastUsed, relativeTo: Date()))]
-        if let bytes = row.memoryBytes {
-            parts.append(ByteCountFormatter.string(fromByteCount: bytes, countStyle: .memory))
-        }
-        if case .window = row.id { parts.insert(row.appName, at: 0) }
-        return parts.joined(separator: " · ")
-    }
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Toggle("", isOn: Binding(
-                get: { MainActor.assumeIsolated { model.selected.contains(row.id) } },
-                set: { _ in MainActor.assumeIsolated { controller.toggle(row.id) } }
-            ))
-            .toggleStyle(.checkbox)
-            .labelsHidden()
-            AppIconView(icon: row.icon, size: 24)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: row.title).font(.system(size: 13)).lineLimit(1)
-                Text(verbatim: detail).font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
-            }
-            Spacer()
-            keepButton
-                .buttonStyle(.borderless)
-                .font(.system(size: 12))
-                .help(Text(keepHelp))
-        }
-        .padding(.vertical, 2)
-    }
-
-    private var keepHelp: String {
-        if case .window = row.id {
-            return L("Keep this window for now. It is suggested again after three more unused days.")
-        }
-        return L("Keep this app running for now. It is suggested again after another unused day.")
-    }
-
-    /// "Keep" is for this row only; banning the whole app sits one click further, in its menu.
-    @ViewBuilder private var keepButton: some View {
-        if row.bundleID != nil {
-            Menu {
-                Button("Never suggest this app again") { controller.neverSuggest(row) }
-            } label: {
-                Text("Keep")
-            } primaryAction: {
-                controller.keepForNow(row)
-            }
-            .menuStyle(.button)
-            .fixedSize()
-        } else {
-            Button("Keep") { controller.keepForNow(row) }
-        }
     }
 }

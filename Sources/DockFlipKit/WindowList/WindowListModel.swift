@@ -51,6 +51,8 @@ final class WindowListModel: ObservableObject {
     @Published var showsPreviews = false
     @Published var hoveredRow: CGWindowID?
     @Published var hoveredTab: String?
+    /// The window whose "Show all N tabs" or "Show fewer" line the mouse is on.
+    @Published var hoveredFold: CGWindowID?
     /// The window whose picture the peek pane shows (previews on, with tabs).
     @Published var peekWindow: CGWindowID?
     /// The mouse is on the peek pane's picture.
@@ -77,6 +79,11 @@ final class WindowListModel: ObservableObject {
     /// and one scroll view for every app, so nothing of the last list may carry
     /// over, least of all its scroll offset, which would hide the most recent windows.
     func startNewList() {
+        // A click hides the panel before the mouse leaves the row, so no exit
+        // arrives: the row would still be lit when the list opens again.
+        hoveredRow = nil
+        hoveredTab = nil
+        hoveredFold = nil
         expanded = []
         peekWindow = nil
         hoveringPeek = false
@@ -100,6 +107,14 @@ final class WindowListModel: ObservableObject {
             peekWindow = window
         } else if hoveredTab == id {
             hoveredTab = nil
+        }
+    }
+
+    func setHoveredFold(_ window: CGWindowID, _ inside: Bool) {
+        if inside {
+            hoveredFold = window
+        } else if hoveredFold == window {
+            hoveredFold = nil
         }
     }
 }

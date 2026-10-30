@@ -21,6 +21,16 @@ extension AXUIElement {
         return value
     }
 
+    /// Several attributes in one round trip to the app, in the order asked, or
+    /// nil if the call failed. A missing attribute comes back as an AXValue
+    /// holding its error, so cast each value to the type expected.
+    func copyAttributes(_ names: [String]) -> [AnyObject]? {
+        var values: CFArray?
+        guard AXUIElementCopyMultipleAttributeValues(self, names as CFArray, [], &values) == .success,
+              let array = values as? [AnyObject], array.count == names.count else { return nil }
+        return array
+    }
+
     func string(_ name: String) -> String? {
         copyAttribute(name) as? String
     }
