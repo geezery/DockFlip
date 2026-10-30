@@ -3,55 +3,68 @@ import Testing
 
 @Suite("EdgeTilingHint")
 struct EdgeTilingHintTests {
-    /// One drag that passes over `zones` snap zones; what each zone's preview showed.
-    private func drag(_ hint: inout EdgeTilingHint, zones: Int = 3, tilingOn: Bool, reads: inout Int) -> [Bool] {
-        hint.newDrag()
-        return (0..<zones).map { _ in
-            hint.showsHint(tilingOn: { reads += 1; return tilingOn })
+    /// Plays drags against one `EdgeTilingHint`, counting reads of the tiling switch.
+    private struct Launch {
+        var hint = EdgeTilingHint()
+        var reads = 0
+
+        /// One drag over `zones` snap zones: what each zone's preview showed.
+        mutating func drag(zones: Int = 3, tilingOn: Bool) -> [Bool] {
+            hint.newDrag()
+            var shown: [Bool] = []
+            // A local count: the closure may not capture `self` while `hint` changes.
+            var read = 0
+            for _ in 0..<zones {
+                shown.append(hint.showsHint(tilingOn: { read += 1; return tilingOn }))
+            }
+            reads += read
+            return shown
         }
     }
 
     @Test func firstDragWithTilingOnShowsItForTheWholeDrag() {
-        var hint = EdgeTilingHint()
-        var reads = 0
-        #expect(drag(&hint, tilingOn: true, reads: &reads) == [true, true, true])
-        #expect(hint.shown)
-        #expect(reads == 1)
+        var launch = Launch()
+        let first = launch.drag(tilingOn: true)
+        #expect(first == [true, true, true])
+        #expect(launch.hint.shown)
+        #expect(launch.reads == 1)
     }
 
     @Test func onlyOncePerLaunch() {
-        var hint = EdgeTilingHint()
-        var reads = 0
-        _ = drag(&hint, tilingOn: true, reads: &reads)
-        #expect(drag(&hint, tilingOn: true, reads: &reads) == [false, false, false])
-        #expect(drag(&hint, tilingOn: true, reads: &reads) == [false, false, false])
+        var launch = Launch()
+        _ = launch.drag(tilingOn: true)
+        let second = launch.drag(tilingOn: true)
+        let third = launch.drag(tilingOn: true)
+        #expect(second == [false, false, false])
+        #expect(third == [false, false, false])
         // Shown once: macOS's preferences are not read again.
-        #expect(reads == 1)
+        #expect(launch.reads == 1)
     }
 
     @Test func neverWithTilingOff() {
-        var hint = EdgeTilingHint()
-        var reads = 0
+        var launch = Launch()
+        var shown: [Bool] = []
         for _ in 0..<3 {
-            #expect(drag(&hint, tilingOn: false, reads: &reads) == [false, false, false])
+            shown += launch.drag(tilingOn: false)
         }
-        #expect(!hint.shown)
+        #expect(!shown.contains(true))
+        #expect(!launch.hint.shown)
         // Once per drag, not once per snap zone.
-        #expect(reads == 3)
+        #expect(launch.reads == 3)
     }
 
     @Test func tilingSwitchedOnLaterShowsItThen() {
-        var hint = EdgeTilingHint()
-        var reads = 0
-        _ = drag(&hint, tilingOn: false, reads: &reads)
-        #expect(drag(&hint, tilingOn: true, reads: &reads) == [true, true, true])
+        var launch = Launch()
+        _ = launch.drag(tilingOn: false)
+        let later = launch.drag(tilingOn: true)
+        #expect(later == [true, true, true])
     }
 
     @Test func aDragThatNeverReachesAZoneReadsNothing() {
-        var hint = EdgeTilingHint()
-        var reads = 0
-        #expect(drag(&hint, zones: 0, tilingOn: true, reads: &reads) == [])
-        #expect(reads == 0)
-        #expect(!hint.shown)
+        var launch = Launch()
+        let shown = launch.drag(zones: 0, tilingOn: true)
+        #expect(shown.isEmpty)
+        #expect(launch.reads == 0)
+        #expect(!launch.hint.shown)
     }
 }
