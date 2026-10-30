@@ -196,7 +196,8 @@ Accessibility**. The setup window opens the right page for you.
 3. It copies the app to `/Applications` and starts it.
 
 No Apple Developer account and no fees. `make uninstall` removes everything,
-the certificate included.
+the certificate included, and turns macOS's own edge tiling back on if
+DockFlip's setup turned it off.
 
 Other targets: `make` (build only), `make run`, `make test`, `make clean`.
 </details>
