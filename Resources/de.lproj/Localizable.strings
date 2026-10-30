@@ -106,6 +106,14 @@
 "Close Selected" = "Auswahl schließen";
 "Keep" = "Behalten";
 "Never suggest this app again" = "Diese App nie wieder vorschlagen";
+"Keep this window for now. It is suggested again after three more unused days." = "Dieses Fenster vorerst behalten. Es wird nach drei weiteren unbenutzten Tagen wieder vorgeschlagen.";
+"Keep this app running for now. It is suggested again after another unused day." = "Diese App vorerst weiterlaufen lassen. Sie wird nach einem weiteren unbenutzten Tag wieder vorgeschlagen.";
+"Kept Apps (%ld)" = "Behaltene Apps (%ld)";
+"Apps Clean Up never suggests" = "Apps, die Aufräumen nie vorschlägt";
+"Kept apps" = "Behaltene Apps";
+"Clean Up never suggests these apps or their windows." = "Aufräumen schlägt diese Apps und ihre Fenster nie vor.";
+"Remove" = "Entfernen";
+"Suggest this app again" = "Diese App wieder vorschlagen";
 "Minimized" = "Im Dock abgelegt";
 "On another desktop" = "Auf anderem Schreibtisch";
 "No windows match" = "Keine passenden Fenster";

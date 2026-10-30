@@ -106,6 +106,14 @@
 "Close Selected" = "선택 항목 닫기";
 "Keep" = "유지";
 "Never suggest this app again" = "이 앱을 다시 제안하지 않음";
+"Keep this window for now. It is suggested again after three more unused days." = "이 윈도우를 지금은 유지합니다. 3일 더 사용하지 않으면 다시 제안됩니다.";
+"Keep this app running for now. It is suggested again after another unused day." = "이 앱을 지금은 계속 실행합니다. 하루 더 사용하지 않으면 다시 제안됩니다.";
+"Kept Apps (%ld)" = "유지하는 앱(%ld)";
+"Apps Clean Up never suggests" = "정리에서 제안하지 않는 앱";
+"Kept apps" = "유지하는 앱";
+"Clean Up never suggests these apps or their windows." = "정리는 이 앱과 해당 윈도우를 제안하지 않습니다.";
+"Remove" = "제거";
+"Suggest this app again" = "이 앱을 다시 제안";
 "Minimized" = "최소화됨";
 "On another desktop" = "다른 데스크탑에 있음";
 "No windows match" = "일치하는 윈도우 없음";

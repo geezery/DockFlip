@@ -51,6 +51,18 @@ final class UsageTracker {
         return latest == .distantPast ? Date() : latest
     }
 
+    /// Clean Up's "Keep" on a window row: this window counts as used now.
+    func markUsed(window id: CGWindowID) {
+        UsageDates.keep(&windowLastUsed, id: id, now: Date())
+        scheduleSave()
+    }
+
+    /// Clean Up's "Keep" on an app row: the app counts as used now.
+    func markUsed(app: NSRunningApplication) {
+        appLastUsed[Self.key(for: app)] = Date()
+        scheduleSave()
+    }
+
     /// Call when the app quits so nothing is lost.
     func saveNow() {
         saveTask?.cancel()

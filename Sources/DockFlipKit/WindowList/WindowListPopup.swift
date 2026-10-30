@@ -111,12 +111,7 @@ final class WindowListPopup {
         }
         let changedItem = currentKey != key
         currentKey = key
-        if changedItem {
-            model.expanded = []
-            model.peekWindow = nil
-            model.hoveringPeek = false
-            model.thumbnails = [:]
-        }
+        if changedItem { model.startNewList() }
 
         let activeID = registry.activeWindowID()
         let title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name

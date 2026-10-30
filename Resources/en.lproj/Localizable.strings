@@ -106,6 +106,14 @@
 "Close Selected" = "Close Selected";
 "Keep" = "Keep";
 "Never suggest this app again" = "Never suggest this app again";
+"Keep this window for now. It is suggested again after three more unused days." = "Keep this window for now. It is suggested again after three more unused days.";
+"Keep this app running for now. It is suggested again after another unused day." = "Keep this app running for now. It is suggested again after another unused day.";
+"Kept Apps (%ld)" = "Kept Apps (%ld)";
+"Apps Clean Up never suggests" = "Apps Clean Up never suggests";
+"Kept apps" = "Kept apps";
+"Clean Up never suggests these apps or their windows." = "Clean Up never suggests these apps or their windows.";
+"Remove" = "Remove";
+"Suggest this app again" = "Suggest this app again";
 "Minimized" = "Minimized";
 "On another desktop" = "On another desktop";
 "No windows match" = "No windows match";
