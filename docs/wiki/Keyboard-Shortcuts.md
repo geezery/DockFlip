@@ -35,7 +35,7 @@ Or drag the window near a corner.
 | Type letters | Filter |
 | Return | Switch |
 | Esc | Clear the filter, or cancel |
-| Release ⌘ | Switch (when not filtering) |
+| Release ⌘ | Switch (when not filtering; once ⌘ is up, Return or a click switches) |
 
 ## Forgot one?
 
