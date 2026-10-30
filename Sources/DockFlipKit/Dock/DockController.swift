@@ -47,6 +47,8 @@ final class DockController: WindowListSource {
     var dockListAXFrame: CGRect?
     /// The window an icon click minimized, restored by the next click on that icon.
     var minimizedByClick: (bundleID: String, windowID: CGWindowID)?
+    /// Bundle IDs of the Dock's apps by URL, for ⌃⌥1…9.
+    var bundleIDs = BundleIDCache()
     private(set) var dockEdge: DockEdge = .bottom
 
     init(registry: WindowRegistry) {
