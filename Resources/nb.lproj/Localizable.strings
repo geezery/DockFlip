@@ -49,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillat DockFlip i Systeminnstillinger. Hvis det allerede er tillatt, start DockFlip på nytt.";
 "Show Setup Again" = "Vis konfigureringen igjen";
 "Accessibility: allowed" = "Tilgjengelighet: tillatt";
+"Accessibility: not yet allowed" = "Tilgjengelighet: ikke tillatt ennå";
+"Turn on DockFlip in the list. This page notices it by itself." = "Slå på DockFlip i listen. Denne siden merker det av seg selv.";
+"All set. Continue to the next step." = "Alt er klart. Fortsett til neste trinn.";
 "Grant Accessibility…" = "Tillat Tilgjengelighet…";
 "Continue Setup…" = "Fortsett konfigureringen…";
 "⌘Tab: active" = "⌘Tab: aktiv";

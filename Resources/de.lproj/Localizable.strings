@@ -49,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Erlaube DockFlip in den Systemeinstellungen. Ist es schon erlaubt, starte DockFlip neu.";
 "Show Setup Again" = "Einrichtung erneut anzeigen";
 "Accessibility: allowed" = "Bedienungshilfen: erlaubt";
+"Accessibility: not yet allowed" = "Bedienungshilfen: noch nicht erlaubt";
+"Turn on DockFlip in the list. This page notices it by itself." = "Schalte DockFlip in der Liste ein. Diese Seite bemerkt es von selbst.";
+"All set. Continue to the next step." = "Alles bereit. Weiter zum nächsten Schritt.";
 "Grant Accessibility…" = "Bedienungshilfen erlauben …";
 "Continue Setup…" = "Einrichtung fortsetzen …";
 "⌘Tab: active" = "⌘Tab: aktiv";
