@@ -25,6 +25,8 @@ final class SwitcherController {
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
     private var previewTasks: [Task<Void, Never>] = []
+    /// Windows whose pictures this session asked for already, so a step asks only for new ones.
+    private var askedPreviews = Set<CGWindowID>()
     private var previousApp: NSRunningApplication?
     private var localMonitor: Any?
     private var resignKeyToken: NSObjectProtocol?
@@ -140,7 +142,7 @@ final class SwitcherController {
 
         show()
         onActiveChanged?(true)
-        loadPreviews(for: windows)
+        loadPreviews(lookAhead: true)
         return true
     }
 
@@ -157,8 +159,7 @@ final class SwitcherController {
         newSelection.select(0)
         selection = newSelection
         model.selection = newSelection.index
-        let ids = Set(matches.map(\.windowID))
-        loadPreviews(for: allWindows.filter { ids.contains($0.id) })
+        loadPreviews(lookAhead: true)
     }
 
     private func step(_ delta: Int) {
@@ -166,6 +167,7 @@ final class SwitcherController {
         selection.step(delta)
         self.selection = selection
         model.selection = selection.index
+        loadPreviews(lookAhead: false)
     }
 
     private func commit(at index: Int) {
@@ -189,6 +191,7 @@ final class SwitcherController {
     private func hide() {
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
+        askedPreviews = []
         if let localMonitor { NSEvent.removeMonitor(localMonitor) }
         localMonitor = nil
         panel?.orderOut(nil)
@@ -203,18 +206,22 @@ final class SwitcherController {
     }
 
     /// Pictures memory already has appear with the stack; fresh ones are
-    /// captured side by side, the windows nearest the front first.
-    private func loadPreviews(for windows: [WindowSnapshot]) {
-        previewTasks.forEach { $0.cancel() }
-        previewTasks = []
-        guard PreviewProvider.shared.isAvailable else { return }
-        let wanted = windows.prefix(16)
+    /// captured side by side, the windows nearest the front first. Called again
+    /// on every step and filter change for the cards not asked for yet (see
+    /// `SwitcherPreviews`); captures already running keep going.
+    private func loadPreviews(lookAhead: Bool) {
+        let ids = SwitcherPreviews.toCapture(
+            ids: model.items.map(\.windowID), selection: model.selection,
+            visibleDepth: SwitcherStack.visibleDepth, asked: askedPreviews, lookAhead: lookAhead)
+        guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
+        askedPreviews.formUnion(ids)
+        let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
         for window in wanted where model.thumbnails[window.id] == nil {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
                 model.thumbnails[window.id] = cached
             }
         }
-        previewTasks = wanted.map { window in
+        previewTasks += wanted.map { window in
             Task { @MainActor [weak self] in
                 let image = await PreviewProvider.shared.thumbnail(for: window)
                 // The switcher may have closed while capturing: drop the image then.
