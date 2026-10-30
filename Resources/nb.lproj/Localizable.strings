@@ -40,6 +40,8 @@
 "Keyboard shortcuts" = "Tastatursnarveier";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab og ⌃⌥-snarveiene for å feste vinduer";
 "Managed by your organization" = "Administreres av organisasjonen din";
+"Screen Recording is not allowed yet" = "Skjermopptak er ikke tillatt ennå";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillat DockFlip i Systeminnstillinger. Hvis det allerede er tillatt, start DockFlip på nytt.";
 "Show Setup Again" = "Vis konfigureringen igjen";
 "Accessibility: allowed" = "Tilgjengelighet: tillatt";
 "Grant Accessibility…" = "Tillat Tilgjengelighet…";
