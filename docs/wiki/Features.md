@@ -92,7 +92,7 @@ quit. ⌘` stays the macOS way.
   display, plug it back in, and every window returns to where it was.
 - **Clean Up** (menu bar → *Clean Up…*) lists windows unused for three days and
   apps running without windows. It only suggests. Nothing closes without you,
-  and apps still ask to save.
+  and apps still ask to save: an app that asks comes forward with its question.
 - **Not responding:** a hung app's window list says so.
 - **Show desktop** with ⌃⌥D, like Win+D.
 - **Window Layout** in the menu bar menu lists every shortcut; clicking one
