@@ -9,16 +9,8 @@ final class SnapController {
     private var restoreFrames: [CGWindowID: CGRect] = [:]
     private let overlay = SnapOverlay()
     private var monitors: [Any] = []
-    private var drag: DragState?
-
-    private struct DragState {
-        let windowID: CGWindowID
-        let startFrame: CGRect
-        let startMouse: NSPoint
-        var isWindowDrag = false
-        var decided = false
-        var zone: (region: SnapRegion, screen: NSScreen)?
-    }
+    private var drag: SnapDrag?
+    private var dragZone: (region: SnapRegion, screen: NSScreen)?
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -110,40 +102,27 @@ final class SnapController {
 
     // MARK: - Drag to edge
 
+    /// Only remembers where the press was: every click on the Mac lands here, and
+    /// `SnapDrag` looks the window up once the mouse has moved like a drag.
     private func mouseDown() {
-        let mouse = NSEvent.mouseLocation
-        guard let id = windowID(under: mouse), let frame = registry.liveFrame(of: id) else {
-            drag = nil
-            return
-        }
-        drag = DragState(windowID: id, startFrame: frame, startMouse: mouse)
+        drag = SnapDrag(startMouse: NSEvent.mouseLocation)
+        dragZone = nil
     }
 
     private func mouseDragged() {
         guard var state = drag else { return }
         let mouse = NSEvent.mouseLocation
 
-        if !state.decided {
-            let distance = hypot(mouse.x - state.startMouse.x, mouse.y - state.startMouse.y)
-            guard distance > 8 else { return }
-            if let frame = registry.liveFrame(of: state.windowID) {
-                let moved = abs(frame.minX - state.startFrame.minX) + abs(frame.minY - state.startFrame.minY) > 4
-                let resized = abs(frame.width - state.startFrame.width) + abs(frame.height - state.startFrame.height) > 2
-                if moved && !resized {
-                    state.isWindowDrag = true
-                    state.decided = true
-                } else if resized || distance > 60 {
-                    state.decided = true
-                }
-            }
-            drag = state
-            guard state.isWindowDrag else { return }
-        }
-        guard state.isWindowDrag else { return }
+        state.moved(to: mouse, windowUnder: { point in
+            Perf.shared.measure("snap.dragStart", quiet: true) { trackedWindow(under: point) }
+        }, frame: { id in
+            Perf.shared.measure("snap.dragCheck", quiet: true) { registry.liveFrame(of: id) }
+        })
+        drag = state
+        guard state.window != nil else { return }
 
         let zone = Self.zone(at: mouse)
-        state.zone = zone
-        drag = state
+        dragZone = zone
         if let zone {
             let area = DisplayLayout.usableArea(of: zone.screen)
             let rect = SnapEngine.rect(for: zone.region, in: area)
@@ -156,22 +135,30 @@ final class SnapController {
     private func mouseUp() {
         defer {
             drag = nil
+            dragZone = nil
             overlay.hide()
         }
-        guard let state = drag, state.isWindowDrag, let zone = state.zone else { return }
-        let startArea = DisplayLayout.screenIndex(for: state.startFrame, in: NSScreen.screens)
+        guard let window = drag?.window, let zone = dragZone else { return }
+        let startArea = DisplayLayout.screenIndex(for: window.startFrame, in: NSScreen.screens)
             .map { DisplayLayout.usableArea(of: NSScreen.screens[$0]) }
-        if let startArea, SnapEngine.region(matching: state.startFrame, in: startArea) == nil {
-            restoreFrames[state.windowID] = state.startFrame
+        if let startArea, SnapEngine.region(matching: window.startFrame, in: startArea) == nil {
+            restoreFrames[window.id] = window.startFrame
         }
         let rect = SnapEngine.rect(for: zone.region, in: DisplayLayout.usableArea(of: zone.screen))
         Log.snap.info("Drag snap to \(String(describing: zone.region), privacy: .public)")
-        let id = state.windowID
+        let id = window.id
         // Let the system finish its own drag handling first.
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(40))
             self?.registry.setFrame(of: id, to: rect)
         }
+    }
+
+    /// The tracked window under the mouse and its live frame: one window-list
+    /// read and one Accessibility call to its app.
+    private func trackedWindow(under cocoaPoint: NSPoint) -> (id: CGWindowID, frame: CGRect)? {
+        guard let id = windowID(under: cocoaPoint), let frame = registry.liveFrame(of: id) else { return nil }
+        return (id, frame)
     }
 
     /// Topmost normal window under the mouse that DockFlip tracks.

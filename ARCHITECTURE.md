@@ -39,14 +39,14 @@ main thread.
 | `Switcher/` | The ⌘Tab switcher: controller, Flip 3D view, selection and type-to-filter rules, `SwitcherStack` (which cards are drawn). |
 | `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9). |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
-| `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, the drag preview), Show Desktop, macOS's own edge tiling switch. |
+| `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch. |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup. |
 | `Cleanup/` | Usage tracking and the Clean Up window. |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |
 
-Pure rules with no AppKit in them (`SnapEngine`, `SwitcherSelection`,
+Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`.
 
@@ -71,6 +71,9 @@ The Dock list's sizing rules (`WindowListLayout`) are tested there too.
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
+- **A click costs nothing.** Drag-to-edge snapping sees every left click on the
+  Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
+  and asks the window's app for its frame once the mouse has moved 8 points.
 
 ## Strings and languages
 

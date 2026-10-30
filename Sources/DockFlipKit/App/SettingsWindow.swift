@@ -47,11 +47,15 @@ struct SettingsView: View {
                     )) {
                         Text("Window thumbnails")
                         Text("Needs the Screen & System Audio Recording permission.")
+                        if settings.previewsManaged { Text("Managed by your organization") }
                     }
+                    .disabled(settings.previewsManaged)
                     Toggle(isOn: $settings.shortcutsEnabled) {
                         Text("Keyboard shortcuts")
                         Text("⌘Tab and the ⌃⌥ snapping shortcuts")
+                        if settings.shortcutsManaged { Text("Managed by your organization") }
                     }
+                    .disabled(settings.shortcutsManaged)
                 }
             }
             .formStyle(.grouped)
