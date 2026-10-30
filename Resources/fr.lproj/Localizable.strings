@@ -113,6 +113,7 @@
 "Paste" = "Coller";
 "Select All" = "Tout sélectionner";
 "%ld tabs" = "%ld onglets";
+"Show fewer" = "Afficher moins";
 "Show all %ld tabs" = "Afficher les %ld onglets";
 "1 more window" = "1 autre fenêtre";
 "%ld more windows" = "%ld autres fenêtres";

@@ -113,6 +113,7 @@
 "Paste" = "Wklej";
 "Select All" = "Zaznacz wszystko";
 "%ld tabs" = "Karty: %ld";
+"Show fewer" = "Pokaż mniej";
 "Show all %ld tabs" = "Pokaż wszystkie karty (%ld)";
 "1 more window" = "Jeszcze 1 okno";
 "%ld more windows" = "Więcej okien: %ld";

@@ -1,5 +1,13 @@
 import AppKit
 
+/// What the line under a long tab list offers.
+enum TabFold: Equatable {
+    /// Folded: open all of them (the count is every tab of the window).
+    case showAll(Int)
+    /// Open: fold it back to the first few tabs and the one you are on.
+    case showFewer
+}
+
 /// Sizes. The panel's size is computed here, not by SwiftUI, so it is known
 /// before anything is drawn and the list never jumps.
 enum WindowListLayout {
@@ -31,6 +39,13 @@ enum WindowListLayout {
             shown.append(selected)
         }
         return (shown, row.tabs.count - shown.count)
+    }
+
+    /// The line under a long tab list: "Show all N tabs" while it is folded,
+    /// "Show fewer" once it is open, so a peek at every tab can be undone.
+    static func foldControl(of row: WindowListRow, expanded: Bool) -> TabFold? {
+        guard row.tabs.count > foldedTabs else { return nil }
+        return expanded ? .showFewer : .showAll(row.tabs.count)
     }
 
     /// Picture cards side by side, while they fit (five); otherwise the list,
@@ -72,11 +87,13 @@ enum WindowListLayout {
         return min(36 + height, cap) - 36
     }
 
-    /// One window in the list: its row, and the tabs listed under it.
+    /// One window in the list: its row, the tabs listed under it, and the
+    /// "Show all N tabs" or "Show fewer" line under a long list.
     static func blockHeight(of row: WindowListRow, expanded: Bool) -> CGFloat {
-        let (tabs, hidden) = visibleTabs(of: row, expanded: expanded)
+        let tabs = visibleTabs(of: row, expanded: expanded).tabs
         guard !tabs.isEmpty else { return rowHeight }
-        return rowHeight + CGFloat(tabs.count + (hidden > 0 ? 1 : 0)) * tabRowHeight + tabListPadding
+        let foldLine = foldControl(of: row, expanded: expanded) == nil ? 0 : 1
+        return rowHeight + CGFloat(tabs.count + foldLine) * tabRowHeight + tabListPadding
     }
 
     /// How many windows are wholly or partly below `visibleBottom`, the lowest

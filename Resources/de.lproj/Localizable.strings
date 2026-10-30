@@ -113,6 +113,7 @@
 "Paste" = "Einsetzen";
 "Select All" = "Alles auswählen";
 "%ld tabs" = "%ld Tabs";
+"Show fewer" = "Weniger anzeigen";
 "Show all %ld tabs" = "Alle %ld Tabs anzeigen";
 "1 more window" = "1 weiteres Fenster";
 "%ld more windows" = "%ld weitere Fenster";

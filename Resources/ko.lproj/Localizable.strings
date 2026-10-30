@@ -113,6 +113,7 @@
 "Paste" = "붙여넣기";
 "Select All" = "모두 선택";
 "%ld tabs" = "탭 %ld개";
+"Show fewer" = "간단히 보기";
 "Show all %ld tabs" = "탭 %ld개 모두 보기";
 "1 more window" = "창 1개 더";
 "%ld more windows" = "창 %ld개 더";
