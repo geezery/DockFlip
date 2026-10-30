@@ -2,26 +2,31 @@ import AppKit
 
 /// Windows 11's "Remember window locations based on monitor connection":
 /// remembers where every window was for each set of displays, and puts the
-/// windows back when that set of displays is connected again.
+/// windows back when that set of displays is connected again. The layouts survive
+/// DockFlip restarts, until the Mac restarts (see `PlacementLayouts`).
 @MainActor
 final class PlacementMemory {
     private let registry: WindowRegistry
-    /// Display-set signature → window id → frame (AX space).
-    private var layouts: [String: [CGWindowID: CGRect]] = [:]
-    private var layoutOrder: [String] = []
+    private var layouts = PlacementLayouts()
+    /// What UserDefaults holds now, so an unchanged save writes nothing.
+    private var storedLayouts = PlacementLayouts()
     private var currentSignature = ""
     /// Saving pauses while macOS shuffles windows after a display change.
     private var pausedUntil = Date.distantPast
     private var saveTask: Task<Void, Never>?
     private var tokens: [NSObjectProtocol] = []
 
-    private static let maxLayouts = 8
+    private enum Key {
+        static let layouts = "placement.layouts"
+        static let boot = "placement.bootTime"
+    }
 
     init(registry: WindowRegistry) {
         self.registry = registry
     }
 
     func start() {
+        load()
         currentSignature = Self.signature()
         registry.addObserver { [weak self] in self?.scheduleSave() }
         tokens.append(NotificationCenter.default.addObserver(
@@ -97,16 +102,38 @@ final class PlacementMemory {
                   !screens.contains(where: { $0 == window.frame }) else { continue } // skip full-screen
             layout[window.id] = window.frame
         }
-        // Forget windows that are gone.
+        layouts.set(layout, for: signature)
+        // Forget windows that are gone. An empty list is a failed read, not an answer.
         let alive = Set(WindowServer.windows(onScreenOnly: false).map(\.id))
-        layout = layout.filter { alive.contains($0.key) }
+        if !alive.isEmpty { layouts.keepOnly(alive) }
+        store()
+    }
 
-        layouts[signature] = layout
-        layoutOrder.removeAll { $0 == signature }
-        layoutOrder.append(signature)
-        while layoutOrder.count > Self.maxLayouts {
-            layouts[layoutOrder.removeFirst()] = nil
-        }
+    /// Call when the app quits, so the last moves are kept for the next launch.
+    func saveOnQuit() {
+        saveTask?.cancel()
+        saveTask = nil
+        // Mid display change the frames are macOS's shuffle, not the user's layout.
+        guard Date() >= pausedUntil else { return }
+        saveNow()
+    }
+
+    // MARK: - Across restarts
+
+    private func store() {
+        guard layouts != storedLayouts else { return }
+        let defaults = UserDefaults.standard
+        defaults.set(layouts.propertyList, forKey: Key.layouts)
+        defaults.set(UsageTracker.bootTime(), forKey: Key.boot)
+        storedLayouts = layouts
+    }
+
+    private func load() {
+        let defaults = UserDefaults.standard
+        guard PlacementLayouts.isSameBoot(saved: defaults.double(forKey: Key.boot), now: UsageTracker.bootTime()) else { return }
+        layouts = PlacementLayouts(propertyList: defaults.array(forKey: Key.layouts))
+        storedLayouts = layouts
+        Log.app.notice("Loaded window positions for \(self.layouts.order.count, privacy: .public) display set(s)")
     }
 
     /// Identifies the connected set of displays and how they are arranged.

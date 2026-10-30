@@ -89,7 +89,9 @@ quit. ⌘` stays the macOS way.
 ## 🧹 The small stuff
 
 - **Windows remember their place for each display setup.** Unplug the external
-  display, plug it back in, and every window returns to where it was.
+  display, plug it back in, and every window returns to where it was, even if
+  DockFlip restarted in between. Only positions are kept, never titles, and only
+  until the Mac restarts.
 - **Clean Up** (menu bar → *Clean Up…*) lists windows unused for three days and
   apps running without windows. It only suggests. Nothing closes without you,
   and apps still ask to save.
