@@ -63,6 +63,7 @@
 "Settings…" = "設定…";
 "Debug Logging" = "デバッグログ";
 "Save Debug Log…" = "デバッグログを保存…";
+"Could Not Save the Debug Log" = "デバッグログを保存できませんでした";
 "Quit DockFlip" = "DockFlipを終了";
 "Left Half" = "左半分";
 "Right Half" = "右半分";

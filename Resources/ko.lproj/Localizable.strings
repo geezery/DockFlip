@@ -63,6 +63,7 @@
 "Settings…" = "설정…";
 "Debug Logging" = "디버그 로깅";
 "Save Debug Log…" = "디버그 로그 저장…";
+"Could Not Save the Debug Log" = "디버그 로그를 저장할 수 없음";
 "Quit DockFlip" = "DockFlip 종료";
 "Left Half" = "왼쪽 절반";
 "Right Half" = "오른쪽 절반";

@@ -63,6 +63,7 @@
 "Settings…" = "Settings…";
 "Debug Logging" = "Debug Logging";
 "Save Debug Log…" = "Save Debug Log…";
+"Could Not Save the Debug Log" = "Could Not Save the Debug Log";
 "Quit DockFlip" = "Quit DockFlip";
 "Left Half" = "Left Half";
 "Right Half" = "Right Half";

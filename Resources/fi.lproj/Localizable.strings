@@ -63,6 +63,7 @@
 "Settings…" = "Asetukset…";
 "Debug Logging" = "Vianetsintäloki";
 "Save Debug Log…" = "Tallenna vianetsintäloki…";
+"Could Not Save the Debug Log" = "Vianetsintälokia ei voitu tallentaa";
 "Quit DockFlip" = "Lopeta DockFlip";
 "Left Half" = "Vasen puolisko";
 "Right Half" = "Oikea puolisko";

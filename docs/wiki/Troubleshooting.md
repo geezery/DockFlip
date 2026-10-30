@@ -54,9 +54,11 @@ is named the same way under *⌘Tab: used by another app*.
 - **Slow apps** (Office, sometimes Chrome) can take a moment to answer. DockFlip
   asks again rather than concluding "no windows".
 - Still missing? Turn on **Debug Logging** in the menu bar menu, reproduce the
-  problem, choose **Save Debug Log…** and attach the file to a
+  problem, choose **Save Debug Log…**, pick where to save it (the Desktop is
+  suggested) and attach the file to a
   [bug report](https://github.com/geezery/DockFlip/issues/new/choose). The log
-  never contains window or tab titles.
+  never contains window or tab titles, and saving it asks for no permission. If
+  it can't be saved, DockFlip says why; pick another folder.
 
 ## Browser tabs aren't listed
 

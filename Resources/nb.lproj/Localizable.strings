@@ -63,6 +63,7 @@
 "Settings…" = "Innstillinger…";
 "Debug Logging" = "Feilsøkingslogging";
 "Save Debug Log…" = "Arkiver feilsøkingslogg…";
+"Could Not Save the Debug Log" = "Kunne ikke arkivere feilsøkingsloggen";
 "Quit DockFlip" = "Avslutt DockFlip";
 "Left Half" = "Venstre halvdel";
 "Right Half" = "Høyre halvdel";

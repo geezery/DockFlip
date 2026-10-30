@@ -63,6 +63,7 @@
 "Settings…" = "Impostazioni…";
 "Debug Logging" = "Log di debug";
 "Save Debug Log…" = "Salva log di debug…";
+"Could Not Save the Debug Log" = "Impossibile salvare il log di debug";
 "Quit DockFlip" = "Esci da DockFlip";
 "Left Half" = "Metà sinistra";
 "Right Half" = "Metà destra";
