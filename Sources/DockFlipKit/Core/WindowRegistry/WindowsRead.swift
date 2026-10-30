@@ -105,7 +105,7 @@ extension WindowsRead.Window {
 
     /// A failed read is not an answer: nil when the role, or a window's subrole,
     /// did not arrive, so the window is kept if known and read again.
-    private static func isStandard(role: String?, subrole: String?) -> Bool? {
+    static func isStandard(role: String?, subrole: String?) -> Bool? {
         guard let role else { return nil }
         guard role == kAXWindowRole else { return false }
         guard let subrole else { return nil }

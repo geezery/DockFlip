@@ -26,7 +26,7 @@ public final class WindowRegistry {
     var windows: [CGWindowID: WindowSnapshot] = [:]
     var mru = MRUList<CGWindowID>()
     var tokens: [NSObjectProtocol] = []
-    /// Accessibility calls that wait on an app (actions, the hover probe) run
+    /// Accessibility calls that wait on an app (actions, the hover probe, window reads) run
     /// here, off the main thread, so a hung app never stalls the event taps.
     let appQueues = AppQueues()
     /// Apps whose first windows read at launch has not answered yet.
