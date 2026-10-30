@@ -284,39 +284,40 @@ public final class WindowRegistry {
     /// Presses the window's close button, so the app can ask to save first — and
     /// looks again shortly, to bring that question forward (`CloseFollowUp`).
     public func close(_ id: CGWindowID) {
-        guard let element = element(for: id),
-              element.element(kAXCloseButtonAttribute)?.perform(kAXPressAction) == true else { return }
-        followUpClose(of: id, element: element, isLastLook: false)
+        guard let pid = windows[id]?.pid, let element = element(for: id) else { return }
+        // Two calls to the app: on its queue, so a hung app never holds up the list's click.
+        let target = SendableElement(element: element)
+        appQueues.run(for: pid, {
+            target.element.element(kAXCloseButtonAttribute)?.perform(kAXPressAction) == true
+        }, then: { [weak self] pressed in
+            guard pressed else { return }
+            self?.followUpClose(of: id, pid: pid, element: target, isLastLook: false)
+        })
     }
 
     /// One-shot looks, never a repeating timer: a save sheet is there within a
-    /// fraction of a second, and a busy app gets one more second.
-    private func followUpClose(of id: CGWindowID, element: AXUIElement, isLastLook: Bool) {
+    /// fraction of a second, and a busy app gets one more second. Each look asks
+    /// the app on its queue.
+    private func followUpClose(of id: CGWindowID, pid: pid_t, element: SendableElement, isLastLook: Bool) {
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: isLastLook ? .seconds(1) : .milliseconds(400))
-            guard let self else { return }
-            switch CloseFollowUp.after(self.closeCheck(of: id, element: element), isLastLook: isLastLook) {
-            case .done:
-                break
-            case .bringForward:
-                let name = self.windows[id].flatMap { self.apps[$0.pid]?.app.localizedName } ?? "?"
-                Log.registry.notice("Close: bringing forward a window that asks first: \(name, privacy: .public)")
-                self.focus(id)
-            case .lookAgain:
-                self.followUpClose(of: id, element: element, isLastLook: true)
-            }
+            self?.appQueues.run(for: pid, { CloseFollowUp.read(element.element) }, then: { [weak self] read in
+                self?.closeLooked(at: id, pid: pid, element: element, read: read, isLastLook: isLastLook)
+            })
         }
     }
 
-    private func closeCheck(of id: CGWindowID, element: AXUIElement) -> CloseFollowUp.Check {
-        var role: CFTypeRef?
-        let error = AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
-        let answered = error != .cannotComplete
-        return CloseFollowUp.Check(
-            isGone: windows[id] == nil || error == .invalidUIElement,
-            answered: answered,
-            hasSheet: answered && element.elements(kAXChildrenAttribute).contains { $0.string(kAXRoleAttribute) == kAXSheetRole },
-            isMinimized: answered && element.bool(kAXMinimizedAttribute) == true
-        )
+    private func closeLooked(at id: CGWindowID, pid: pid_t, element: SendableElement, read: CloseFollowUp.Read, isLastLook: Bool) {
+        let check = CloseFollowUp.Check(isTracked: windows[id] != nil, read: read)
+        switch CloseFollowUp.after(check, isLastLook: isLastLook) {
+        case .done:
+            break
+        case .bringForward:
+            let name = apps[pid]?.app.localizedName ?? "?"
+            Log.registry.notice("Close: bringing forward a window that asks first: \(name, privacy: .public)")
+            focus(id)
+        case .lookAgain:
+            followUpClose(of: id, pid: pid, element: element, isLastLook: true)
+        }
     }
 }

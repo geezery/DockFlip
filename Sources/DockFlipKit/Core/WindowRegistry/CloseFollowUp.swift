@@ -1,3 +1,5 @@
+import ApplicationServices
+
 /// What DockFlip does a moment after it pressed a window's close button.
 ///
 /// An app that asks to save attaches its sheet to that window — which may be
@@ -22,6 +24,27 @@ enum CloseFollowUp: Equatable {
         var isMinimized: Bool
     }
 
+    /// What the app said about the window, read on the app's queue: the error of
+    /// reading its role, then its sheets and minimized state if it answered.
+    struct Read: Equatable, Sendable {
+        var error: AXError
+        var hasSheet = false
+        var isMinimized = false
+    }
+
+    /// Asks the app about the window. It waits on the app: call it off the main thread.
+    static func read(_ element: AXUIElement) -> Read {
+        var role: CFTypeRef?
+        let error = AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
+        // No answer in time: the app is hung, and each further read would wait as long.
+        guard error != .cannotComplete else { return Read(error: error) }
+        return Read(
+            error: error,
+            hasSheet: element.elements(kAXChildrenAttribute).contains { $0.string(kAXRoleAttribute) == kAXSheetRole },
+            isMinimized: element.bool(kAXMinimizedAttribute) == true
+        )
+    }
+
     /// `isLastLook`: this was the second look; a busy app is not asked again.
     static func after(_ check: Check, isLastLook: Bool) -> CloseFollowUp {
         if check.isGone { return .done }
@@ -34,5 +57,18 @@ enum CloseFollowUp: Equatable {
         // A visible window without a sheet is closing slowly, or hides itself
         // instead of closing: pulling it forward would only get in the way.
         return .done
+    }
+}
+
+extension CloseFollowUp.Check {
+    /// `isTracked`: the registry still has the window (no destroyed notification yet).
+    init(isTracked: Bool, read: CloseFollowUp.Read) {
+        let answered = read.error != .cannotComplete
+        self.init(
+            isGone: !isTracked || read.error == .invalidUIElement,
+            answered: answered,
+            hasSheet: answered && read.hasSheet,
+            isMinimized: answered && read.isMinimized
+        )
     }
 }
