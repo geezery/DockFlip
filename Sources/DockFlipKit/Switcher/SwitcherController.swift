@@ -82,11 +82,11 @@ final class SwitcherController {
                 return true
             }
             return begin(reverse: shift)
-        case .right:
+        case .next:
             guard isActive else { return false }
             step(1)
             return true
-        case .left:
+        case .previous:
             guard isActive else { return false }
             step(-1)
             return true

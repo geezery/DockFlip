@@ -98,12 +98,28 @@ struct SwitcherControllerTests {
         #expect(active == [true, false])
     }
 
+    @Test func nextAndPreviousStepOnlyWhileOpen() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, _) = makeSwitcher(mac)
+        #expect(!switcher.handle(.next))
+        #expect(!switcher.handle(.previous))
+
+        switcher.handle(.commandTab(shift: false)) // selects 20
+        #expect(switcher.handle(.next))            // 30
+        #expect(switcher.handle(.previous))        // 20
+        #expect(switcher.handle(.previous))        // 10
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+
+        #expect(mac.focused == [10])
+    }
+
     @Test func keysFromThePanelReachTheController() {
         let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
         let (switcher, presenter) = makeSwitcher(mac)
         switcher.handle(.commandTab(shift: false))
 
-        presenter.onInput?(.left)
+        presenter.onInput?(.previous)
         presenter.onInput?(.commandReleased)
 
         #expect(mac.focused == [10])
