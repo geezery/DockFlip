@@ -48,30 +48,46 @@ and leaves the rest where it was. No Start menu, no surprise restarts, no
 paperclip.
 
 - **Polished without peeking.** Window cards, mini-maps and tab lists look the
-  part without Screen Recording. Other switchers want to see your screen;
-  DockFlip only needs Accessibility.
+  part without Screen Recording. Other Dock preview apps need to see your
+  screen for that; DockFlip only needs Accessibility.
 - **Lean for real.** No polling, no timers, no dependencies, no network. When
   you're not using it, it's doing nothing at all.
 - **Right out of the box.** Three settings, all with sensible defaults. You
   install it, allow one permission, and get on with your day.
 
-## One app instead of three
+## How it compares
 
-| | DockFlip | Three separate apps |
-|---|---|---|
-| Window lists and tabs in the Dock | ✓ | App 1 |
-| ⌘Tab that switches windows | ✓ Flip 3D, type to filter | App 2 |
-| Win-style snapping | ✓ | App 3 |
-| Permissions to grant | 1 (Accessibility) | Up to 2 per app |
-| Settings to tune | 3, all sensible by default | Plenty, in three places |
-| Price | Free, open source | Free to paid |
-| Thirds, gaps, per-app rules, themes | No, on purpose | Yes, if you want them |
+Checked on 30 October 2026 against each app's own site and Apple's macOS 27
+guide. "–" means we found no such feature there. Apps change; if a row is out
+of date, [tell us](https://github.com/geezery/DockFlip/issues).
 
-Built for people who never open the settings. If you love fine-tuning,
-[AltTab](https://github.com/lwouis/alt-tab-macos),
-[DockDoor](https://github.com/ejbills/DockDoor) and
-[Rectangle](https://github.com/rxhanson/Rectangle) are excellent, and DockFlip
-learned a lot from them.
+| | DockFlip | [AltTab](https://alt-tab.app) | [DockDoor](https://dockdoor.net) | [DockDoor Pro](https://pro.dockdoor.net) | macOS 27 alone |
+|---|---|---|---|---|---|
+| Windows above a Dock icon | ✓ List, or thumbnails | – | ✓ Live previews | ✓ Live previews, in its own Dock | Titles in the right-click menu |
+| Browser tabs under each window | ✓ | – | – | – | – |
+| A switcher for windows, not apps | ✓ ⌘Tab, Flip 3D | ✓ | ✓ ⌥Tab | ✓ | ⌘\` within one app |
+| Type to search in the switcher | ✓ | Pro only | ✓ | ✓ | – |
+| Snapping | ✓ ⌃⌥ arrows, drag to edges | – | Title-bar swipes, off by default | From a preview card | ✓ Drag to edges, shortcuts, green button |
+| Screen Recording | Not needed (only for opt-in thumbnails) | Optional; no thumbnails without it | Required | Needed for live previews | – |
+| IT kit (`.pkg` and PPPC profile) | ✓ [docs/IT.md](docs/IT.md) | – | – | – | – |
+| Price | Free, GPL-3.0 | Free, GPL-3.0; Pro $9.99 or $24.99 lifetime | Free, GPL-3.0 | $20 once, 3 Macs | Included |
+| Runs on | macOS 26 and later | macOS 12 and later | macOS 13 and later | macOS 14.6 and later | – |
+
+**Where DockFlip stands out:** it is the one app here that does all three jobs
+for free without Screen Recording, it lists browser tabs, it has three settings,
+all sensible by default, and IT can roll it out with no prompts at all.
+
+**Where the others do more:** DockDoor Pro replaces the Dock outright, with
+profiles, widgets and a Dock per display. AltTab and DockDoor run on older
+macOS and have plenty of looks to choose from. For thirds, gaps and per-app
+rules, [Rectangle](https://github.com/rxhanson/Rectangle) is excellent. DockFlip
+learned a lot from all of them.
+
+Sources: [AltTab Pro terms](https://alt-tab.app/terms?lang=en) (updated
+2026-10-21), [DockDoor](https://dockdoor.net),
+[DockDoor 1.41 release notes](https://github.com/ejbills/DockDoor/releases),
+[DockDoor Pro features](https://pro.dockdoor.net/features/),
+[Tile windows on Mac, macOS 27](https://support.apple.com/guide/mac-help/mchlef287e5d/27/mac/27).
 
 ## Features
 
@@ -209,8 +225,9 @@ menu, where clicking one applies it.
 
 <img src="docs/assets/feature-privacy.gif" alt="DockFlip asks for Accessibility only: no Screen Recording, no network access, no third-party code" width="100%">
 
-Most Dock preview apps and window switchers ask for **Screen Recording** the
-moment you open them, because they're built around screenshots of your windows.
+Most Dock preview apps ask for **Screen Recording** the moment you open them,
+and window switchers need it for their thumbnails, because they're built around
+screenshots of your windows.
 DockFlip isn't. Its window cards, mini-maps and tab lists are drawn from what
 macOS already shares with it (titles, positions, icons, tabs), so it looks
 polished from the first second without ever seeing your screen.

@@ -3,6 +3,20 @@
 **Is it really free?**
 Yes. GPL-3.0, no trial, no "Pro", no subscription, and no account.
 
+**How is it different from AltTab or DockDoor?**
+They're excellent, and DockFlip learned a lot from them. DockFlip does all
+three jobs in one free app without Screen Recording, lists browser tabs, and
+has three settings. AltTab's search is in its paid Pro version, and DockDoor
+needs Screen Recording. If you want to tune every look, or run an older macOS,
+they're the better fit. The dated
+[comparison](https://github.com/geezery/DockFlip#how-it-compares) has the
+details and sources.
+
+**Doesn't macOS do this by itself now?**
+Partly. macOS 27 tiles windows when you drag them to the edges. Its ⌘Tab still
+switches apps rather than windows, and its Dock has no window list beyond the
+titles in the right-click menu.
+
 **Does it replace my Dock?**
 No. The Dock stays the real macOS Dock. DockFlip adds the window lists and the
 click behaviour on top of it.
