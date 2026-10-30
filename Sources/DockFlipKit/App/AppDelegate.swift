@@ -28,6 +28,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ))
         Diagnostics.stateProvider = { [weak self] in self?.services?.debugLines() ?? ["services not started"] }
         settingsWindow.onShowSetup = { [weak self] in self?.showOnboarding() }
+        // Screen Recording allowed in System Settings often applies only after a restart.
+        settingsWindow.onRelaunch = { [weak self] in self?.relaunch() }
 
         if Permissions.isAccessibilityTrusted {
             startServices()
