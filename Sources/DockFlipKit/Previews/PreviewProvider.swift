@@ -85,7 +85,8 @@ final class PreviewProvider {
 
     /// True when previews may be shown at all.
     var isAvailable: Bool {
-        Settings.shared.previewsEnabled && CGPreflightScreenCaptureAccess()
+        ThumbnailAccess(enabled: Settings.shared.previewsEnabled,
+                        screenRecordingAllowed: CGPreflightScreenCaptureAccess()) == .on
     }
 
     /// Apps never pictured, whatever the settings: they show passwords and secrets.
@@ -96,6 +97,13 @@ final class PreviewProvider {
     /// Asks macOS for Screen Recording. macOS may require DockFlip to restart before it applies.
     static func requestPermission() {
         _ = CGRequestScreenCaptureAccess()
+    }
+
+    /// Opens System Settings at Privacy & Security → Screen & System Audio Recording.
+    static func openScreenRecordingSettings() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     /// The last image of a window still in memory, without capturing.
