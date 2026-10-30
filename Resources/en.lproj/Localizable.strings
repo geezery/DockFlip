@@ -47,6 +47,8 @@
 "⌘Tab: not active" = "⌘Tab: not active";
 "Windows tracked: %ld" = "Windows tracked: %ld";
 "Restart DockFlip" = "Restart DockFlip";
+"Turn Off macOS Edge Tiling" = "Turn Off macOS Edge Tiling";
+"Windows snap twice when dragged to an edge" = "Windows snap twice when dragged to an edge";
 "Window Layout" = "Window Layout";
 "Clean Up (%ld)…" = "Clean Up (%ld)…";
 "Clean Up…" = "Clean Up…";

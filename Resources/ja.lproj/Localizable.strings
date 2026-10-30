@@ -47,6 +47,8 @@
 "⌘Tab: not active" = "⌘Tab：無効";
 "Windows tracked: %ld" = "追跡中のウインドウ：%ld";
 "Restart DockFlip" = "DockFlipを再起動";
+"Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";
+"Windows snap twice when dragged to an edge" = "端にドラッグしたウインドウが二重にスナップします";
 "Window Layout" = "ウインドウレイアウト";
 "Clean Up (%ld)…" = "整理（%ld）…";
 "Clean Up…" = "整理…";

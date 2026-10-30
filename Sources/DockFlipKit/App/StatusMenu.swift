@@ -41,6 +41,7 @@ final class StatusMenu: NSObject, NSMenuDelegate {
         if !Settings.shared.onboardingCompleted {
             menu.addItem(ClosureMenuItem(L("Continue Setup…"), handler: actions.showSetup))
         }
+        addEdgeTilingWarning(to: menu)
         if let services {
             addStatus(services.shortcutsActive ? L("⌘Tab: active") : L("⌘Tab: not active"), to: menu)
             addStatus(String(format: L("Windows tracked: %ld"), services.registry.trackedWindowCount), to: menu)
@@ -85,6 +86,20 @@ final class StatusMenu: NSObject, NSMenuDelegate {
     private func addStatus(_ title: String, to menu: NSMenu) {
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         item.isEnabled = false
+        menu.addItem(item)
+    }
+
+    /// macOS's own edge tiling can come back on after setup turned it off (System
+    /// Settings, a macOS update), and then a dragged window snaps twice. The menu
+    /// is rebuilt on every open, so the item goes away once tiling is off.
+    private func addEdgeTilingWarning(to menu: NSMenu) {
+        guard NativeEdgeTiling.isOn else { return }
+        let item = ClosureMenuItem(L("Turn Off macOS Edge Tiling")) {
+            Log.app.notice("macOS edge tiling turned off from the menu")
+            NativeEdgeTiling.turnOff()
+        }
+        item.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: nil)
+        item.subtitle = L("Windows snap twice when dragged to an edge")
         menu.addItem(item)
     }
 

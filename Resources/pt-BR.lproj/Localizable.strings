@@ -47,6 +47,8 @@
 "⌘Tab: not active" = "⌘Tab: inativo";
 "Windows tracked: %ld" = "Janelas monitoradas: %ld";
 "Restart DockFlip" = "Reiniciar o DockFlip";
+"Turn Off macOS Edge Tiling" = "Desativar o mosaico nas bordas do macOS";
+"Windows snap twice when dragged to an edge" = "As janelas se encaixam duas vezes ao serem arrastadas para uma borda";
 "Window Layout" = "Disposição das Janelas";
 "Clean Up (%ld)…" = "Limpar (%ld)…";
 "Clean Up…" = "Limpar…";
