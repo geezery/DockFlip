@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # land/<sha>: the Hogherd farm's landing gate (scripts/land-gate.ps1) pushes a branch merged
+    # with main there and lands it only when this run passes.
+    branches: [main, 'land/**']
   pull_request:
 
 permissions:
@@ -44,3 +46,6 @@ jobs:
           plutil -lint build/DockFlip.app/Contents/Info.plist
           codesign --verify --verbose build/DockFlip.app
           du -sh build/DockFlip.app
+
+      - name: Landing gate tests
+        run: pwsh -NoProfile -File scripts/land-gate-tests.ps1
