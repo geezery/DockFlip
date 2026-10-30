@@ -53,6 +53,16 @@ jobs:
             *-dirty|unknown|__COMMIT__) echo "::error::A clean checkout was built as commit '$commit'"; exit 1 ;;
           esac
 
+      # Starts the app for real and holds it to SCOPE.md's budgets: first window on screen,
+      # resident memory, CPU at idle, and a clean quit on SIGTERM.
+      - name: Launch check
+        run: |
+          swiftc -O scripts/launch-check.swift -o build/launch-check
+          build/launch-check build/DockFlip.app
+
+      - name: Launch check tests
+        run: pwsh -NoProfile -File scripts/launch-check-tests.ps1
+
       - name: Landing gate tests
         run: pwsh -NoProfile -File scripts/land-gate-tests.ps1
 

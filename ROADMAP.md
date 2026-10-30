@@ -7,7 +7,9 @@ its exit criteria hold on a clean macOS 26 install with default settings.
 - Repository, GPL-3.0, README, SCOPE, ROADMAP, CONTRIBUTING.
 - Swift Package + Makefile that assembles the `.app` bundle. Builds with the
   Command Line Tools only — no Xcode project, no Apple account.
-- GitHub Actions on `macos-26`: build, unit tests, launch-time and memory check.
+- GitHub Actions on `macos-26`: build, unit tests, bundle check, and a launch check
+  (`scripts/launch-check.swift`) that starts the app and holds its first window, resident
+  memory and idle CPU to SCOPE's budgets (launch gets 4× on CI's virtual Mac).
 - Onboarding: Accessibility permission flow; previews choice.
 
 **Exit:** CI green on every push; the app launches, asks for Accessibility, and
