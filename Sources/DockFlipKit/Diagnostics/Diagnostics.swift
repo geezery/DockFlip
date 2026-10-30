@@ -83,13 +83,11 @@ enum Diagnostics {
     static func exportLog() {
         var lines: [String] = []
         let info = ProcessInfo.processInfo
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "?"
         let uptime = Date().timeIntervalSince(Perf.shared.launchDate)
 
         lines.append("DockFlip debug log")
         lines.append("Created: \(ISO8601DateFormatter().string(from: Date()))")
-        lines.append("DockFlip \(version) (\(build)), running \(Int(uptime / 60)) min")
+        lines.append("DockFlip \(AppVersion.version), build \(AppVersion.build), commit \(AppVersion.commit ?? "unknown"), running \(Int(uptime / 60)) min")
         lines.append("macOS \(info.operatingSystemVersionString), model \(hardwareModel()), \(info.processorCount) cores, \(info.physicalMemory / 1_073_741_824) GB")
         lines.append("Memory (resident): \(residentMemoryMB()) MB")
         lines.append("")

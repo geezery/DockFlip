@@ -12,6 +12,9 @@ APP_NAME  := DockFlip
 BUNDLE_ID ?= io.github.dockflip.DockFlip
 VERSION   ?= 0.3.0
 BUILD_NUM ?= 1
+# The commit the app is built from, shown in the menu bar menu next to the version:
+# builds from source all say 0.3.0, so this is what tells them apart.
+COMMIT    ?= $(or $(shell git rev-parse --short=7 HEAD 2>/dev/null),unknown)
 CONFIG    ?= release
 # Extra flags for swift build, e.g. SWIFT_FLAGS="--arch arm64 --arch x86_64"
 # for a universal build (the release workflow does that).
@@ -40,6 +43,7 @@ app: build
 	@cp "$$(swift build -c $(CONFIG) $(SWIFT_FLAGS) --show-bin-path)/$(APP_NAME)" "$(APP)/Contents/MacOS/$(APP_NAME)"
 	@sed -e 's/__VERSION__/$(VERSION)/' \
 	     -e 's/__BUILD__/$(BUILD_NUM)/' \
+	     -e 's/__COMMIT__/$(COMMIT)/' \
 	     -e 's/__BUNDLE_ID__/$(BUNDLE_ID)/' \
 	     Resources/Info.plist > "$(APP)/Contents/Info.plist"
 	@cp -R Resources/*.lproj "$(APP)/Contents/Resources/"
