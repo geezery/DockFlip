@@ -79,9 +79,11 @@ struct TabListView: View {
                     }
                     .padding(.leading, 30)
                     .frame(height: WindowListLayout.tabRowHeight)
+                    .tabHighlight(model.hoveredFold == row.id)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .onHover { model.setHoveredFold(row.id, $0) }
             }
         }
         .padding(.bottom, WindowListLayout.tabListPadding)
@@ -137,16 +139,24 @@ struct TabRowView: View {
         .padding(.leading, 30)
         .padding(.trailing, 10)
         .frame(height: WindowListLayout.tabRowHeight)
-        .background(
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(Color.accentColor.opacity(hovering ? 0.12 : 0))
-                .padding(.leading, 48)
-        )
+        .tabHighlight(hovering)
         .contentShape(Rectangle())
         .onHover { model.setHoveredTab(tab.id, window: tab.windowID, $0) }
         .onTapGesture { popup.pickTab(tab) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(tab.isSelected ? [.isButton, .isSelected] : [.isButton])
+    }
+}
+
+extension View {
+    /// The hover highlight of a line under a window: a tab, or "Show all N tabs".
+    /// It starts after the branch line, so the tree stays unlit.
+    func tabHighlight(_ isOn: Bool) -> some View {
+        background(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(Color.accentColor.opacity(isOn ? 0.12 : 0))
+                .padding(.leading, 48)
+        )
     }
 }
 
