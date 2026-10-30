@@ -101,6 +101,8 @@
 "Select All" = "Valitse kaikki";
 "%ld tabs" = "Välilehtiä: %ld";
 "Show all %ld tabs" = "Näytä kaikki %ld välilehteä";
+"1 more window" = "1 ikkuna lisää";
+"%ld more windows" = "%ld ikkunaa lisää";
 "Duplicate" = "Kaksoiskappale";
 "Not responding" = "Ei vastaa";
 "Active window" = "Aktiivinen ikkuna";

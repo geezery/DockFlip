@@ -101,6 +101,8 @@
 "Select All" = "Selecteer alles";
 "%ld tabs" = "%ld tabbladen";
 "Show all %ld tabs" = "Toon alle %ld tabbladen";
+"1 more window" = "Nog 1 venster";
+"%ld more windows" = "Nog %ld vensters";
 "Duplicate" = "Duplicaat";
 "Not responding" = "Reageert niet";
 "Active window" = "Actief venster";

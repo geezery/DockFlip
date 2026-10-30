@@ -101,6 +101,8 @@
 "Select All" = "Marker alt";
 "%ld tabs" = "%ld faner";
 "Show all %ld tabs" = "Vis alle %ld faner";
+"1 more window" = "1 vindu til";
+"%ld more windows" = "%ld vinduer til";
 "Duplicate" = "Duplikat";
 "Not responding" = "Svarer ikke";
 "Active window" = "Aktivt vindu";

@@ -101,6 +101,8 @@
 "Select All" = "모두 선택";
 "%ld tabs" = "탭 %ld개";
 "Show all %ld tabs" = "탭 %ld개 모두 보기";
+"1 more window" = "창 1개 더";
+"%ld more windows" = "창 %ld개 더";
 "Duplicate" = "중복";
 "Not responding" = "응답 없음";
 "Active window" = "활성 윈도우";
