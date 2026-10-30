@@ -10,7 +10,7 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 - DockDoor (free, GPL-3.0): Dock window previews, a window switcher with search, and snapping by title-bar swipes (off by default). It requires Screen Recording.
 - DockDoor Pro ($20 once): replaces the macOS Dock with its own, with live previews, a switcher with search and tiling from a preview card.
 - macOS 27 alone: tiling by dragging to edges, keyboard shortcuts and the green button; ⌘Tab switches apps, ⌘` cycles one app's windows, and the Dock's right-click menu lists window titles.
-- What only DockFlip does among these: all three jobs, free, without Screen Recording; browser tabs (Safari, Chrome, Edge, Firefox, Brave, Vivaldi, Opera) and Finder and Terminal tabs listed under each window; an IT kit (a .pkg and a PPPC profile that pre-approves Accessibility through an MDM).
+- What only DockFlip does among these: all three jobs, free, without Screen Recording; browser tabs (Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium, DuckDuckGo) and Finder and Terminal tabs listed under each window; an IT kit (a .pkg and a PPPC profile that pre-approves Accessibility through an MDM).
 - Where others do more: DockDoor Pro replaces the Dock; AltTab and DockDoor run on older macOS (12 and 13) where DockFlip needs macOS 26; Rectangle does thirds, gaps and per-app rules.
 
 ## Get it

@@ -99,10 +99,10 @@ Rest the mouse on an app in the Dock and its windows pop up in a list. Click one
 to go to it, or press × to close it. The Dock itself stays exactly as it is:
 folders, Trash, badges and your settings all keep working.
 
-- **Browser tabs, listed.** Safari, Chrome, Edge, Firefox, Brave, Vivaldi and
-  Opera show each window's tabs under it, and so do Finder and Terminal. Each
-  site gets its own colour, duplicate tabs are marked, and a click takes you
-  straight to that tab.
+- **Browser tabs, listed.** Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi,
+  Opera, Zen, Orion, Chromium and DuckDuckGo show each window's tabs under it,
+  and so do Finder and Terminal. Each site gets its own colour, duplicate tabs
+  are marked, and a click takes you straight to that tab.
 - **Click to minimize, click again to restore.** Clicking the app you're
   already in tucks its window away; the next click brings it back, like the
   taskbar always did.

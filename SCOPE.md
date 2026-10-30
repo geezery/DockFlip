@@ -50,8 +50,9 @@ settings.
 - Click the front app's icon: minimize its window; click again: restore.
   Click another app's icon: its most recent window comes forward.
 - Apps without windows: no popup; the Dock's own behaviour (launch, reopen).
-- Browser tabs (Safari, Chrome, Edge, Firefox, Brave, Vivaldi, Opera; also Finder
-  and Terminal tabs) are listed under their window, read from the tab bar through
+- Browser tabs (Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen,
+  Orion, Chromium, DuckDuckGo; also Finder and Terminal tabs) are listed under
+  their window, read from the tab bar through
   Accessibility off the main thread, never from page content. Site chips from the
   title suffix, duplicates marked, more than 8 folded. Windows 7 showed IE tabs on
   the taskbar; Windows 11 shows Edge tabs in Alt+Tab. Tab titles are never logged.
