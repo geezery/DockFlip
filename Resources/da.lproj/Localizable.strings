@@ -113,6 +113,7 @@
 "Paste" = "Indsæt";
 "Select All" = "Vælg alle";
 "%ld tabs" = "%ld faner";
+"Show fewer" = "Vis færre";
 "Show all %ld tabs" = "Vis alle %ld faner";
 "1 more window" = "1 vindue mere";
 "%ld more windows" = "%ld vinduer mere";

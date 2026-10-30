@@ -113,6 +113,7 @@
 "Paste" = "Colar";
 "Select All" = "Selecionar Tudo";
 "%ld tabs" = "%ld abas";
+"Show fewer" = "Mostrar menos";
 "Show all %ld tabs" = "Mostrar todas as %ld abas";
 "1 more window" = "Mais 1 janela";
 "%ld more windows" = "Mais %ld janelas";
