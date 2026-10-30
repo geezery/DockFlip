@@ -1,6 +1,5 @@
 import AppKit
 import Combine
-import ServiceManagement
 
 /// The user settings (see SCOPE.md). Everything lives in UserDefaults; nothing
 /// leaves the Mac. Views observe this object; services read it when they act.
@@ -18,6 +17,7 @@ final class Settings: ObservableObject {
     private let defaults: UserDefaults
     /// True for a key an MDM profile sets (managed preferences, see docs/IT.md).
     private let isForced: (String) -> Bool
+    private let loginItem: any LoginItem
 
     /// Window pictures in the Dock list and ⌘Tab (needs Screen Recording).
     @Published var previewsEnabled: Bool {
@@ -53,10 +53,18 @@ final class Settings: ObservableObject {
     var previewsManaged: Bool { isForced(Key.previews) }
     var shortcutsManaged: Bool { isForced(Key.shortcuts) }
 
-    /// `defaults` and `isForced` are for tests; `isForced` defaults to asking `defaults`.
-    init(defaults: UserDefaults = .standard, isForced: ((String) -> Bool)? = nil) {
+    /// Why the last Launch at login change didn't take; Settings shows it under the switch.
+    @Published private(set) var launchAtLoginProblem: LoginItemProblem? = nil
+
+    /// `defaults`, `isForced` and `loginItem` are for tests; `isForced` defaults to asking `defaults`.
+    init(
+        defaults: UserDefaults = .standard,
+        isForced: ((String) -> Bool)? = nil,
+        loginItem: any LoginItem = MainAppLoginItem()
+    ) {
         self.defaults = defaults
         self.isForced = isForced ?? { defaults.objectIsForced(forKey: $0) }
+        self.loginItem = loginItem
         defaults.register(defaults: [
             Key.previews: false,
             Key.shortcuts: true,
@@ -76,14 +84,28 @@ final class Settings: ObservableObject {
 
     /// Lives in macOS (Login Items), not in UserDefaults.
     var launchAtLogin: Bool {
-        get { SMAppService.mainApp.status == .enabled }
+        get { loginItem.status == .enabled }
         set {
+            var failure: String?
             do {
-                if newValue { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+                if newValue { try loginItem.register() } else { try loginItem.unregister() }
             } catch {
+                failure = error.localizedDescription
                 Log.app.error("Launch at login change failed: \(error.localizedDescription, privacy: .public)")
             }
             objectWillChange.send()
+            launchAtLoginProblem = LoginItemProblem.after(wanting: newValue, status: loginItem.status, error: failure)
         }
+    }
+
+    /// Reads Login Items again, after the user may have changed it in System Settings.
+    func refreshLaunchAtLogin() {
+        objectWillChange.send()
+        let problem = launchAtLoginProblem?.refreshed(status: loginItem.status)
+        if problem != launchAtLoginProblem { launchAtLoginProblem = problem }
+    }
+
+    func openLoginItemsSettings() {
+        loginItem.openSystemSettings()
     }
 }

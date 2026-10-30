@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip är redan påslaget i listan men ingenting händer?";
 "Reset Permission" = "Återställ behörighet";
 "Launch at login" = "Öppna vid inloggning";
+"DockFlip is switched off in Login Items" = "DockFlip är avstängt i inloggningsobjekt";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Öppna inloggningsobjekt och slå på DockFlip där så öppnas det när du loggar in.";
+"Launch at login could not be changed" = "Öppna vid inloggning kunde inte ändras";
+"macOS did not accept the change." = "macOS godtog inte ändringen.";
+"Open Login Items" = "Öppna inloggningsobjekt";
 "Done" = "Klart";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Vila pekaren på en symbol för att se dess fönster och flikar. Klicka för att minimera och återställa.";

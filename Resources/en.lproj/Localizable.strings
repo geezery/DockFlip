@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip is already switched on in the list, but nothing changes?";
 "Reset Permission" = "Reset Permission";
 "Launch at login" = "Launch at login";
+"DockFlip is switched off in Login Items" = "DockFlip is switched off in Login Items";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "Open Login Items and switch DockFlip on there to start it when you log in.";
+"Launch at login could not be changed" = "Launch at login could not be changed";
+"macOS did not accept the change." = "macOS did not accept the change.";
+"Open Login Items" = "Open Login Items";
 "Done" = "Done";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "Rest on an icon to see its windows and tabs. Click to minimize and restore.";

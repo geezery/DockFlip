@@ -41,7 +41,7 @@ main thread.
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch. |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
-| `Placement/` | Window positions remembered per display setup. |
+| `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking and the Clean Up window. |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |

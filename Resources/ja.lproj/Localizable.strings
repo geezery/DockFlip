@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "リストでDockFlipがすでにオンになっているのに、何も変わりませんか？";
 "Reset Permission" = "アクセス権をリセット";
 "Launch at login" = "ログイン時に起動";
+"DockFlip is switched off in Login Items" = "DockFlipはログイン項目でオフになっています";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "ログイン項目を開き、DockFlipをオンにすると、ログイン時に起動します。";
+"Launch at login could not be changed" = "ログイン時に起動の設定を変更できませんでした";
+"macOS did not accept the change." = "macOSが変更を受け付けませんでした。";
+"Open Login Items" = "ログイン項目を開く";
 "Done" = "完了";
 "Dock" = "Dock";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "アイコンにポインタを置くと、そのウインドウとタブが表示されます。クリックでウインドウをしまったり元に戻したりできます。";
