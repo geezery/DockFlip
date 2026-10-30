@@ -32,7 +32,9 @@ struct PlacementLayoutsTests {
         #expect(PlacementLayouts(propertyList: nil) == PlacementLayouts())
         #expect(PlacementLayouts(propertyList: "garbage") == PlacementLayouts())
         let broken: [[String: Any]] = [
-            ["signature": laptop, "frames": ["x": [1.0, 2, 3, 4], "7": [1.0, 2]]],
+            ["signature": laptop, "frames": [
+                "x": [1.0, 2, 3, 4], "7": [1.0, 2], "8": [Double.nan, 2, 3, 4], "9": [1.0, 2, 0, 4],
+            ]],
             ["frames": ["1": [1.0, 2, 3, 4]]],
         ]
         let restored = PlacementLayouts(propertyList: broken)

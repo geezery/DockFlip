@@ -56,7 +56,8 @@ struct PlacementLayouts: Equatable {
                   let frames = entry["frames"] as? [String: [Double]] else { continue }
             var layout: [CGWindowID: CGRect] = [:]
             for (key, values) in frames {
-                guard let id = UInt32(key), values.count == 4 else { continue }
+                guard let id = UInt32(key), values.count == 4, values.allSatisfy(\.isFinite),
+                      values[2] > 0, values[3] > 0 else { continue }
                 layout[CGWindowID(id)] = CGRect(x: values[0], y: values[1], width: values[2], height: values[3])
             }
             set(layout, for: signature)
