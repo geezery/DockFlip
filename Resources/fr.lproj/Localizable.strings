@@ -105,6 +105,14 @@
 "Close Selected" = "Fermer la sélection";
 "Keep" = "Conserver";
 "Never suggest this app again" = "Ne plus suggérer cette app";
+"Keep this window for now. It is suggested again after three more unused days." = "Conserver cette fenêtre pour l’instant. Elle sera de nouveau suggérée après trois autres jours sans usage.";
+"Keep this app running for now. It is suggested again after another unused day." = "Laisser cette app ouverte pour l’instant. Elle sera de nouveau suggérée après un autre jour sans usage.";
+"Kept Apps (%ld)" = "Apps conservées (%ld)";
+"Apps Clean Up never suggests" = "Apps que Nettoyer ne suggère jamais";
+"Kept apps" = "Apps conservées";
+"Clean Up never suggests these apps or their windows." = "Nettoyer ne suggère jamais ces apps ni leurs fenêtres.";
+"Remove" = "Retirer";
+"Suggest this app again" = "Suggérer de nouveau cette app";
 "Minimized" = "Réduite";
 "On another desktop" = "Sur un autre bureau";
 "No windows match" = "Aucune fenêtre ne correspond";

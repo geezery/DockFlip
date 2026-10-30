@@ -105,6 +105,14 @@
 "Close Selected" = "選択項目を閉じる";
 "Keep" = "残す";
 "Never suggest this app again" = "このアプリを今後提案しない";
+"Keep this window for now. It is suggested again after three more unused days." = "このウインドウを今は残します。さらに3日間使われないと、再び提案されます。";
+"Keep this app running for now. It is suggested again after another unused day." = "このアプリを今は起動したままにします。さらに1日使われないと、再び提案されます。";
+"Kept Apps (%ld)" = "残すアプリ（%ld）";
+"Apps Clean Up never suggests" = "整理が提案しないアプリ";
+"Kept apps" = "残すアプリ";
+"Clean Up never suggests these apps or their windows." = "整理はこれらのアプリとそのウインドウを提案しません。";
+"Remove" = "削除";
+"Suggest this app again" = "このアプリを再び提案する";
 "Minimized" = "しまっています";
 "On another desktop" = "別のデスクトップ";
 "No windows match" = "一致するウインドウはありません";

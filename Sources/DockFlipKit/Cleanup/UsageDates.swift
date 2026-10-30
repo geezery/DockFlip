@@ -12,4 +12,10 @@ enum UsageDates {
         }
         if let active { dates[active] = now }
     }
+
+    /// Clean Up's "Keep" on one window: it counts as used `now`, so it waits a whole
+    /// idle time again. The app's other windows keep their own dates.
+    static func keep<ID: Hashable>(_ dates: inout [ID: Date], id: ID, now: Date) {
+        dates[id] = now
+    }
 }
