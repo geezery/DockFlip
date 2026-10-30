@@ -59,7 +59,9 @@ is named the same way under *⌘Tab: used by another app*.
   suggested) and attach the file to a
   [bug report](https://github.com/geezery/DockFlip/issues/new/choose). The log
   never contains window or tab titles, and saving it asks for no permission. If
-  it can't be saved, DockFlip says why; pick another folder.
+  it can't be saved, DockFlip says why; pick another folder. Its *Self-check*
+  section says whether the private macOS calls and the Dock hook DockFlip
+  relies on still work on your macOS: a line in capitals is the likely cause.
 
 ## Browser tabs aren't listed
 
