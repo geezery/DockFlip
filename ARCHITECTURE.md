@@ -36,7 +36,7 @@ main thread.
 | `App/` | Lifecycle (`AppDelegate`), feature wiring and shortcut routing (`Services`), the menu bar menu (`StatusMenu`), settings, setup (`Onboarding`), languages, the Accessibility permission. |
 | `Core/` | `WindowRegistry` — all windows, their state and most-recently-used order; `WindowServer` — the window server's view (all Spaces); Accessibility helpers; geometry and displays. |
 | `Shortcuts/` | `GlobalHotKeys` (Carbon hot keys: ⌘Tab, ⌃⌥…), `SwitcherKeyTaps` (the two event taps a ⌘Tab session needs), `NativeCommandTab` (turns macOS's own ⌘Tab off while DockFlip runs). |
-| `Switcher/` | The ⌘Tab switcher: controller, Flip 3D view, selection and type-to-filter rules. |
+| `Switcher/` | The ⌘Tab switcher: controller, Flip 3D view, selection and type-to-filter rules, `SwitcherStack` (which cards are drawn). |
 | `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9). |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, the drag preview), Show Desktop, macOS's own edge tiling switch. |

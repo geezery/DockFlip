@@ -76,7 +76,7 @@ struct SwitcherView: View {
                     .onTapGesture { model.onCancel?() }
 
                 ZStack {
-                    ForEach(Array(model.items.enumerated()), id: \.element.id) { index, item in
+                    ForEach(drawnItems, id: \.element.id) { index, item in
                         stackedCard(item, index: index, size: CGSize(width: cardWidth, height: cardHeight))
                     }
                 }
@@ -128,6 +128,15 @@ struct SwitcherView: View {
 }
 
 extension SwitcherView {
+    /// The cards worth drawing with their index in `model.items`: only those
+    /// near the front, so ⌘Tab with dozens of windows still opens at once.
+    /// Identified by window, so a card keeps its animation as it moves.
+    private var drawnItems: [(offset: Int, element: SwitcherItem)] {
+        let indices: [Int] = SwitcherStack.drawnIndices(
+            count: model.items.count, selection: model.selection, visibleDepth: visibleDepth)
+        return indices.map { (offset: $0, element: model.items[$0]) }
+    }
+
     /// One card placed in the stack by its depth (0 = front). Kept out of `body`
     /// with every value typed up front: as one expression it takes the type
     /// checker longer than slower machines allow.
