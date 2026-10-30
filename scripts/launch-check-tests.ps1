@@ -117,14 +117,21 @@ Test 'every check ROADMAP M0 promises is a ci.yml step' {
     }
 }
 
-# The check itself, compiled once; only where there is a Swift compiler (CI's macOS runner).
+# The check itself, only where there is a Swift compiler (CI's macOS runner). CI's Launch check
+# step has built it already; compiling it again would add about ten seconds, so it is reused.
 if ($IsMacOS -and (Get-Command swiftc -ErrorAction SilentlyContinue)) {
     $temp = Join-Path ([IO.Path]::GetTempPath()) ('launch-check-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Force $temp | Out-Null
-    $bin = Join-Path $temp 'launch-check'
+    $bin = Join-Path $root 'build/launch-check'
     try {
-        & swiftc -O (Join-Path $PSScriptRoot 'launch-check.swift') -o $bin
-        $compiled = $LASTEXITCODE -eq 0
+        $source = Join-Path $PSScriptRoot 'launch-check.swift'
+        if ((Test-Path $bin) -and (Get-Item $bin).LastWriteTimeUtc -ge (Get-Item $source).LastWriteTimeUtc) {
+            $compiled = $true
+        } else {
+            $bin = Join-Path $temp 'launch-check'
+            & swiftc -O $source -o $bin
+            $compiled = $LASTEXITCODE -eq 0
+        }
 
         Test 'the launch check compiles' {
             if (-not $compiled) { throw 'swiftc could not compile scripts/launch-check.swift' }
