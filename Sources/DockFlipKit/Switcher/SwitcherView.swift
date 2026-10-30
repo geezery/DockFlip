@@ -61,8 +61,7 @@ final class SwitcherModel: ObservableObject {
 struct SwitcherView: View {
     @ObservedObject var model: SwitcherModel
 
-    /// Cards further back than this fade out.
-    private let visibleDepth = 7
+    private let visibleDepth = SwitcherStack.visibleDepth
 
     var body: some View {
         GeometryReader { geo in

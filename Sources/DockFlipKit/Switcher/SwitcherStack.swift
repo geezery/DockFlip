@@ -2,6 +2,9 @@ import Foundation
 
 /// Which windows the ⌘Tab stack draws. Pure, unit-tested.
 public enum SwitcherStack {
+    /// Cards further back than this fade out.
+    public static let visibleDepth = 7
+
     /// Indices of the cards to draw, in index order: those at depth 0 through
     /// `visibleDepth + 1`, and the one at the very back. Every card deeper than
     /// `visibleDepth` is fully faded out, so leaving the rest out of the view
