@@ -123,8 +123,8 @@ final class CleanupController {
         case .window(let id):
             usage.markUsed(window: id)
         case .app(let pid):
-            guard let app = NSRunningApplication(processIdentifier: pid) else { return }
-            usage.markUsed(app: app)
+            // An app that quit meanwhile has nothing to mark; the reload drops its row.
+            if let app = NSRunningApplication(processIdentifier: pid) { usage.markUsed(app: app) }
         }
         reload()
     }
