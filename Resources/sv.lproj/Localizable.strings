@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: aktivt";
 "⌘Tab: not active" = "⌘Tab: inte aktivt";
 "⌘Tab: used by another app" = "⌘Tab: används av en annan app";
+"Probably %@" = "Troligen %@";
+"%@: used by another app" = "%@: används av en annan app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Troligen %@. Avsluta den eller ändra dess kortkommandon och klicka sedan för att försöka igen.";
+"Quit the app that uses them, then click to try again." = "Avsluta appen som använder dem och klicka sedan för att försöka igen.";
 "Windows tracked: %ld" = "Spårade fönster: %ld";
 "Restart DockFlip" = "Starta om DockFlip";
 "Turn Off macOS Edge Tiling" = "Stäng av macOS fönsterplacering vid kanter";

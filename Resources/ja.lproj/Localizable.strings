@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab：有効";
 "⌘Tab: not active" = "⌘Tab：無効";
 "⌘Tab: used by another app" = "⌘Tab：別のアプリが使用中";
+"Probably %@" = "おそらく%@";
+"%@: used by another app" = "%@：別のアプリが使用中";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "おそらく%@です。終了するかショートカットを変更してから、クリックして再試行してください。";
+"Quit the app that uses them, then click to try again." = "使用しているアプリを終了してから、クリックして再試行してください。";
 "Windows tracked: %ld" = "追跡中のウインドウ：%ld";
 "Restart DockFlip" = "DockFlipを再起動";
 "Turn Off macOS Edge Tiling" = "macOSの画面端タイル表示をオフにする";

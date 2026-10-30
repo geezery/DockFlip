@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab : actif";
 "⌘Tab: not active" = "⌘Tab : inactif";
 "⌘Tab: used by another app" = "⌘Tab : utilisé par une autre app";
+"Probably %@" = "Probablement %@";
+"%@: used by another app" = "%@ : utilisés par une autre app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Probablement %@. Quittez-la ou modifiez ses raccourcis, puis cliquez pour réessayer.";
+"Quit the app that uses them, then click to try again." = "Quittez l’app qui les utilise, puis cliquez pour réessayer.";
 "Windows tracked: %ld" = "Fenêtres suivies : %ld";
 "Restart DockFlip" = "Relancer DockFlip";
 "Turn Off macOS Edge Tiling" = "Désactiver la mosaïque sur les bords de macOS";

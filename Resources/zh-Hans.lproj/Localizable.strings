@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab：已启用";
 "⌘Tab: not active" = "⌘Tab：未启用";
 "⌘Tab: used by another app" = "⌘Tab：被其他应用占用";
+"Probably %@" = "可能是 %@";
+"%@: used by another app" = "%@：被其他应用占用";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "可能是 %@。请退出它或更改它的快捷键，然后点按以重试。";
+"Quit the app that uses them, then click to try again." = "请退出占用它们的应用，然后点按以重试。";
 "Windows tracked: %ld" = "已跟踪的窗口：%ld";
 "Restart DockFlip" = "重新启动 DockFlip";
 "Turn Off macOS Edge Tiling" = "关闭 macOS 边缘平铺";
