@@ -9,15 +9,21 @@ enum AppVersion {
     static var commit: String? { info("DockFlipCommit") }
 
     /// "0.3.0 (c79a704)", or "0.3.0" when the commit is unknown.
-    static var display: String {
+    static var display: String { format(version: version, commit: commit) }
+
+    static func format(version: String, commit: String?) -> String {
         guard let commit else { return version }
         return "\(version) (\(commit))"
     }
 
-    private static func info(_ key: String) -> String? {
-        // A plist that was never filled in (`swift run`, no git) still holds its placeholder.
-        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String,
-              !value.isEmpty, !value.hasPrefix("__"), value != "unknown" else { return nil }
+    /// A plist value worth showing: a plist that was never filled in (`swift run`,
+    /// a build without git) still holds its placeholder or "unknown".
+    static func cleaned(_ value: String?) -> String? {
+        guard let value, !value.isEmpty, !value.hasPrefix("__"), value != "unknown" else { return nil }
         return value
+    }
+
+    private static func info(_ key: String) -> String? {
+        cleaned(Bundle.main.object(forInfoDictionaryKey: key) as? String)
     }
 }
