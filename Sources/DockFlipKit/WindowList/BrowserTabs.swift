@@ -52,6 +52,12 @@ enum BrowserTabs {
         "com.microsoft.edgemac", "com.microsoft.edgemac.Beta", "com.microsoft.edgemac.Dev",
         "org.mozilla.firefox", "org.mozilla.firefoxdeveloperedition", "org.mozilla.nightly",
         "com.brave.Browser", "com.vivaldi.Vivaldi", "com.operasoftware.Opera",
+        "org.chromium.Chromium",
+        // Arc keeps its tabs in a sidebar: the reader's vertical-bar order covers it.
+        "company.thebrowser.Browser",
+        "app.zen-browser.zen",
+        "com.kagi.kagimacOS", "com.kagi.kagimacOS.RC",
+        "com.duckduckgo.macos.browser",
         "com.apple.finder", "com.apple.Terminal"
     ]
 
