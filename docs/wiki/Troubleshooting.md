@@ -25,6 +25,17 @@ DockFlip switches it off while running and gives it back when it quits, includin
 when it's stopped from Terminal. If DockFlip crashed hard, start it and quit it
 once, and the native switcher is back.
 
+## The menu says *⌘Tab: used by another app*
+
+Another app, usually AltTab, already holds ⌘Tab. DockFlip then leaves ⌘Tab to
+macOS's own switcher instead of switching it off, and its ⌃⌥ shortcuts keep
+working. Quit the other app (and remove it from *Login Items*), then turn
+**Keyboard shortcuts** off and on in DockFlip's Settings, or restart DockFlip.
+**Save Debug Log…** names each shortcut another app holds.
+
+*⌘Tab: not active* with **Restart DockFlip** below it means macOS refused
+DockFlip's key taps: choose **Restart DockFlip**.
+
 ## An app's windows don't show up
 
 - **Is a window actually open?** The dot under a Dock icon means the app is
@@ -42,6 +53,13 @@ once, and the native switcher is back.
 - Tabs show when a window has more than one tab.
 - **Firefox** turns on its accessibility engine the first time DockFlip asks it
   for tabs. Give it a second.
+
+## Thumbnails are on but no pictures show
+
+Thumbnails need *Screen & System Audio Recording*. While it isn't allowed,
+Settings says so under **Window thumbnails**: press **Open System Settings**,
+allow DockFlip there, then press **Restart DockFlip**, because macOS often
+applies the permission only after a restart.
 
 ## Snapping fights with macOS
 

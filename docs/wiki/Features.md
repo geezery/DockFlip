@@ -20,8 +20,8 @@ Rest the mouse on an app in the Dock, and its windows pop up in a list above it.
 
 ### Browser tabs
 
-Safari, Chrome, Edge, Firefox, Brave, Vivaldi and Opera list each window's tabs
-under it, and so do Finder and Terminal.
+Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium
+and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
 
 - The tab you're on is marked in the app's colour.
 - Each site gets its own colour chip, and the same site always gets the same colour.

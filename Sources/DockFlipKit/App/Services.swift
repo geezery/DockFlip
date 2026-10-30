@@ -52,20 +52,50 @@ final class Services {
         applyShortcutSetting()
     }
 
-    /// True when ⌘Tab works right now.
+    /// True when DockFlip's ⌘Tab works right now. The ⌃⌥ shortcuts don't count:
+    /// with them alone ⌘Tab is macOS's (or another app's).
     var shortcutsActive: Bool {
-        Settings.shared.shortcutsEnabled && hotKeys.registeredCount > 0 && tapsRunning
+        Settings.shared.shortcutsEnabled && hotKeys.ownsCommandTab && tapsRunning
     }
+
+    /// True when DockFlip wants ⌘Tab but another app (AltTab) holds it.
+    var commandTabHeldElsewhere: Bool {
+        Settings.shared.shortcutsEnabled && hotKeys.registration.commandTabFailed
+    }
+
+    /// The one later attempt at ⌘Tab after another app held it.
+    private var commandTabRetry: Task<Void, Never>?
 
     /// ⌘Tab and the ⌃⌥ shortcuts belong to DockFlip while the setting is on;
     /// otherwise macOS gets ⌘Tab back.
     func applyShortcutSetting() {
-        if Settings.shared.shortcutsEnabled {
-            NativeCommandTab.setEnabled(false)
-            hotKeys.registerAll()
-        } else {
+        commandTabRetry?.cancel()
+        commandTabRetry = nil
+        guard Settings.shared.shortcutsEnabled else {
             hotKeys.unregisterAll()
             NativeCommandTab.setEnabled(true)
+            return
+        }
+        takeShortcuts()
+        guard !hotKeys.ownsCommandTab else { return }
+        // On Restart DockFlip the old instance holds ⌘Tab until it has quit, which
+        // can be after this one starts: ask once more. Not a poll: one try only.
+        commandTabRetry = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2))
+            guard let self, !Task.isCancelled, Settings.shared.shortcutsEnabled else { return }
+            self.commandTabRetry = nil
+            self.takeShortcuts()
+        }
+    }
+
+    /// Registers the shortcuts. macOS's own ⌘Tab goes off first, as AltTab does, and
+    /// back on when another app holds ⌘Tab: otherwise ⌘Tab would do nothing at all.
+    private func takeShortcuts() {
+        NativeCommandTab.setEnabled(false)
+        hotKeys.registerAll()
+        if !hotKeys.ownsCommandTab {
+            NativeCommandTab.setEnabled(true)
+            Log.keys.error("Another app holds ⌘Tab: macOS keeps its own ⌘Tab")
         }
     }
 
@@ -88,6 +118,7 @@ final class Services {
     }
 
     func willTerminate(handingOver: Bool) {
+        commandTabRetry?.cancel()
         // Give ⌘Tab back to macOS — unless a new DockFlip instance is taking over.
         if !handingOver { NativeCommandTab.setEnabled(true) }
         hotKeys.unregisterAll()
@@ -96,8 +127,9 @@ final class Services {
 
     /// Lines for the debug log.
     func debugLines() -> [String] {
-        registry.debugSummary() + [
-            "hotKeys=\(hotKeys.registeredCount) keyTaps=\(tapsRunning) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())"
+        let failed = hotKeys.registration.failed.map(\.shortcutName).joined(separator: " ")
+        return registry.debugSummary() + [
+            "hotKeys=\(hotKeys.registeredCount) commandTab=\(hotKeys.ownsCommandTab) failed=[\(failed)] keyTaps=\(tapsRunning) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())"
         ]
     }
 }

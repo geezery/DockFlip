@@ -40,12 +40,15 @@
 "Keyboard shortcuts" = "Tastaturgenveje";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab og ⌃⌥-genvejene til fastgørelse";
 "Managed by your organization" = "Administreres af din organisation";
+"Screen Recording is not allowed yet" = "Skærmoptagelse er ikke tilladt endnu";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillad DockFlip i Systemindstillinger. Hvis det allerede er tilladt, så genstart DockFlip.";
 "Show Setup Again" = "Vis konfigurationen igen";
 "Accessibility: allowed" = "Tilgængelighed: tilladt";
 "Grant Accessibility…" = "Tillad Tilgængelighed…";
 "Continue Setup…" = "Fortsæt konfigurationen…";
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
+"⌘Tab: used by another app" = "⌘Tab: bruges af en anden app";
 "Windows tracked: %ld" = "Overvågede vinduer: %ld";
 "Restart DockFlip" = "Genstart DockFlip";
 "Turn Off macOS Edge Tiling" = "Slå macOS' kantplacering af vinduer fra";

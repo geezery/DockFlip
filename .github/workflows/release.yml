@@ -83,21 +83,32 @@ jobs:
           ln -s /Applications dmg/Applications
           hdiutil create -volname DockFlip -srcfolder dmg -fs HFS+ -format UDZO -ov "DockFlip-$VERSION.dmg"
           codesign --force --timestamp=none --keychain "$KEYCHAIN" --sign "$SIGN_HASH" "DockFlip-$VERSION.dmg"
-          shasum -a 256 "DockFlip-$VERSION.dmg" | tee "DockFlip-$VERSION.dmg.sha256"
           # Same file under a fixed name, so .../releases/latest/download/DockFlip.dmg
           # always downloads the newest version.
           cp "DockFlip-$VERSION.dmg" DockFlip.dmg
 
+      # Every file a user or an MDM installs gets a checksum and an attestation,
+      # not only the disk image: IT verifies the .pkg and the profile before
+      # pushing them to a fleet (docs/IT.md, SECURITY.md).
+      - name: Checksums
+        run: |
+          for f in "DockFlip-$VERSION.dmg" "DockFlip-$VERSION.pkg" DockFlip-Accessibility.mobileconfig; do
+            shasum -a 256 "$f" | tee "$f.sha256"
+          done
+
       - uses: actions/attest-build-provenance@v2
         with:
-          subject-path: DockFlip-${{ env.VERSION }}.dmg
+          subject-path: |
+            DockFlip-${{ env.VERSION }}.dmg
+            DockFlip-${{ env.VERSION }}.pkg
+            DockFlip-Accessibility.mobileconfig
 
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           sed "s/VERSION/$VERSION/g" .github/release-notes.md > notes.md
-          FILES="DockFlip.dmg DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256 DockFlip-$VERSION.pkg DockFlip-Accessibility.mobileconfig"
+          FILES="DockFlip.dmg DockFlip-$VERSION.dmg DockFlip-$VERSION.dmg.sha256 DockFlip-$VERSION.pkg DockFlip-$VERSION.pkg.sha256 DockFlip-Accessibility.mobileconfig DockFlip-Accessibility.mobileconfig.sha256"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" $FILES --clobber
           else

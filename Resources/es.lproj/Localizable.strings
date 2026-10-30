@@ -40,12 +40,15 @@
 "Keyboard shortcuts" = "Atajos de teclado";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab y los atajos de acoplamiento ⌃⌥";
 "Managed by your organization" = "Gestionado por tu organización";
+"Screen Recording is not allowed yet" = "La grabación de pantalla aún no está permitida";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Permite DockFlip en Ajustes del Sistema. Si ya está permitido, reinicia DockFlip.";
 "Show Setup Again" = "Volver a mostrar la configuración";
 "Accessibility: allowed" = "Accesibilidad: permitida";
 "Grant Accessibility…" = "Permitir accesibilidad…";
 "Continue Setup…" = "Continuar configuración…";
 "⌘Tab: active" = "⌘Tab: activo";
 "⌘Tab: not active" = "⌘Tab: inactivo";
+"⌘Tab: used by another app" = "⌘Tab: en uso por otra app";
 "Windows tracked: %ld" = "Ventanas registradas: %ld";
 "Restart DockFlip" = "Reiniciar DockFlip";
 "Turn Off macOS Edge Tiling" = "Desactivar el mosaico en los bordes de macOS";

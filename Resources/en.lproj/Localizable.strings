@@ -40,12 +40,15 @@
 "Keyboard shortcuts" = "Keyboard shortcuts";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab and the ⌃⌥ snapping shortcuts";
 "Managed by your organization" = "Managed by your organization";
+"Screen Recording is not allowed yet" = "Screen Recording is not allowed yet";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.";
 "Show Setup Again" = "Show Setup Again";
 "Accessibility: allowed" = "Accessibility: allowed";
 "Grant Accessibility…" = "Grant Accessibility…";
 "Continue Setup…" = "Continue Setup…";
 "⌘Tab: active" = "⌘Tab: active";
 "⌘Tab: not active" = "⌘Tab: not active";
+"⌘Tab: used by another app" = "⌘Tab: used by another app";
 "Windows tracked: %ld" = "Windows tracked: %ld";
 "Restart DockFlip" = "Restart DockFlip";
 "Turn Off macOS Edge Tiling" = "Turn Off macOS Edge Tiling";

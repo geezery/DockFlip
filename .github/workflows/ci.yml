@@ -49,3 +49,6 @@ jobs:
 
       - name: Landing gate tests
         run: pwsh -NoProfile -File scripts/land-gate-tests.ps1
+
+      - name: Release workflow tests
+        run: pwsh -NoProfile -File scripts/release-workflow-tests.ps1

@@ -40,12 +40,15 @@
 "Keyboard shortcuts" = "键盘快捷键";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab 和 ⌃⌥ 贴靠快捷键";
 "Managed by your organization" = "由你的组织管理";
+"Screen Recording is not allowed yet" = "尚未允许录屏";
+"Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "请在系统设置中允许 DockFlip。如果已经允许，请重新启动 DockFlip。";
 "Show Setup Again" = "再次显示设置助理";
 "Accessibility: allowed" = "辅助功能：已允许";
 "Grant Accessibility…" = "授予辅助功能权限…";
 "Continue Setup…" = "继续设置…";
 "⌘Tab: active" = "⌘Tab：已启用";
 "⌘Tab: not active" = "⌘Tab：未启用";
+"⌘Tab: used by another app" = "⌘Tab：被其他应用占用";
 "Windows tracked: %ld" = "已跟踪的窗口：%ld";
 "Restart DockFlip" = "重新启动 DockFlip";
 "Turn Off macOS Edge Tiling" = "关闭 macOS 边缘平铺";

@@ -55,7 +55,7 @@ enum KeyCode {
 final class GlobalHotKeys {
     var handler: ((HotkeyCommand) -> Void)?
 
-    private var refs: [EventHotKeyRef] = []
+    private var refs: [UInt32: EventHotKeyRef] = [:]
     private var commands: [UInt32: HotkeyCommand] = [:]
     private var handlerRef: EventHandlerRef?
     private static let signature: OSType = 0x444B_464C // "DKFL"
@@ -83,6 +83,12 @@ final class GlobalHotKeys {
 
     var registeredCount: Int { refs.count }
 
+    /// Which shortcuts the last `registerAll` got.
+    private(set) var registration = HotKeyRegistration()
+
+    /// True when ⌘Tab and ⌘⇧Tab are DockFlip's; false when another app holds ⌘Tab.
+    var ownsCommandTab: Bool { registration.ownsCommandTab }
+
     func registerAll() {
         unregisterAll()
         installHandlerIfNeeded()
@@ -95,19 +101,32 @@ final class GlobalHotKeys {
                 GetApplicationEventTarget(), 0, &ref
             )
             if status == noErr, let ref {
-                refs.append(ref)
+                refs[id] = ref
                 commands[id] = binding.command
+                registration.record(binding.command, registered: true)
             } else {
-                Log.keys.error("RegisterEventHotKey failed for key \(binding.key, privacy: .public) (status \(status, privacy: .public))")
+                // Usually another app holds it (eventHotKeyExistsErr, -9878).
+                Log.keys.error("RegisterEventHotKey failed for \(binding.command.shortcutName, privacy: .public) (status \(status, privacy: .public))")
+                registration.record(binding.command, registered: false)
             }
+        }
+        // Half of ⌘Tab is not kept: macOS gets the whole of it back (see Services).
+        for command in registration.commandTabToRelease {
+            for (id, held) in commands where held == command {
+                if let ref = refs.removeValue(forKey: id) { UnregisterEventHotKey(ref) }
+                commands[id] = nil
+            }
+            registration.release(command)
+            Log.keys.notice("Let go of \(command.shortcutName, privacy: .public): another app holds ⌘Tab")
         }
         Log.keys.notice("Registered \(self.refs.count, privacy: .public) global shortcuts")
     }
 
     func unregisterAll() {
-        for ref in refs { UnregisterEventHotKey(ref) }
-        refs = []
+        for ref in refs.values { UnregisterEventHotKey(ref) }
+        refs = [:]
         commands = [:]
+        registration = HotKeyRegistration()
     }
 
     private func installHandlerIfNeeded() {
