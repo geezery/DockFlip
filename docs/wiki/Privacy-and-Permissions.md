@@ -43,6 +43,10 @@ opt-in.
 - **No window or tab titles in the debug log.** The log records timings and
   counts, not what you were looking at.
 - **No page content.** Browser tabs are read from the tab bar only.
+- **No titles on disk.** DockFlip's preferences hold its settings, the apps
+  Clean Up keeps, when each window and app was last used, and where windows were
+  for each set of displays: window numbers, bundle ids, dates and frames only.
+  The window lists are dropped when the Mac restarts.
 
 ## Thumbnails, in detail
 

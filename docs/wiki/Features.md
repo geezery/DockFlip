@@ -43,7 +43,8 @@ under the mouse.
 <img src="https://github.com/geezery/DockFlip/raw/main/docs/assets/feature-flip.gif" alt="Flip 3D window switcher" width="100%">
 
 Hold ⌘ and press Tab: every window stands in a slanted 3D stack, with the most
-recently used in front.
+recently used in front. A quick ⌘Tab (or ⌘Tab-Tab) switches without drawing the
+stack at all; it appears once ⌘ is held a moment, or as soon as you type.
 
 | Key | Action |
 |---|---|
@@ -72,7 +73,8 @@ recently used in front.
   working.
 
 macOS's own ⌘Tab is switched off while DockFlip runs and comes back when you
-quit. ⌘` stays the macOS way.
+quit. If another app (AltTab) already holds ⌘Tab, macOS's stays on and the menu
+says so (see [Troubleshooting](Troubleshooting)). ⌘` stays the macOS way.
 
 ## 📐 Snapping
 

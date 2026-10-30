@@ -44,6 +44,21 @@ The rest of the time DockFlip doesn't see what you type. Its shortcuts are
 registered as system hot keys, so macOS only tells DockFlip when one of them is
 pressed.
 
+## What DockFlip keeps on your Mac
+
+Only its own preferences (`defaults read io.github.dockflip.DockFlip`), and never
+a window or tab title:
+
+- Its settings, and the apps you told Clean Up to keep (their bundle ids).
+- When each window and app was last used, for Clean Up's suggestions: window
+  numbers and app bundle ids, each with a date.
+- Where each window was for each set of displays, so windows go back after a
+  display change or a DockFlip restart: window numbers and frames.
+
+macOS reuses window numbers after the Mac restarts, so DockFlip drops both window
+lists then. `make uninstall` deletes all of it. The debug log is written only
+where you save it.
+
 ## If you turn on thumbnails
 
 Thumbnails are the only feature that uses Screen Recording, and they come with
