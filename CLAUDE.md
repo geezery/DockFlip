@@ -23,8 +23,8 @@ rules), `ARCHITECTURE.md` (how the parts fit), `SECURITY.md` (privacy claims the
 | `Sources/DockFlipKit/WindowLayout/` | Snapping (`SnapEngine` rules, `SnapController` input, overlay), Show Desktop, edge tiling switch. |
 | `Sources/DockFlipKit/{Previews,Placement,Cleanup,UI,Diagnostics}/` | Opt-in thumbnails; positions per display setup; Clean Up window; shared views; logging. |
 | `Tests/DockFlipKitTests/` | Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`) for the pure rules. |
-| `Resources/` | `Info.plist` template (`__VERSION__`, `__BUILD__`, `__BUNDLE_ID__`), app icon, 15 `*.lproj/Localizable.strings`. |
-| `site/` | Homepage (static HTML, `i18n.js` holds its translations), deployed by `.github/workflows/pages.yml`. |
+| `Resources/` | `Info.plist` template (`__VERSION__`, `__BUILD__`, `__COMMIT__`, `__BUNDLE_ID__`), app icon, 15 `*.lproj/Localizable.strings`. |
+| `site/` | Homepage (static HTML; `i18n.js` holds the language switcher, `i18n/<language>.js` each language's strings), deployed by `.github/workflows/pages.yml`. |
 | `docs/wiki/` | GitHub wiki pages, synced by `.github/workflows/wiki.yml`; `docs/IT.md` for admins. |
 | `scripts/` | Signing certificate, release identity, app icon and PPPC profile helpers. |
 | `.github/workflows/` | `ci.yml` (build + test on `macos-26`), `release.yml` (on a `v*` tag), `pages.yml`, `wiki.yml`. |
@@ -79,10 +79,10 @@ without `make cert`. Nothing fails on `main`.
 - A failed Accessibility read is not an answer: keep what was known and ask again later.
 - Pure logic (ordering, geometry, selection, filtering) lives in small value types with no
   AppKit, and has tests in `Tests/DockFlipKitTests`. SwiftPM keeps tests in `Tests/`, not
-  beside the source: name the test file after the feature it tests.
+  beside the source: a type's suite is `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift`.
 - Strings: user-facing text is English and the English is the key, `L("…")` in AppKit and
   `Text("…")` in SwiftUI. Add every new string to all 15 `Resources/*.lproj/Localizable.strings`
-  (English as a placeholder is fine). The homepage's strings are in `site/i18n.js`.
+  (English as a placeholder is fine). The homepage's strings are in `site/i18n/<language>.js`.
 - New code goes into its feature's folder; shared views go to `UI/`. Comments explain *why*
   (macOS quirks, timing), in plain English; doc comments use `///`.
 - Docs stay true: a change to shortcuts, settings or permissions updates `README.md`,
