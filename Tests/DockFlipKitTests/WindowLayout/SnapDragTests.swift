@@ -16,13 +16,15 @@ struct SnapDragTests {
 
     @Test func plainClickLooksNothingUp() {
         var drag = SnapDrag(startMouse: start)
-        var lookups = 0
+        var listReads = 0
+        var frameReads = 0
         // A click with a little jitter: drag events, all within the threshold.
         for mouse in [CGPoint(x: 501, y: 700), CGPoint(x: 503, y: 698), CGPoint(x: 505, y: 694)] {
-            drag.moved(to: mouse, windowUnder: { _ in lookups += 1; return (42, frame) },
-                       frame: { _ in lookups += 1; return frame })
+            drag.moved(to: mouse, windowUnder: { _ in listReads += 1; return (42, frame) },
+                       frame: { _ in frameReads += 1; return frame })
         }
-        #expect(lookups == 0)
+        #expect(listReads == 0)
+        #expect(frameReads == 0)
         #expect(drag.phase == .pressed)
         #expect(drag.window?.id == nil)
     }
