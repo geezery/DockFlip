@@ -49,7 +49,7 @@ recently used in front.
 |---|---|
 | Tab | Next window |
 | ⇧ Tab | Previous window |
-| ← → | Move through the stack |
+| ← → ↑ ↓ | Move through the stack (→ and ↓ next, ← and ↑ previous) |
 | Release ⌘ | Switch to the window in front |
 | Return | Switch (also while filtering) |
 | Esc | Cancel, or clear the filter |
