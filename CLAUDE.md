@@ -59,7 +59,8 @@ without `make cert`. Nothing fails on `main`.
   check `@MainActor` isolation, `private` access across files and string keys by reading.
 - There is no formatter or linter; match the surrounding code by hand.
 - `.github/workflows/ci.yml` names what CI checks: build, `make test`, `plutil -lint` of the
-  bundle's `Info.plist`, and `codesign --verify`.
+  bundle's `Info.plist`, `codesign --verify`, and the PowerShell tests in `scripts/`
+  (`land-gate-tests.ps1`, `release-workflow-tests.ps1`).
 
 ## Conventions
 

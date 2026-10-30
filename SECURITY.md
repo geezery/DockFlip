@@ -61,13 +61,16 @@ grep -rnE "URLSession|NWConnection|CFNetwork|URLRequest|socket\(" Sources
 Or watch it with a firewall such as Little Snitch, or `nettop -p DockFlip`.
 
 **The download is the code.** Every release is built by GitHub Actions from the
-tagged source, and the disk image comes with a build-provenance attestation and
-a SHA-256 checksum:
+tagged source, and the disk image, the IT `.pkg` and the Accessibility profile
+each come with a build-provenance attestation and a SHA-256 checksum:
 
 ```sh
 gh attestation verify DockFlip-<version>.dmg --repo geezery/DockFlip
-shasum -a 256 DockFlip-<version>.dmg
+shasum -a 256 -c DockFlip-<version>.dmg.sha256
 ```
+
+The same two commands work for `DockFlip-<version>.pkg` and
+`DockFlip-Accessibility.mobileconfig`; see [docs/IT.md](docs/IT.md#verify-the-files).
 
 **The signature.** Every release is signed with the same identity, which is why
 your Accessibility permission survives updates:
