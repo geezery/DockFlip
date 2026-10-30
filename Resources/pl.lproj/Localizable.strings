@@ -103,6 +103,7 @@
 "Paste" = "Wklej";
 "Select All" = "Zaznacz wszystko";
 "%ld tabs" = "Karty: %ld";
+"Show fewer" = "Pokaż mniej";
 "Show all %ld tabs" = "Pokaż wszystkie karty (%ld)";
 "Duplicate" = "Duplikat";
 "Not responding" = "Nie odpowiada";

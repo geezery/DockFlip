@@ -103,6 +103,7 @@
 "Paste" = "Sijoita";
 "Select All" = "Valitse kaikki";
 "%ld tabs" = "Välilehtiä: %ld";
+"Show fewer" = "Näytä vähemmän";
 "Show all %ld tabs" = "Näytä kaikki %ld välilehteä";
 "Duplicate" = "Kaksoiskappale";
 "Not responding" = "Ei vastaa";

@@ -103,6 +103,7 @@
 "Paste" = "Coller";
 "Select All" = "Tout sélectionner";
 "%ld tabs" = "%ld onglets";
+"Show fewer" = "Afficher moins";
 "Show all %ld tabs" = "Afficher les %ld onglets";
 "Duplicate" = "Doublon";
 "Not responding" = "Ne répond pas";

@@ -103,6 +103,7 @@
 "Paste" = "붙여넣기";
 "Select All" = "모두 선택";
 "%ld tabs" = "탭 %ld개";
+"Show fewer" = "간단히 보기";
 "Show all %ld tabs" = "탭 %ld개 모두 보기";
 "Duplicate" = "중복";
 "Not responding" = "응답 없음";

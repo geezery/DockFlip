@@ -103,6 +103,7 @@
 "Paste" = "粘贴";
 "Select All" = "全选";
 "%ld tabs" = "%ld 个标签页";
+"Show fewer" = "收起";
 "Show all %ld tabs" = "显示全部 %ld 个标签页";
 "Duplicate" = "重复";
 "Not responding" = "未响应";

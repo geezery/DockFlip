@@ -103,6 +103,7 @@
 "Paste" = "Incolla";
 "Select All" = "Seleziona tutto";
 "%ld tabs" = "%ld pannelli";
+"Show fewer" = "Mostra meno";
 "Show all %ld tabs" = "Mostra tutti i %ld pannelli";
 "Duplicate" = "Duplicato";
 "Not responding" = "Non risponde";

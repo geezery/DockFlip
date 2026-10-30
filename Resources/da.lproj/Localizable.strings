@@ -103,6 +103,7 @@
 "Paste" = "Indsæt";
 "Select All" = "Vælg alle";
 "%ld tabs" = "%ld faner";
+"Show fewer" = "Vis færre";
 "Show all %ld tabs" = "Vis alle %ld faner";
 "Duplicate" = "Dublet";
 "Not responding" = "Svarer ikke";

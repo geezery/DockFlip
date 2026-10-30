@@ -103,6 +103,7 @@
 "Paste" = "Einsetzen";
 "Select All" = "Alles auswählen";
 "%ld tabs" = "%ld Tabs";
+"Show fewer" = "Weniger anzeigen";
 "Show all %ld tabs" = "Alle %ld Tabs anzeigen";
 "Duplicate" = "Duplikat";
 "Not responding" = "Reagiert nicht";

@@ -103,6 +103,7 @@
 "Paste" = "ペースト";
 "Select All" = "すべてを選択";
 "%ld tabs" = "%ld個のタブ";
+"Show fewer" = "表示を減らす";
 "Show all %ld tabs" = "%ld個のタブをすべて表示";
 "Duplicate" = "重複";
 "Not responding" = "応答なし";
