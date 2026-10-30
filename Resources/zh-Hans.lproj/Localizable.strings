@@ -8,6 +8,11 @@
 "DockFlip is already switched on in the list, but nothing changes?" = "DockFlip 已在列表中打开，但没有任何变化？";
 "Reset Permission" = "重置权限";
 "Launch at login" = "登录时启动";
+"DockFlip is switched off in Login Items" = "DockFlip 已在登录项中关闭";
+"Open Login Items and switch DockFlip on there to start it when you log in." = "打开登录项并在其中启用 DockFlip，即可在登录时启动。";
+"Launch at login could not be changed" = "无法更改“登录时启动”";
+"macOS did not accept the change." = "macOS 未接受此更改。";
+"Open Login Items" = "打开登录项";
 "Done" = "完成";
 "Dock" = "程序坞";
 "Rest on an icon to see its windows and tabs. Click to minimize and restore." = "将指针停留在图标上可查看其窗口和标签页。点按可最小化和恢复。";

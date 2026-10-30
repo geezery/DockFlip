@@ -28,14 +28,18 @@ final class SettingsWindowController {
             window.center()
             self.window = window
             // Coming back from System Settings brings this window forward: read the
-            // Screen Recording answer again then, not on a timer.
+            // Screen Recording and Login Items answers again then, not on a timer.
             keyObserver = NotificationCenter.default.addObserver(
                 forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
             ) { [weak self] _ in
-                MainActor.assumeIsolated { self?.screenRecording.refresh() }
+                MainActor.assumeIsolated {
+                    self?.screenRecording.refresh()
+                    Settings.shared.refreshLaunchAtLogin()
+                }
             }
         }
         screenRecording.refresh()
+        Settings.shared.refreshLaunchAtLogin()
         if let window { WindowPresenter.bringToFront(window) }
     }
 }
@@ -58,6 +62,11 @@ struct SettingsView: View {
                         get: { MainActor.assumeIsolated { settings.launchAtLogin } },
                         set: { value in MainActor.assumeIsolated { settings.launchAtLogin = value } }
                     ))
+                    if let problem = settings.launchAtLoginProblem {
+                        LaunchAtLoginWarning(problem: problem) {
+                            MainActor.assumeIsolated { settings.openLoginItemsSettings() }
+                        }
+                    }
                     Toggle(isOn: Binding(
                         get: { MainActor.assumeIsolated { settings.previewsEnabled } },
                         set: { value in
@@ -131,5 +140,45 @@ struct ScreenRecordingWarning: View {
                 }
             }
         }
+    }
+}
+
+/// Under the Launch at login switch when macOS didn't take the change: the switch
+/// only flips back, and DockFlip would quietly not start after the next reboot.
+struct LaunchAtLoginWarning: View {
+    let problem: LoginItemProblem
+    let openLoginItems: () -> Void
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    switch problem {
+                    case .needsApproval:
+                        Text("DockFlip is switched off in Login Items")
+                        detail(Text("Open Login Items and switch DockFlip on there to start it when you log in."))
+                    case .failed(let reason):
+                        Text("Launch at login could not be changed")
+                        if let reason {
+                            // macOS's own words, already in the user's language.
+                            detail(Text(verbatim: reason))
+                        } else {
+                            detail(Text("macOS did not accept the change."))
+                        }
+                    }
+                }
+                Button("Open Login Items", action: openLoginItems)
+            }
+        }
+    }
+
+    private func detail(_ text: Text) -> some View {
+        text
+            .font(.callout)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
