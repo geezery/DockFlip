@@ -206,8 +206,11 @@ extension DockController {
     /// separators: subrole and URL in one call to the Dock, no frame, and the
     /// app's Info.plist read once (`bundleIDs`).
     private func dockItemBundleID(_ element: AXUIElement) -> String? {
-        guard let values = element.copyAttributes([kAXSubroleAttribute, kAXURLAttribute]),
-              values[0] as? String == "AXApplicationDockItem",
+        // A failed batch read must not shift the count: ask one attribute at a time.
+        guard let values = element.copyAttributes([kAXSubroleAttribute, kAXURLAttribute]) else {
+            return Self.appBundleID(element)
+        }
+        guard values[0] as? String == "AXApplicationDockItem",
               let url = values[1] as? URL else { return nil }
         return bundleIDs.bundleID(for: url) { Bundle(url: $0)?.bundleIdentifier }
     }
