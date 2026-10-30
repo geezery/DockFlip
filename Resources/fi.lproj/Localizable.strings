@@ -44,6 +44,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Salli DockFlip Järjestelmäasetuksissa. Jos se on jo sallittu, käynnistä DockFlip uudelleen.";
 "Show Setup Again" = "Näytä käyttöönotto uudelleen";
 "Accessibility: allowed" = "Käyttöapu: sallittu";
+"Accessibility: not yet allowed" = "Käyttöapu: ei vielä sallittu";
+"Turn on DockFlip in the list. This page notices it by itself." = "Laita DockFlip päälle luettelossa. Tämä sivu huomaa sen itse.";
+"All set. Continue to the next step." = "Kaikki valmista. Jatka seuraavaan vaiheeseen.";
 "Grant Accessibility…" = "Salli Käyttöapu…";
 "Continue Setup…" = "Jatka käyttöönottoa…";
 "⌘Tab: active" = "⌘Tab: käytössä";
