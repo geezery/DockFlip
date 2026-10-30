@@ -3,7 +3,8 @@
 #   make            build build/DockFlip.app
 #   make install    create the local signing certificate (first time only),
 #                   build, and install to /Applications
-#   make uninstall  quit and remove DockFlip, its permissions, settings and certificate
+#   make uninstall  quit and remove DockFlip, its permissions, settings and certificate,
+#                   and turn macOS's own edge tiling back on if it is off
 #   make run        build and run from build/
 #   make test       run unit tests
 #   make clean
@@ -85,6 +86,7 @@ uninstall:
 	@-defaults delete "$(BUNDLE_ID)" >/dev/null 2>&1
 	@-security delete-keychain "$(SIGN_KEYCHAIN)" >/dev/null 2>&1
 	@rm -f "$(SIGN_PASSFILE)"
+	@-./scripts/restore-edge-tiling.sh
 	@echo "Removed DockFlip."
 
 run: app

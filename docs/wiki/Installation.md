@@ -71,8 +71,12 @@ because every release is signed with the same identity.
 Quit DockFlip from its menu bar menu and drag it from Applications to the Trash.
 macOS's own ⌘Tab comes back as soon as DockFlip quits.
 
+If you let setup turn off macOS's own edge tiling, switch it back on in
+**System Settings → Desktop & Dock**: **Drag windows to screen edges to tile**
+and **Drag windows to menu bar to fill screen**.
+
 From source, `make uninstall` also removes its settings, its permissions and the
-signing keychain.
+signing keychain, and turns macOS's edge tiling back on if it is off.
 
 ## Other make targets
 

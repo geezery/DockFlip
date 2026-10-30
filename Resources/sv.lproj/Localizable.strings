@@ -49,6 +49,9 @@
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillåt DockFlip i Systeminställningar. Om det redan är tillåtet, starta om DockFlip.";
 "Show Setup Again" = "Visa konfigurationen igen";
 "Accessibility: allowed" = "Hjälpmedel: tillåtet";
+"Accessibility: not yet allowed" = "Hjälpmedel: inte tillåtet ännu";
+"Turn on DockFlip in the list. This page notices it by itself." = "Slå på DockFlip i listan. Den här sidan märker det av sig själv.";
+"All set. Continue to the next step." = "Allt klart. Fortsätt till nästa steg.";
 "Grant Accessibility…" = "Tillåt Hjälpmedel…";
 "Continue Setup…" = "Fortsätt konfigurationen…";
 "⌘Tab: active" = "⌘Tab: aktivt";
@@ -113,6 +116,7 @@
 "Paste" = "Klistra in";
 "Select All" = "Markera alla";
 "%ld tabs" = "%ld flikar";
+"Show fewer" = "Visa färre";
 "Show all %ld tabs" = "Visa alla %ld flikar";
 "1 more window" = "1 fönster till";
 "%ld more windows" = "%ld fönster till";
