@@ -65,6 +65,24 @@ struct PlacementLayoutsTests {
         #expect(layouts.order == [laptop, docked])
     }
 
+    /// A restart in the middle of a display change: saving paused, so the last save was
+    /// for the displays before it. Starting with other displays is the change, not a layout.
+    @Test func startingWithOtherDisplaysThanTheLastSaveIsADisplayChange() throws {
+        var layouts = PlacementLayouts()
+        #expect(!layouts.isDisplayChange(to: laptop)) // nothing saved: first launch, new boot
+
+        layouts.set([1: CGRect(x: 1600, y: 40, width: 1200, height: 900)], for: docked)
+        layouts.set([1: CGRect(x: 0, y: 25, width: 800, height: 600)], for: laptop)
+        #expect(!layouts.isDisplayChange(to: laptop))
+        #expect(layouts.isDisplayChange(to: docked)) // plugged in, then DockFlip restarted
+
+        // The new launch reads the order back from the saved form.
+        let data = try PropertyListSerialization.data(fromPropertyList: layouts.propertyList, format: .binary, options: 0)
+        let restored = PlacementLayouts(propertyList: try PropertyListSerialization.propertyList(from: data, format: nil))
+        #expect(restored.isDisplayChange(to: docked))
+        #expect(!restored.isDisplayChange(to: laptop))
+    }
+
     /// Window ids are reused after the Mac restarts: only this boot's layouts are trusted.
     @Test func onlyThisBootsLayoutsAreTrusted() {
         let boot: TimeInterval = 1_800_000_000
