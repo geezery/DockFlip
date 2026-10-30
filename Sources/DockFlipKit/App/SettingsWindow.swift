@@ -5,28 +5,50 @@ import SwiftUI
 @MainActor
 final class SettingsWindowController {
     private var window: NSWindow?
+    private lazy var screenRecording = ScreenRecordingStatus()
+    private var keyObserver: NSObjectProtocol?
     var onShowSetup: (() -> Void)?
+    var onRelaunch: (() -> Void)?
 
     func show() {
         if window == nil {
-            let view = SettingsView(settings: Settings.shared) { [weak self] in
-                self?.window?.close()
-                self?.onShowSetup?()
-            }
+            let view = SettingsView(
+                settings: Settings.shared,
+                screenRecording: screenRecording,
+                showSetup: { [weak self] in
+                    self?.window?.close()
+                    self?.onShowSetup?()
+                },
+                relaunch: { [weak self] in self?.onRelaunch?() }
+            )
             let window = NSWindow(contentViewController: NSHostingController(rootView: view))
             window.styleMask = [.titled, .closable]
             window.title = L("DockFlip Settings")
             window.isReleasedWhenClosed = false
             window.center()
             self.window = window
+            // Coming back from System Settings brings this window forward: read the
+            // Screen Recording answer again then, not on a timer.
+            keyObserver = NotificationCenter.default.addObserver(
+                forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.screenRecording.refresh() }
+            }
         }
+        screenRecording.refresh()
         if let window { WindowPresenter.bringToFront(window) }
     }
 }
 
 struct SettingsView: View {
     @ObservedObject var settings: Settings
+    @ObservedObject var screenRecording: ScreenRecordingStatus
     let showSetup: () -> Void
+    let relaunch: () -> Void
+
+    private var thumbnailAccess: ThumbnailAccess {
+        ThumbnailAccess(enabled: settings.previewsEnabled, screenRecordingAllowed: screenRecording.isAllowed)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -41,7 +63,10 @@ struct SettingsView: View {
                         set: { value in
                             MainActor.assumeIsolated {
                                 settings.previewsEnabled = value
-                                if value { PreviewProvider.requestPermission() }
+                                if value {
+                                    PreviewProvider.requestPermission()
+                                    screenRecording.refresh()
+                                }
                             }
                         }
                     )) {
@@ -50,6 +75,9 @@ struct SettingsView: View {
                         if settings.previewsManaged { Text("Managed by your organization") }
                     }
                     .disabled(settings.previewsManaged)
+                    if thumbnailAccess == .waitingForPermission {
+                        ScreenRecordingWarning(relaunch: relaunch)
+                    }
                     Toggle(isOn: $settings.shortcutsEnabled) {
                         Text("Keyboard shortcuts")
                         Text("⌘Tab and the ⌃⌥ snapping shortcuts")
@@ -73,5 +101,34 @@ struct SettingsView: View {
         }
         .frame(width: 480)
         .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Under the thumbnails switch while it is on but macOS has not allowed Screen
+/// Recording: a denied prompt, or the restart macOS wants after allowing it,
+/// would otherwise leave the Dock list without pictures and no word why.
+struct ScreenRecordingWarning: View {
+    let relaunch: () -> Void
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Screen Recording is not allowed yet")
+                    Text("Allow DockFlip in System Settings. If it is already allowed, restart DockFlip.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                HStack {
+                    Button("Open System Settings") {
+                        MainActor.assumeIsolated { PreviewProvider.openScreenRecordingSettings() }
+                    }
+                    Button("Restart DockFlip", action: relaunch)
+                }
+            }
+        }
     }
 }
