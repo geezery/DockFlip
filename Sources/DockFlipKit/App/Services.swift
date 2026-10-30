@@ -63,6 +63,13 @@ final class Services {
         Settings.shared.shortcutsEnabled && hotKeys.registration.commandTabFailed
     }
 
+    /// The ⌃⌥ shortcuts another app (Rectangle, Magnet) held when DockFlip asked for
+    /// them, as people type them. Empty when DockFlip got them all.
+    var layoutShortcutsHeldElsewhere: [String] {
+        guard Settings.shared.shortcutsEnabled else { return [] }
+        return ShortcutConflicts.layoutShortcutNames(failed: hotKeys.registration.failed)
+    }
+
     /// The one later attempt at ⌘Tab after another app held it.
     private var commandTabRetry: Task<Void, Never>?
 

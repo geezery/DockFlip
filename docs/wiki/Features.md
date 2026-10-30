@@ -49,7 +49,7 @@ recently used in front.
 |---|---|
 | Tab | Next window |
 | ⇧ Tab | Previous window |
-| ← → | Move through the stack |
+| ← → ↑ ↓ | Move through the stack (→ and ↓ next, ← and ↑ previous) |
 | Release ⌘ | Switch to the window in front |
 | Return | Switch (also while filtering) |
 | Esc | Cancel, or clear the filter |
@@ -94,7 +94,7 @@ quit. ⌘` stays the macOS way.
   until the Mac restarts.
 - **Clean Up** (menu bar → *Clean Up…*) lists windows unused for three days and
   apps running without windows. It only suggests. Nothing closes without you,
-  and apps still ask to save.
+  and apps still ask to save: an app that asks comes forward with its question.
 - **Not responding:** a hung app's window list says so.
 - **Show desktop** with ⌃⌥D, like Win+D.
 - **Window Layout** in the menu bar menu lists every shortcut; clicking one

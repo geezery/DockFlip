@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
 "⌘Tab: used by another app" = "⌘Tab: bruges af en anden app";
+"Probably %@" = "Sandsynligvis %@";
+"%@: used by another app" = "%@: bruges af en anden app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Sandsynligvis %@. Afslut den eller skift dens genveje, og klik så for at prøve igen.";
+"Quit the app that uses them, then click to try again." = "Afslut den app, der bruger dem, og klik så for at prøve igen.";
 "Windows tracked: %ld" = "Overvågede vinduer: %ld";
 "Restart DockFlip" = "Genstart DockFlip";
 "Turn Off macOS Edge Tiling" = "Slå macOS' kantplacering af vinduer fra";
@@ -59,6 +63,7 @@
 "Settings…" = "Indstillinger…";
 "Debug Logging" = "Fejlfindingslogning";
 "Save Debug Log…" = "Gem fejlfindingslog…";
+"Could Not Save the Debug Log" = "Fejlfindingsloggen kunne ikke gemmes";
 "Quit DockFlip" = "Slut DockFlip";
 "Left Half" = "Venstre halvdel";
 "Right Half" = "Højre halvdel";
@@ -104,6 +109,8 @@
 "Select All" = "Vælg alle";
 "%ld tabs" = "%ld faner";
 "Show all %ld tabs" = "Vis alle %ld faner";
+"1 more window" = "1 vindue mere";
+"%ld more windows" = "%ld vinduer mere";
 "Duplicate" = "Dublet";
 "Not responding" = "Svarer ikke";
 "Active window" = "Aktivt vindue";

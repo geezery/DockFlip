@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab：已启用";
 "⌘Tab: not active" = "⌘Tab：未启用";
 "⌘Tab: used by another app" = "⌘Tab：被其他应用占用";
+"Probably %@" = "可能是 %@";
+"%@: used by another app" = "%@：被其他应用占用";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "可能是 %@。请退出它或更改它的快捷键，然后点按以重试。";
+"Quit the app that uses them, then click to try again." = "请退出占用它们的应用，然后点按以重试。";
 "Windows tracked: %ld" = "已跟踪的窗口：%ld";
 "Restart DockFlip" = "重新启动 DockFlip";
 "Turn Off macOS Edge Tiling" = "关闭 macOS 边缘平铺";
@@ -59,6 +63,7 @@
 "Settings…" = "设置…";
 "Debug Logging" = "调试日志";
 "Save Debug Log…" = "存储调试日志…";
+"Could Not Save the Debug Log" = "无法存储调试日志";
 "Quit DockFlip" = "退出 DockFlip";
 "Left Half" = "左半边";
 "Right Half" = "右半边";
@@ -104,6 +109,8 @@
 "Select All" = "全选";
 "%ld tabs" = "%ld 个标签页";
 "Show all %ld tabs" = "显示全部 %ld 个标签页";
+"1 more window" = "还有 1 个窗口";
+"%ld more windows" = "还有 %ld 个窗口";
 "Duplicate" = "重复";
 "Not responding" = "未响应";
 "Active window" = "当前窗口";

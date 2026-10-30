@@ -57,9 +57,18 @@ final class WindowListModel: ObservableObject {
     @Published var hoveringPeek = false
     /// Windows whose long tab list is shown in full.
     @Published var expanded = Set<CGWindowID>()
+    /// The lowest point of the list on screen, measured from the list's top, as
+    /// the scroll view last reported it; nil until it has. Decides "N more windows".
+    @Published var listBottom: CGFloat?
 
     var hasTabs: Bool { rows.contains { $0.tabs.count > 1 } }
     var usesCards: Bool { WindowListLayout.usesCards(rows: rows, previews: showsPreviews) }
+    /// Windows below the bottom of the list. Before the scroll view reports, the
+    /// list is at its top, so the bottom is the list's own height.
+    var windowsBelow: Int {
+        let bottom = listBottom ?? WindowListLayout.listHeight(rows: rows, expanded: expanded, previews: showsPreviews)
+        return WindowListLayout.windowsBelow(rows: rows, expanded: expanded, visibleBottom: bottom)
+    }
 
     func setHovered(_ id: CGWindowID, _ inside: Bool) {
         if inside {

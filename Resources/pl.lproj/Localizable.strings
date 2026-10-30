@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: aktywny";
 "⌘Tab: not active" = "⌘Tab: nieaktywny";
 "⌘Tab: used by another app" = "⌘Tab: używany przez inną aplikację";
+"Probably %@" = "Prawdopodobnie %@";
+"%@: used by another app" = "%@: używane przez inną aplikację";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Prawdopodobnie %@. Zamknij ją lub zmień jej skróty, a potem kliknij, aby spróbować ponownie.";
+"Quit the app that uses them, then click to try again." = "Zamknij aplikację, która ich używa, a potem kliknij, aby spróbować ponownie.";
 "Windows tracked: %ld" = "Śledzone okna: %ld";
 "Restart DockFlip" = "Uruchom DockFlip ponownie";
 "Turn Off macOS Edge Tiling" = "Wyłącz kafelkowanie przy krawędziach w macOS";
@@ -59,6 +63,7 @@
 "Settings…" = "Ustawienia…";
 "Debug Logging" = "Rejestrowanie debugowania";
 "Save Debug Log…" = "Zachowaj dziennik debugowania…";
+"Could Not Save the Debug Log" = "Nie można zachować dziennika debugowania";
 "Quit DockFlip" = "Zakończ DockFlip";
 "Left Half" = "Lewa połowa";
 "Right Half" = "Prawa połowa";
@@ -104,6 +109,8 @@
 "Select All" = "Zaznacz wszystko";
 "%ld tabs" = "Karty: %ld";
 "Show all %ld tabs" = "Pokaż wszystkie karty (%ld)";
+"1 more window" = "Jeszcze 1 okno";
+"%ld more windows" = "Więcej okien: %ld";
 "Duplicate" = "Duplikat";
 "Not responding" = "Nie odpowiada";
 "Active window" = "Aktywne okno";

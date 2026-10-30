@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: actief";
 "⌘Tab: not active" = "⌘Tab: niet actief";
 "⌘Tab: used by another app" = "⌘Tab: in gebruik door een andere app";
+"Probably %@" = "Waarschijnlijk %@";
+"%@: used by another app" = "%@: in gebruik door een andere app";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Waarschijnlijk %@. Stop die app of wijzig de sneltoetsen ervan en klik dan om het opnieuw te proberen.";
+"Quit the app that uses them, then click to try again." = "Stop de app die ze gebruikt en klik dan om het opnieuw te proberen.";
 "Windows tracked: %ld" = "Gevolgde vensters: %ld";
 "Restart DockFlip" = "Herstart DockFlip";
 "Turn Off macOS Edge Tiling" = "Zet tegelen aan schermranden van macOS uit";
@@ -59,6 +63,7 @@
 "Settings…" = "Instellingen…";
 "Debug Logging" = "Debuglogboek";
 "Save Debug Log…" = "Bewaar debuglogboek…";
+"Could Not Save the Debug Log" = "Kan debuglogboek niet bewaren";
 "Quit DockFlip" = "Stop DockFlip";
 "Left Half" = "Linkerhelft";
 "Right Half" = "Rechterhelft";
@@ -104,6 +109,8 @@
 "Select All" = "Selecteer alles";
 "%ld tabs" = "%ld tabbladen";
 "Show all %ld tabs" = "Toon alle %ld tabbladen";
+"1 more window" = "Nog 1 venster";
+"%ld more windows" = "Nog %ld vensters";
 "Duplicate" = "Duplicaat";
 "Not responding" = "Reageert niet";
 "Active window" = "Actief venster";

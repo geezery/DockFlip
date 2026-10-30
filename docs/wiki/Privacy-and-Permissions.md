@@ -17,8 +17,22 @@ opt-in.
 
 | Permission | Needed? | Used for |
 |---|---|---|
-| Accessibility | **Yes** | Listing, focusing, moving and minimizing windows; reading browser tab titles; the keyboard shortcuts |
+| Accessibility | **Yes** | Listing, focusing, moving and minimizing windows; reading browser tab titles; the keyboard shortcuts; watching left mouse clicks and drags for Dock icon clicks and drag snapping |
 | Screen Recording | **No, opt-in** | Window thumbnails, and nothing else |
+
+## What DockFlip sees of your mouse and keyboard
+
+- **Left mouse clicks and drags, anywhere on the Mac, as pointer positions
+  only.** That's how a click on a Dock icon brings its window forward and how
+  dragging a window to a screen edge snaps it. Clicks and drags outside the
+  Dock pass through untouched, and where you click is never recorded or logged.
+  Right clicks and scrolling are never seen.
+- **Pointer movement, only while it's over the Dock or a window list**, so the
+  list closes when you move away.
+- **Modifier keys** (⌘, ⌃, ⌥, ⇧), to notice when you let go of ⌘.
+- **Other keys only while the ⌘Tab switcher is open**, for type-to-filter. The
+  rest of the time macOS tells DockFlip only when one of its shortcuts is
+  pressed.
 
 ## What DockFlip never does
 

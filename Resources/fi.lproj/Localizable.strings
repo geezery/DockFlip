@@ -49,6 +49,10 @@
 "⌘Tab: active" = "⌘Tab: käytössä";
 "⌘Tab: not active" = "⌘Tab: ei käytössä";
 "⌘Tab: used by another app" = "⌘Tab: toisen ohjelman käytössä";
+"Probably %@" = "Luultavasti %@";
+"%@: used by another app" = "%@: toisen ohjelman käytössä";
+"Probably %@. Quit it or change its shortcuts, then click to try again." = "Luultavasti %@. Lopeta se tai vaihda sen pikanäppäimet ja yritä sitten uudelleen klikkaamalla.";
+"Quit the app that uses them, then click to try again." = "Lopeta ohjelma, joka käyttää niitä, ja yritä sitten uudelleen klikkaamalla.";
 "Windows tracked: %ld" = "Seurattavia ikkunoita: %ld";
 "Restart DockFlip" = "Käynnistä DockFlip uudelleen";
 "Turn Off macOS Edge Tiling" = "Laita macOS:n reunajärjestys pois";
@@ -59,6 +63,7 @@
 "Settings…" = "Asetukset…";
 "Debug Logging" = "Vianetsintäloki";
 "Save Debug Log…" = "Tallenna vianetsintäloki…";
+"Could Not Save the Debug Log" = "Vianetsintälokia ei voitu tallentaa";
 "Quit DockFlip" = "Lopeta DockFlip";
 "Left Half" = "Vasen puolisko";
 "Right Half" = "Oikea puolisko";
@@ -104,6 +109,8 @@
 "Select All" = "Valitse kaikki";
 "%ld tabs" = "Välilehtiä: %ld";
 "Show all %ld tabs" = "Näytä kaikki %ld välilehteä";
+"1 more window" = "1 ikkuna lisää";
+"%ld more windows" = "%ld ikkunaa lisää";
 "Duplicate" = "Kaksoiskappale";
 "Not responding" = "Ei vastaa";
 "Active window" = "Aktiivinen ikkuna";
