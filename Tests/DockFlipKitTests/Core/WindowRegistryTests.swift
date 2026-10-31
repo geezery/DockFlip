@@ -363,23 +363,21 @@ struct WindowRegistryTests {
     }
 
     @Test(.timeLimit(.minutes(1)))
-    func anAppThatRefusesItsSubscriptionsIsAskedAgain() async {
+    func anAppThatRefusesItsSubscriptionsWaitsOrIsTrackedWithoutThem() async {
         let registry = WindowRegistry()
         let pid = NSRunningApplication.current.processIdentifier
-        let subscriptions = Reads()
         registry.subscribeApp = { _, _ in
-            // Refused the first time, accepted the next.
-            let status = subscriptions.add() == 1 ? AXError.cannotComplete : .success
-            return AppSubscriber.notifications.map { _ in status.rawValue }
+            AppSubscriber.notifications.map { _ in AXError.cannotComplete.rawValue }
         }
+        // Refused on the first try: not tracked yet, a retry is on its way.
         registry.track(.current)
         await answered(registry, pid: pid)
         #expect(registry.apps[pid] == nil)
-        // The retry waits 400 ms, then subscribes on the queue again.
-        try? await Task.sleep(for: .milliseconds(1000))
+        // Refused on the last try: tracked anyway, without notifications (as Excel).
+        registry.track(.current, attempt: 6)
         await answered(registry, pid: pid)
         #expect(registry.apps[pid] != nil)
-        #expect(subscriptions.total == 2)
+        #expect(registry.apps[pid]?.observer == nil)
         registry.untrack(pid: pid)
     }
 
