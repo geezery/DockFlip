@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/geezery/DockFlip/actions/workflows/ci.yml"><img src="https://github.com/geezery/DockFlip/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/macOS-26%2B-0c9a6a" alt="macOS 26+">
-  <img src="https://img.shields.io/badge/Swift-6-0c9a6a" alt="Swift 6">
+  <img src="https://img.shields.io/badge/Swift%20toolchain-6-0c9a6a" alt="Swift 6 toolchain">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0c9a6a" alt="GPL-3.0"></a>
   <img src="https://img.shields.io/badge/price-%E2%82%AC0-0c9a6a" alt="Price: €0">
   <img src="https://img.shields.io/badge/screen%20recording-not%20needed-0c9a6a" alt="Screen recording: not needed">
