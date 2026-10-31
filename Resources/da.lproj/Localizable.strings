@@ -58,6 +58,10 @@
 "⌘Tab: active" = "⌘Tab: aktiv";
 "⌘Tab: not active" = "⌘Tab: ikke aktiv";
 "⌘Tab: used by another app" = "⌘Tab: bruges af en anden app";
+"Turning off macOS's own ⌘Tab: not available on this macOS version" = "Slå macOS' egen ⌘Tab fra: ikke tilgængelig i denne macOS-version";
+"Window tracking: not available on this macOS version" = "Vinduesovervågning: ikke tilgængelig i denne macOS-version";
+"Windows on other Spaces: not available on this macOS version" = "Vinduer på andre skriveborde: ikke tilgængelige i denne macOS-version";
+"Dock lists: not available on this macOS version" = "Dock-lister: ikke tilgængelige i denne macOS-version";
 "Probably %@" = "Sandsynligvis %@";
 "%@: used by another app" = "%@: bruges af en anden app";
 "Probably %@. Quit it or change its shortcuts, then click to try again." = "Sandsynligvis %@. Afslut den eller skift dens genveje, og klik så for at prøve igen.";

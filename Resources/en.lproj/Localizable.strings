@@ -58,6 +58,10 @@
 "⌘Tab: active" = "⌘Tab: active";
 "⌘Tab: not active" = "⌘Tab: not active";
 "⌘Tab: used by another app" = "⌘Tab: used by another app";
+"Turning off macOS's own ⌘Tab: not available on this macOS version" = "Turning off macOS's own ⌘Tab: not available on this macOS version";
+"Window tracking: not available on this macOS version" = "Window tracking: not available on this macOS version";
+"Windows on other Spaces: not available on this macOS version" = "Windows on other Spaces: not available on this macOS version";
+"Dock lists: not available on this macOS version" = "Dock lists: not available on this macOS version";
 "Probably %@" = "Probably %@";
 "%@: used by another app" = "%@: used by another app";
 "Probably %@. Quit it or change its shortcuts, then click to try again." = "Probably %@. Quit it or change its shortcuts, then click to try again.";

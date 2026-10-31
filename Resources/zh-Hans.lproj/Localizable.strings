@@ -58,6 +58,10 @@
 "⌘Tab: active" = "⌘Tab：已启用";
 "⌘Tab: not active" = "⌘Tab：未启用";
 "⌘Tab: used by another app" = "⌘Tab：被其他应用占用";
+"Turning off macOS's own ⌘Tab: not available on this macOS version" = "关闭 macOS 自带的 ⌘Tab：此 macOS 版本不支持";
+"Window tracking: not available on this macOS version" = "窗口跟踪：此 macOS 版本不支持";
+"Windows on other Spaces: not available on this macOS version" = "其他桌面上的窗口：此 macOS 版本不支持";
+"Dock lists: not available on this macOS version" = "程序坞列表：此 macOS 版本不支持";
 "Probably %@" = "可能是 %@";
 "%@: used by another app" = "%@：被其他应用占用";
 "Probably %@. Quit it or change its shortcuts, then click to try again." = "可能是 %@。请退出它或更改它的快捷键，然后点按以重试。";

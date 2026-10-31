@@ -58,6 +58,10 @@
 "⌘Tab: active" = "⌘Tab: käytössä";
 "⌘Tab: not active" = "⌘Tab: ei käytössä";
 "⌘Tab: used by another app" = "⌘Tab: toisen ohjelman käytössä";
+"Turning off macOS's own ⌘Tab: not available on this macOS version" = "macOSin oman ⌘Tabin poisto: ei käytettävissä tässä macOS-versiossa";
+"Window tracking: not available on this macOS version" = "Ikkunoiden seuranta: ei käytettävissä tässä macOS-versiossa";
+"Windows on other Spaces: not available on this macOS version" = "Muiden työpöytien ikkunat: ei käytettävissä tässä macOS-versiossa";
+"Dock lists: not available on this macOS version" = "Dockin listat: ei käytettävissä tässä macOS-versiossa";
 "Probably %@" = "Luultavasti %@";
 "%@: used by another app" = "%@: toisen ohjelman käytössä";
 "Probably %@. Quit it or change its shortcuts, then click to try again." = "Luultavasti %@. Lopeta se tai vaihda sen pikanäppäimet ja yritä sitten uudelleen klikkaamalla.";
