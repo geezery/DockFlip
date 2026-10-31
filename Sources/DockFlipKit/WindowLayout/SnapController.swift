@@ -14,9 +14,12 @@ final class SnapController {
     private var tilingHint = EdgeTilingHint()
     /// The earlier frame a snapped window took back when this drag pulled it off.
     private var unsnappedTo: CGRect?
+    /// The other windows offered for the region a snap leaves (Snap Assist).
+    private let assist = SnapAssistPanel()
 
     init(registry: WindowRegistry) {
         self.registry = registry
+        assist.onPick = { [weak self] id, region in self?.fill(region, with: id) }
     }
 
     func start() {
@@ -40,6 +43,8 @@ final class SnapController {
     }
 
     private func handleUnmeasured(_ key: SnapKey) -> Bool {
+        // The next snap closes the cards of the last one, as on Windows.
+        assist.dismiss()
         guard let (id, frame) = targetWindow() else { return false }
         let screens = DisplayLayout.screensLeftToRight()
         guard let display = DisplayLayout.screenIndex(for: frame, in: screens) else { return false }
@@ -49,7 +54,9 @@ final class SnapController {
         switch SnapEngine.action(for: key, current: current, display: display, displayCount: screens.count) {
         case .snap(let region, let target):
             if current == nil { restoreFrames[id] = frame }
-            registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: DisplayLayout.usableArea(of: screens[target])))
+            let targetArea = DisplayLayout.usableArea(of: screens[target])
+            registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: targetArea))
+            offerAssist(after: region, of: id, in: targetArea)
         case .restore:
             restore(id, in: area)
         case .minimize:
@@ -62,6 +69,7 @@ final class SnapController {
 
     /// ⌃⌥⇧← / → : the same layout on the neighbouring display.
     func moveToDisplay(_ key: SnapKey) -> Bool {
+        assist.dismiss()
         guard key == .left || key == .right, let (id, frame) = targetWindow() else { return false }
         let screens = DisplayLayout.screensLeftToRight()
         guard screens.count > 1, let display = DisplayLayout.screenIndex(for: frame, in: screens) else { return false }
@@ -80,6 +88,7 @@ final class SnapController {
 
     /// Puts the front window straight into `region` (from the menu bar menu).
     func snap(to region: SnapRegion) {
+        assist.dismiss()
         guard let (id, frame) = targetWindow() else { return }
         let screens = DisplayLayout.screensLeftToRight()
         guard let display = DisplayLayout.screenIndex(for: frame, in: screens) else { return }
@@ -105,11 +114,40 @@ final class SnapController {
         registry.setFrame(of: id, to: target)
     }
 
+    // MARK: - Snap Assist
+
+    /// Offers the other windows for the region a snap to `region` leaves in `area`,
+    /// if it leaves one and there are windows to offer.
+    private func offerAssist(after region: SnapRegion, of id: CGWindowID, in area: CGRect) {
+        guard let left = SnapAssist.remainingRegion(after: region) else { return }
+        let rect = SnapEngine.rect(for: left, in: area)
+        guard let offer = SnapAssist.offer(after: region, snappedID: id, windows: registry.switcherWindows(),
+                                           limit: SnapAssistPanel.capacity(for: rect)) else { return }
+        assist.show(offer.windows, over: rect)
+    }
+
+    /// The window picked in Snap Assist fills the region left: brought forward
+    /// first (a minimized one comes back), then sized, both in order on its app's
+    /// queue. Like any snap, ⌃⌥↓ gives a free window its frame back later.
+    private func fill(_ region: CGRect, with id: CGWindowID) {
+        if let frame = registry.knownFrame(of: id),
+           let display = DisplayLayout.screenIndex(for: frame, in: NSScreen.screens),
+           SnapEngine.region(matching: frame, in: DisplayLayout.usableArea(of: NSScreen.screens[display])) == nil {
+            restoreFrames[id] = frame
+        }
+        Log.snap.info("Snap Assist fills the region left")
+        registry.focus(id)
+        registry.setFrame(of: id, to: region)
+    }
+
     // MARK: - Drag to edge
 
     /// Only remembers where the press was: every click on the Mac lands here, and
     /// `SnapDrag` looks the window up once the mouse has moved like a drag.
     private func mouseDown() {
+        // A click anywhere but on the cards closes them; clicks on DockFlip's
+        // own panel never reach this global monitor. Memory only, no window reads.
+        assist.dismiss()
         drag = SnapDrag(startMouse: NSEvent.mouseLocation)
         dragZone = nil
         unsnappedTo = nil
@@ -163,10 +201,16 @@ final class SnapController {
         let rect = SnapEngine.rect(for: zone.region, in: DisplayLayout.usableArea(of: zone.screen))
         Log.snap.info("Drag snap to \(String(describing: zone.region), privacy: .public)")
         let id = window.id
+        let region = zone.region
+        let area = DisplayLayout.usableArea(of: zone.screen)
         // Let the system finish its own drag handling first.
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .milliseconds(40))
-            self?.registry.setFrame(of: id, to: rect)
+            guard let self else { return }
+            self.registry.setFrame(of: id, to: rect)
+            // A click since the drop has moved on; the cards would come too late.
+            guard self.drag == nil else { return }
+            self.offerAssist(after: region, of: id, in: area)
         }
     }
 

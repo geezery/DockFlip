@@ -1,7 +1,8 @@
 import CoreGraphics
 
 /// Windows 11 Snap Assist rules, pure and unit-tested: after a window snaps, which
-/// region is left to fill and which windows to offer for it. No UI here yet.
+/// region is left to fill and which windows to offer for it. The panel that offers
+/// them is `SnapAssistPanel`.
 public enum SnapAssist {
     /// The region left beside a window just snapped to `snapped`: the other half,
     /// or for a quarter the rest of its own half. A maximized window leaves nothing.
@@ -27,5 +28,15 @@ public enum SnapAssist {
                 && !window.isOnOtherSpace
                 && (window.isMinimized || (window.frame.width > 0 && window.frame.height > 0))
         }
+    }
+
+    /// What to offer after a window snaps to `snapped`: the region left and the
+    /// windows for it, at most `limit` of them. Nil when there is nothing to offer:
+    /// a maximized window leaves no region, and a lone window has nobody to pair with.
+    public static func offer(after snapped: SnapRegion, snappedID: CGWindowID,
+                             windows: [WindowSnapshot], limit: Int) -> (region: SnapRegion, windows: [WindowSnapshot])? {
+        guard let region = remainingRegion(after: snapped), limit > 0 else { return nil }
+        let offered = Array(candidates(from: windows, excluding: snappedID).prefix(limit))
+        return offered.isEmpty ? nil : (region, offered)
     }
 }
