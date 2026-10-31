@@ -26,6 +26,15 @@ DockFlip switches it off while running and gives it back when it quits, includin
 when it's stopped from Terminal. If DockFlip crashed hard, start it and quit it
 once, and the native switcher is back.
 
+## I switched Accessibility off while DockFlip was running
+
+Without the permission DockFlip can show windows but can't switch to them, so
+it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second and opens its
+setup at the Accessibility step. Switch DockFlip back on in *System Settings →
+Privacy & Security → Accessibility* and it restarts by itself with its own ⌘Tab.
+If you'd rather not, close the setup window: macOS keeps ⌘Tab until you allow
+DockFlip again (**Grant Accessibility…** in the menu) or quit it.
+
 ## The menu says *⌘Tab: used by another app*
 
 Another app, usually AltTab, already holds ⌘Tab. DockFlip then leaves ⌘Tab to
