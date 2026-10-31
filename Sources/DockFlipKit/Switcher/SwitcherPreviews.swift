@@ -24,31 +24,28 @@ public enum SwitcherPreviews {
             let inView = Set(drawn)
             order += (0..<count).map { (front + $0) % count }.filter { !inView.contains($0) }
         }
-        var picked: [ID] = []
-        var seen = asked
-        for index in order where picked.count < batch {
-            if seen.insert(ids[index]).inserted { picked.append(ids[index]) }
-        }
-        return picked
+        return pick(order, of: ids, asked: asked, limit: batch)
     }
 
     /// For the grid (`SwitcherGrid`), which draws far more windows at once than the
     /// stack: the windows to capture now, nearest the selected one first, the one
-    /// after it before the one before it (wrapping, as ⌘⇧Tab starts on the last), up to `limit`,
-    /// none of them in `asked`.
+    /// after it before the one before it, up to `limit`, none of them in `asked`.
+    /// No wrapping: the grid shows the rows around the selected tile, so with
+    /// ⌘Tab on the second window the last windows are out of sight.
     public static func toCaptureAround<ID: Hashable>(
         ids: [ID], selection: Int, asked: Set<ID>, limit: Int
     ) -> [ID] {
         let count = ids.count
-        guard count > 0, limit > 0 else { return [] }
+        guard count > 0 else { return [] }
         let front = ((selection % count) + count) % count
-        var order = [front]
-        var distance = 1
-        while order.count < count {
-            order.append((front + distance) % count)
-            if order.count < count { order.append((front - distance % count + count) % count) }
-            distance += 1
+        let order = (0..<count).sorted { a, b in
+            (abs(a - front), a < front ? 1 : 0) < (abs(b - front), b < front ? 1 : 0)
         }
+        return pick(order, of: ids, asked: asked, limit: limit)
+    }
+
+    /// The ids at `order`, in that order, up to `limit`, skipping those in `asked`.
+    private static func pick<ID: Hashable>(_ order: [Int], of ids: [ID], asked: Set<ID>, limit: Int) -> [ID] {
         var picked: [ID] = []
         var seen = asked
         for index in order where picked.count < limit {
