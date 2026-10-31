@@ -12,6 +12,9 @@ struct SwitcherControllerTests {
         var windows: [WindowSnapshot]
         var commandHeld: Bool
         var focused: [CGWindowID] = []
+        /// Running apps with no window, and the ones ⌘Tab opened.
+        var windowlessApps: [SwitcherApp] = []
+        var opened: [pid_t] = []
         var slept: [Duration] = []
 
         init(windowIDs: [CGWindowID], commandHeld: Bool) {
@@ -48,6 +51,8 @@ struct SwitcherControllerTests {
             focusWindow: { mac.focused.append($0) },
             isCommandHeld: { mac.commandHeld },
             sleep: { mac.slept.append($0) },
+            windowlessApps: { mac.windowlessApps },
+            openApp: { mac.opened.append($0) },
             presenter: presenter
         )
         return (switcher, presenter)
@@ -313,13 +318,59 @@ struct SwitcherControllerTests {
         #expect(!switcher.isActive)
     }
 
-    @Test func noWindowsOpensNothing() {
+    @Test func noWindowsAndNoAppsOpensNothing() {
         let mac = FakeMac(windowIDs: [], commandHeld: true)
         let (switcher, presenter) = makeSwitcher(mac)
 
         #expect(!switcher.handle(.commandTab(shift: false)))
         #expect(presenter.shown == 0)
         #expect(!switcher.isActive)
+    }
+
+    @Test func noWindowsListsRunningAppsAndReleaseOpensTheSelectedOne() {
+        // Every window closed, Finder and Mail still running: ⌘Tab must still do something.
+        let mac = FakeMac(windowIDs: [], commandHeld: true)
+        mac.windowlessApps = [
+            SwitcherApp(pid: 101, name: "Finder", icon: nil),
+            SwitcherApp(pid: 202, name: "Mail", icon: nil),
+        ]
+        let (switcher, presenter) = makeSwitcher(mac)
+
+        #expect(switcher.handle(.commandTab(shift: false)))
+        #expect(switcher.isActive)
+        #expect(presenter.shown == 1)
+
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+
+        let opened = mac.opened
+        #expect(opened == [202])
+        #expect(mac.focused == [])
+        #expect(!switcher.isActive)
+    }
+
+    @Test func quickCommandTabWithOnlyOneWindowlessAppOpensIt() {
+        let mac = FakeMac(windowIDs: [], commandHeld: false)
+        mac.windowlessApps = [SwitcherApp(pid: 101, name: "Finder", icon: nil)]
+        let (switcher, presenter) = makeSwitcher(mac)
+
+        #expect(switcher.handle(.commandTab(shift: false)))
+
+        let opened = mac.opened
+        #expect(opened == [101])
+        #expect(presenter.shown == 0)
+    }
+
+    @Test func windowlessAppsAreNotListedBesideWindows() {
+        let mac = FakeMac(windowIDs: [10, 20], commandHeld: false)
+        mac.windowlessApps = [SwitcherApp(pid: 101, name: "Finder", icon: nil)]
+        let (switcher, _) = makeSwitcher(mac)
+
+        switcher.handle(.commandTab(shift: true))
+
+        let opened = mac.opened
+        #expect(opened == [])
+        #expect(mac.focused == [20])
     }
 
     @Test func lateReleaseAfterSwitchingDoesNothing() {

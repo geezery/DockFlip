@@ -21,6 +21,10 @@ final class SwitcherController {
     private let sleep: @MainActor (Duration) async -> Void
     /// Flip 3D or the Windows 11 grid, read as the switcher opens.
     private let style: @MainActor () -> SwitcherStyle
+    /// Running apps with no open window, listed only when there are no windows at all.
+    private let windowlessApps: @MainActor () -> [SwitcherApp]
+    /// Brings a windowless app forward, asking it to reopen a window.
+    private let openApp: @MainActor (pid_t) -> Void
     private let presenter: any SwitcherPresenter
     private let model: SwitcherModel
     private var selection: SwitcherSelection?
@@ -58,6 +62,8 @@ final class SwitcherController {
             isCommandHeld: { NSEvent.modifierFlags.contains(.command) },
             sleep: { try? await Task.sleep(for: $0) },
             style: { Settings.shared.switcherStyle },
+            windowlessApps: { registry.windowlessApps() },
+            openApp: { registry.openApp(pid: $0) },
             presenter: nil
         )
         // On the next turn, so launch itself is not held up by it.
@@ -78,9 +84,13 @@ final class SwitcherController {
         isCommandHeld: @escaping @MainActor () -> Bool,
         sleep: @escaping @MainActor (Duration) async -> Void,
         style: @escaping @MainActor () -> SwitcherStyle = { .flip3D },
+        windowlessApps: @escaping @MainActor () -> [SwitcherApp] = { [] },
+        openApp: @escaping @MainActor (pid_t) -> Void = { _ in },
         presenter: (any SwitcherPresenter)?
     ) {
         let model = SwitcherModel()
+        self.windowlessApps = windowlessApps
+        self.openApp = openApp
         self.switcherWindows = switcherWindows
         self.focusWindow = focusWindow
         self.isCommandHeld = isCommandHeld
@@ -155,7 +165,10 @@ final class SwitcherController {
 
     private func beginUnmeasured(reverse: Bool) -> Bool {
         let windows = switcherWindows()
-        guard !windows.isEmpty else { return false }
+        // ⌘Tab is ours and macOS's own is off, so with every window closed it
+        // must still reach the running apps: list them as app cards instead.
+        let apps = windows.isEmpty ? windowlessApps() : []
+        guard !windows.isEmpty || !apps.isEmpty else { return false }
 
         allWindows = windows
         let previews = PreviewProvider.shared.isAvailable
@@ -163,7 +176,7 @@ final class SwitcherController {
         model.query = ""
         model.thumbnails = [:]
         model.style = style()
-        model.items = windows.map { window in
+        let windowItems: [SwitcherItem] = windows.map { window in
             let placement = WindowAppearance.placement(of: window.frame)
             return SwitcherItem(
                 windowID: window.id,
@@ -181,9 +194,10 @@ final class SwitcherController {
                 neverPictured: previews && PreviewProvider.neverPictured(window.bundleID)
             )
         }
+        model.items = apps.map(Self.appCard) + windowItems
         allItems = model.items
 
-        let selection = SwitcherSelection(count: windows.count, reverse: reverse)
+        let selection = SwitcherSelection(count: model.items.count, reverse: reverse)
         // Open without animating from the previous session's state.
         showSelection(selection.index, animated: false)
         self.selection = selection
@@ -279,7 +293,20 @@ final class SwitcherController {
         guard isActive, model.items.indices.contains(index) else { return }
         let item = model.items[index]
         hide(returningToPreviousApp: false)
-        focusWindow(item.windowID)
+        if let pid = item.appPID {
+            openApp(pid)
+        } else {
+            focusWindow(item.windowID)
+        }
+    }
+
+    private static func appCard(_ app: SwitcherApp) -> SwitcherItem {
+        SwitcherItem(
+            windowID: 0, title: app.name, appName: app.name, icon: app.icon,
+            minimap: nil, isMinimized: false, isOnOtherSpace: false, document: nil,
+            screenName: nil, sizeText: "", windowSize: .zero, tint: .gray,
+            neverPictured: false, appPID: app.pid
+        )
     }
 
     private func cancel() {

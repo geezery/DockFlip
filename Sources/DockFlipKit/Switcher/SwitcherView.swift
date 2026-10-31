@@ -4,7 +4,8 @@ import SwiftUI
 /// One window in the switcher, ready to draw.
 struct SwitcherItem: Identifiable {
     let windowID: CGWindowID
-    var id: CGWindowID { windowID }
+    /// Window ids are positive; an app card (`appPID`) takes its negated pid so the two never meet.
+    var id: Int64 { appPID.map { -Int64($0) - 1 } ?? Int64(windowID) }
     let title: String
     let appName: String
     let icon: NSImage?
@@ -25,11 +26,15 @@ struct SwitcherItem: Identifiable {
     let tint: Color
     /// Thumbnails are on, but this app is never pictured (password managers, System Settings).
     let neverPictured: Bool
+    /// Set for an app card: a running app with no open window, which ⌘Tab
+    /// lists when there are no windows at all. Picking it opens the app.
+    var appPID: pid_t? = nil
 }
 
 extension SwitcherItem {
     /// "Safari", "Safari · Minimized", "Safari · On another desktop".
     var subtitle: String {
+        if appPID != nil { return "\(appName) · \(L("No open windows"))" }
         if isMinimized { return "\(appName) · \(L("Minimized"))" }
         if isOnOtherSpace { return "\(appName) · \(L("On another desktop"))" }
         return appName
@@ -268,19 +273,22 @@ struct FanCard: View {
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 }
-                HStack(spacing: 14) {
-                    Minimap(rect: item.minimap, isMinimized: item.isMinimized, tint: item.tint, icon: item.icon)
-                        .frame(width: 160, height: 100)
-                    VStack(alignment: .leading, spacing: 4) {
-                        if let screen = item.screenName {
-                            Text(verbatim: screen).lineLimit(2)
+                // An app card has no window: no mini-map, display or size.
+                if item.appPID == nil {
+                    HStack(spacing: 14) {
+                        Minimap(rect: item.minimap, isMinimized: item.isMinimized, tint: item.tint, icon: item.icon)
+                            .frame(width: 160, height: 100)
+                        VStack(alignment: .leading, spacing: 4) {
+                            if let screen = item.screenName {
+                                Text(verbatim: screen).lineLimit(2)
+                            }
+                            Text(verbatim: item.sizeText)
                         }
-                        Text(verbatim: item.sizeText)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
                     }
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
+                    .padding(.top, 6)
                 }
-                .padding(.top, 6)
             }
         }
         .padding(28)
