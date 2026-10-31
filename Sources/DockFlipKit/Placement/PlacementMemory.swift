@@ -75,15 +75,20 @@ final class PlacementMemory {
     private func restore(_ layout: [CGWindowID: CGRect]) {
         let start = Perf.now()
         let screens = NSScreen.screens.map { DisplayLayout.axFrame(of: $0) }
-        var moved = 0
-        for (id, frame) in layout {
-            guard let window = registry.window(id), !window.isMinimized,
-                  screens.contains(where: { $0.intersects(frame) }),
-                  let current = registry.liveFrame(of: id),
-                  current.integral != frame.integral else { continue }
-            registry.setFrame(of: id, to: frame)
-            moved += 1
+        // Frames from memory (kept current by moved/resized notifications), so a hung app
+        // can't stall the main thread and its event taps; setFrame itself runs on AppQueues.
+        var known: [CGWindowID: PlacementRestore.Known] = [:]
+        for id in layout.keys {
+            guard let window = registry.window(id), !window.isMinimized else { continue }
+            if let frame = registry.knownFrame(of: id) {
+                known[id] = .frame(frame)
+            } else {
+                known[id] = .unknownFrame
+            }
         }
+        let moves = PlacementRestore.moves(layout: layout, screens: screens, known: known)
+        for move in moves { registry.setFrame(of: move.id, to: move.frame) }
+        let moved = moves.count
         Perf.shared.record("placement.restore", since: start, detail: "\(moved) windows")
         Log.app.notice("Restored \(moved, privacy: .public) window positions")
     }
