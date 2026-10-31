@@ -205,6 +205,81 @@ struct SwitcherControllerTests {
         #expect(mac.focused.isEmpty)
     }
 
+    @Test func holdingCommandAgainAfterClearingTheFilterSwitchesOnRelease() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, presenter) = makeSwitcher(mac)
+        switcher.handle(.commandTab(shift: false))
+        switcher.handle(.text("20"))
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)   // ⌘ up while filtering: no switch
+        #expect(switcher.handle(.escape))    // filter cleared; 10 is in front
+
+        mac.commandHeld = true
+        // Passed on, not swallowed: other apps see ⌘ go down.
+        #expect(!switcher.handle(.commandPressed))
+        #expect(switcher.isActive)
+        #expect(switcher.handle(.commandTab(shift: false))) // ⌘Tab on to 20
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+
+        #expect(mac.focused == [20])
+        #expect(presenter.hidden == [false])
+        #expect(!switcher.isActive)
+    }
+
+    @Test func holdingCommandAgainWhileFilteringStillWaitsForReturn() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, _) = makeSwitcher(mac)
+        switcher.handle(.commandTab(shift: false))
+        switcher.handle(.text("30"))
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+
+        mac.commandHeld = true
+        switcher.handle(.commandPressed)
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+        #expect(mac.focused.isEmpty)
+        #expect(switcher.isActive)
+
+        // That release used up the re-arm: a later modifier change doesn't switch either.
+        #expect(switcher.handle(.escape))
+        switcher.handle(.commandReleased)
+        #expect(mac.focused.isEmpty)
+        #expect(switcher.isActive)
+    }
+
+    @Test func lateCommandPressedAfterCommandIsUpDoesNotRearm() {
+        // The panel's monitor and the flags tap both report a ⌘ press; one copy can
+        // come in after ⌘ is already up again.
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, _) = makeSwitcher(mac)
+        switcher.handle(.commandTab(shift: false))
+        switcher.handle(.text("20"))
+        mac.commandHeld = false
+        switcher.handle(.commandReleased)
+        switcher.handle(.escape)
+
+        switcher.handle(.commandPressed)   // stale: ⌘ is not down
+        switcher.handle(.commandReleased)  // say ⇧ pressed
+
+        #expect(mac.focused.isEmpty)
+        #expect(switcher.isActive)
+    }
+
+    @Test func commandPressedWhileClosedIsIgnored() {
+        let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
+        let (switcher, presenter) = makeSwitcher(mac)
+
+        #expect(!switcher.handle(.commandPressed))
+        mac.commandHeld = false
+        #expect(!switcher.handle(.commandReleased))
+
+        #expect(!switcher.isActive)
+        #expect(presenter.shown == 0)
+        #expect(mac.focused.isEmpty)
+    }
+
     @Test func escapeClearsTheFilterFirstThenGoesBack() {
         let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: true)
         let (switcher, presenter) = makeSwitcher(mac)

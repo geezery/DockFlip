@@ -111,7 +111,7 @@ final class SwitcherPanel: SwitcherPresenter {
     private func handleLocal(_ event: NSEvent) -> Bool {
         guard isShown else { return false }
         if event.type == .flagsChanged {
-            if !event.modifierFlags.contains(.command) { onInput?(.commandReleased) }
+            onInput?(event.modifierFlags.contains(.command) ? .commandPressed : .commandReleased)
             return false
         }
         let input = SwitcherInput.from(

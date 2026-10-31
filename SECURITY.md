@@ -30,7 +30,7 @@ yourself.
 | The Dock's hovered icon | The window list opens above the right app |
 | Left mouse clicks and drags, anywhere on the Mac (the pointer's position only) | A click on a Dock icon brings its window forward or minimizes it, and dragging a window to a screen edge snaps it |
 | Pointer movement, **only while it's over the Dock or a window list** | The list closes when you move away |
-| Modifier keys (⌘, ⌃, ⌥, ⇧) | It notices when you let go of ⌘ |
+| Modifier keys (⌘, ⌃, ⌥, ⇧) | It notices when you press or let go of ⌘ |
 | Other keys, **only while the ⌘Tab switcher is open** | Type-to-filter works |
 
 Clicks and drags outside the Dock pass through untouched. DockFlip uses only
