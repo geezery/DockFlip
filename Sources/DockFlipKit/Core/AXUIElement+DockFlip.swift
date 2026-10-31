@@ -48,27 +48,23 @@ extension AXUIElement {
         (copyAttribute(name) as? [AXUIElement]) ?? []
     }
 
-    private func axValue(_ name: String) -> AXValue? {
-        guard let value = copyAttribute(name), CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
-        return (value as! AXValue)
-    }
-
-    private func point(_ name: String) -> CGPoint? {
-        guard let value = axValue(name) else { return nil }
-        var point = CGPoint.zero
-        return AXValueGetValue(value, .cgPoint, &point) ? point : nil
-    }
-
-    private func size(_ name: String) -> CGSize? {
-        guard let value = axValue(name) else { return nil }
-        var size = CGSize.zero
-        return AXValueGetValue(value, .cgSize, &size) ? size : nil
+    /// The one decoder of a position and a size AXValue into a frame, for a
+    /// frame read alone (`frame`) or in a batch (`copyAttributes`). Nil when
+    /// either is missing, not an AXValue (a batch's missing attribute is an
+    /// error AXValue), or not the point or size asked for.
+    static func frame(position: CFTypeRef?, size: CFTypeRef?) -> CGRect? {
+        guard let position, let size,
+              CFGetTypeID(position) == AXValueGetTypeID(), CFGetTypeID(size) == AXValueGetTypeID() else { return nil }
+        var origin = CGPoint.zero
+        var extent = CGSize.zero
+        guard AXValueGetValue(position as! AXValue, .cgPoint, &origin),
+              AXValueGetValue(size as! AXValue, .cgSize, &extent) else { return nil }
+        return CGRect(origin: origin, size: extent)
     }
 
     /// Frame in global coordinates with the origin at the top-left of the primary display.
     var frame: CGRect? {
-        guard let origin = point(kAXPositionAttribute), let extent = size(kAXSizeAttribute) else { return nil }
-        return CGRect(origin: origin, size: extent)
+        Self.frame(position: copyAttribute(kAXPositionAttribute), size: copyAttribute(kAXSizeAttribute))
     }
 
     /// The window's id. Every answer also goes to the self-check: on a window
