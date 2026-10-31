@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Settings gives ⌘Tab back to macOS within a second (`AccessibilityLoss`).
     private lazy var permissionWatch = AccessibilityWatch()
     private var permissionObserver: NSObjectProtocol?
+    private var permissionActivationObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = Perf.shared // starts the clock: the debug log covers everything from launch
@@ -86,6 +87,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { _ = self?.permissionWatch.settingsChanged() }
+        }
+        // The announcement is not documented and can be missed. Leaving System Settings
+        // brings another app to the front, so each app switch asks once too: one local
+        // call per switch, still no timer.
+        permissionActivationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.permissionWatch.check() }
         }
     }
 

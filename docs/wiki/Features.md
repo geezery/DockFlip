@@ -115,7 +115,8 @@ and Settings say so (see [Troubleshooting](Troubleshooting)). ⌘` stays the mac
   *Keep* spares that one window until it sits unused again; its menu has *Never
   suggest this app again*, and *Kept Apps* at the bottom lists those apps to remove.
 - **Not responding:** a hung app's window list says so.
-- **Show desktop** with ⌃⌥D, like Win+D.
+- **Show desktop** with ⌃⌥D, like Win+D. Press it again and the windows come
+  back, with the one you were typing in in front.
 - **Window Layout** in the menu bar menu lists every shortcut; clicking one
   applies it.
 
