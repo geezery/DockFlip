@@ -44,6 +44,10 @@
 "Window thumbnails" = "Fönsterminiatyrer";
 "Keyboard shortcuts" = "Kortkommandon";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab och kortkommandona ⌃⌥ för att fästa fönster";
+"⌘Tab switcher" = "⌘Tab-växlare";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Flip 3D som i Windows 7, eller ett rutnät som i Windows 11";
+"Flip 3D" = "Flip 3D";
+"Grid" = "Rutnät";
 "Managed by your organization" = "Hanteras av din organisation";
 "Screen Recording is not allowed yet" = "Skärminspelning är inte tillåten än";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Tillåt DockFlip i Systeminställningar. Om det redan är tillåtet, starta om DockFlip.";

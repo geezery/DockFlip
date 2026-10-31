@@ -72,7 +72,10 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   list (other Spaces) are found by AltTab's element-id walk, off the main thread.
 - Hold ⌘, press Tab to advance; ⇧ reverses; Esc cancels; release ⌘ to switch.
 - Windows 7 Flip 3D look: windows in a slanted, receding 3D stack; the selected
-  window in front.
+  window in front. Or, chosen in Settings, the Windows 11 look: one frosted panel
+  with a tile per window (icon and title above its picture) in rows, the selected
+  tile outlined. Both behave the same; only the drawing differs. The grid draws
+  the rows around the selected tile only, so it keeps the same ⌘Tab budget.
 - Type to filter: typed words narrow the stack to windows whose title, app or
   document contains them (case ignored; ä and ö count as letters of their own). While filtering, releasing
   ⌘ does not switch; Return does, Esc clears the filter. Cleared on close.
@@ -130,13 +133,17 @@ with app shortcuts; Globe combinations belong to macOS's own tiling.)
 | Win+D | ⌃⌥D (show desktop) |
 | Win+E | ⌃⌥E (new Finder window) |
 
-## Settings (three)
+## Settings (four)
 
 1. Launch at login — on
 2. Window thumbnails — off until chosen in onboarding
 3. Keyboard shortcuts — on
+4. ⌘Tab switcher — Flip 3D (or the Windows 11 grid)
 
-Anything else needs a strong case against principles 1 and 2.
+Anything else needs a strong case against principles 1 and 2. The ⌘Tab look made
+that case: Windows 7 and Windows 11 users each remember a different Alt+Tab
+fondly, both are the best bits of Windows, and neither would call the other
+"Alt+Tab". One choice between two whole looks, not knobs for angles or sizes.
 
 ## Out of scope
 

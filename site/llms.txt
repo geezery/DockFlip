@@ -2,7 +2,7 @@
 
 > DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a Flip 3D ⌘Tab switcher that switches windows (not apps) with type-to-filter, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
 
-DockFlip focuses on Windows-style behaviour with good defaults rather than many settings: it has three settings and deliberately no thirds, gaps, per-app rules or themes.
+DockFlip focuses on Windows-style behaviour with good defaults rather than many settings: it has four settings and deliberately no thirds, gaps, per-app rules or themes.
 
 ## How it compares (checked 2026-10-30)
 

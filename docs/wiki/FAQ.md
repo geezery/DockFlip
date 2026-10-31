@@ -6,7 +6,7 @@ Yes. GPL-3.0, no trial, no "Pro", no subscription, and no account.
 **How is it different from AltTab or DockDoor?**
 They're excellent, and DockFlip learned a lot from them. DockFlip does all
 three jobs in one free app without Screen Recording, lists browser tabs, and
-has three settings. AltTab's search is in its paid Pro version, and DockDoor
+has four settings. AltTab's search is in its paid Pro version, and DockDoor
 needs Screen Recording. If you want to tune every look, or run an older macOS,
 they're the better fit. The dated
 [comparison](https://github.com/geezery/DockFlip#how-it-compares) has the
@@ -29,6 +29,8 @@ app's windows.
 **Why Flip 3D, of all things?**
 Because it was great and nobody should have taken it away. A stack also fits
 more windows on screen than a grid, and the one in front is unmistakable.
+If you'd rather have Windows 11's grid of tiles, choose *Grid* under
+*⌘Tab switcher* in Settings.
 
 **Why ⌃⌥ instead of ⌘ for snapping?**
 ⌘ shortcuts belong to apps, and Globe shortcuts belong to macOS's own tiling.

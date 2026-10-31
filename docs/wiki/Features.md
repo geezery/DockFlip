@@ -73,6 +73,10 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
 - **Works under secure input.** Password fields and some terminal modes turn on
   macOS's secure keyboard input, which blinds most switchers. DockFlip's keeps
   working.
+- **Or the Windows 11 look.** Choose *Grid* under *⌘Tab switcher* in Settings
+  and ⌘Tab shows one frosted panel with a tile per window, its icon and title
+  above its picture, in rows like Windows 11's Alt+Tab. The selected tile is
+  outlined. The keys, the order and type to filter work just the same.
 
 macOS's own ⌘Tab is switched off while DockFlip runs and comes back when you
 quit. If another app (AltTab) already holds ⌘Tab, macOS's stays on and the menu

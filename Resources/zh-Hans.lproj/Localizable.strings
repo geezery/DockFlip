@@ -44,6 +44,10 @@
 "Window thumbnails" = "窗口缩略图";
 "Keyboard shortcuts" = "键盘快捷键";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab 和 ⌃⌥ 贴靠快捷键";
+"⌘Tab switcher" = "⌘Tab 切换器";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "像 Windows 7 那样的 Flip 3D，或像 Windows 11 那样的网格";
+"Flip 3D" = "Flip 3D";
+"Grid" = "网格";
 "Managed by your organization" = "由你的组织管理";
 "Screen Recording is not allowed yet" = "尚未允许录屏";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "请在系统设置中允许 DockFlip。如果已经允许，请重新启动 DockFlip。";

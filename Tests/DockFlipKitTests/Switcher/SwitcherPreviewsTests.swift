@@ -78,4 +78,22 @@ struct SwitcherPreviewsTests {
         #expect(capture(ids(3), selection: 7, lookAhead: false) == [101, 102, 100])
         #expect(capture(ids(3), selection: -1, lookAhead: false) == [102, 100, 101])
     }
+
+    // MARK: - The Windows 11 grid (`toCaptureAround`)
+
+    @Test func gridAsksForTheWindowsAroundTheSelectionNearestFirst() {
+        let asked = SwitcherPreviews.toCaptureAround(ids: ids(10), selection: 1, asked: [], limit: 5)
+        #expect(asked == [101, 102, 100, 103, 109])
+    }
+
+    @Test func gridAsksForEveryWindowOnceAndOnlyNewOnes() {
+        let windows = ids(5)
+        let all = SwitcherPreviews.toCaptureAround(ids: windows, selection: 4, asked: [], limit: 24)
+        #expect(Set(all) == Set(windows))
+        #expect(all.count == windows.count)
+        #expect(all.first == 104) // ⌘⇧Tab opens on the last window: it comes first
+        let again = SwitcherPreviews.toCaptureAround(ids: windows, selection: 2, asked: Set(all), limit: 24)
+        #expect(again.isEmpty)
+        #expect(SwitcherPreviews.toCaptureAround(ids: ids(0), selection: 0, asked: [], limit: 24).isEmpty)
+    }
 }

@@ -152,7 +152,7 @@ final class SwitcherPanel: SwitcherPresenter {
             keyable: true
         )
 
-        let hosting = FirstMouseHostingView(rootView: SwitcherView(model: model))
+        let hosting = FirstMouseHostingView(rootView: SwitcherRootView(model: model))
         hosting.sizingOptions = []
         panel.contentView = hosting
         observeResignKey(of: panel)

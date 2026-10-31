@@ -44,6 +44,10 @@
 "Window thumbnails" = "Vensterminiaturen";
 "Keyboard shortcuts" = "Toetscombinaties";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab en de ⌃⌥-toetscombinaties voor uitlijnen";
+"⌘Tab switcher" = "⌘Tab-wisselaar";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Flip 3D zoals in Windows 7, of een raster zoals in Windows 11";
+"Flip 3D" = "Flip 3D";
+"Grid" = "Raster";
 "Managed by your organization" = "Beheerd door je organisatie";
 "Screen Recording is not allowed yet" = "Schermopname is nog niet toegestaan";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Sta DockFlip toe in Systeeminstellingen. Is het al toegestaan, herstart DockFlip dan.";

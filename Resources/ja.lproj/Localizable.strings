@@ -44,6 +44,10 @@
 "Window thumbnails" = "ウインドウのサムネール";
 "Keyboard shortcuts" = "キーボードショートカット";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tabと⌃⌥のスナップショートカット";
+"⌘Tab switcher" = "⌘Tabスイッチャー";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Windows 7のようなフリップ3D、またはWindows 11のようなグリッド";
+"Flip 3D" = "フリップ3D";
+"Grid" = "グリッド";
 "Managed by your organization" = "組織によって管理されています";
 "Screen Recording is not allowed yet" = "画面収録はまだ許可されていません";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "システム設定でDockFlipを許可してください。すでに許可している場合は、DockFlipを再起動してください。";
