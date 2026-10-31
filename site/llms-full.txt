@@ -1,6 +1,6 @@
 # DockFlip: the full description
 
-> DockFlip is a free, open-source (GPL-3.0) macOS menu bar app that brings three Windows habits to the Mac: window lists with browser tabs above the real Dock's icons, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, shown as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style snapping (⌃⌥ arrows, drag to edges and corners, Snap Assist). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. macOS 26 or later; universal (Apple silicon and Intel).
+> DockFlip is a free, open-source (GPL-3.0) macOS menu bar app that brings three Windows habits to the Mac: window lists with browser tabs above the real Dock's icons, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, shown as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style snapping (⌃⌥ arrows, drag to edges and corners, Snap Assist). Core features require only the Accessibility permission; optional window thumbnails (off by default) also require Screen Recording. It has no networking code and no third-party dependencies. macOS 26 or later; universal (Apple silicon and Intel).
 
 This is the long version of [llms.txt](https://geezery.github.io/DockFlip/llms.txt), for readers who want the details in one page.
 
