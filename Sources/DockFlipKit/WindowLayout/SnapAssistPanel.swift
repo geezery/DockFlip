@@ -92,7 +92,7 @@ final class SnapAssistPanel {
     /// side and drop in as they come. Only while thumbnails are on.
     private func loadPreviews(of windows: [WindowSnapshot], enabled: Bool) {
         guard enabled else { return }
-        for window in windows {
+        for window in windows where !PreviewProvider.neverPictured(window) {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
                 model.thumbnails[window.id] = cached
             }

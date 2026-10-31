@@ -135,7 +135,8 @@ front.
 <img src="docs/assets/feature-snap.gif" alt="Windows snapping into the left half, the right half and the quarters of the screen" width="100%">
 
 **⌃⌥ is your Win key.** Use the arrows for halves, maximize and quarters, or
-drag a window to an edge or a corner and let go. The space left beside it
+drag a window to an edge or a corner and let go; drag it away and it takes back
+its earlier size. The space left beside a half or a quarter
 shows your other windows: click one, or pick it with the arrows and Return,
 and it fills that space. Esc or a click elsewhere closes them.
 

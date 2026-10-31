@@ -50,7 +50,7 @@ extension SwitcherItem {
             sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
             windowSize: window.frame.size,
             tint: WindowAppearance.tint(of: window),
-            neverPictured: previews && PreviewProvider.neverPictured(window.bundleID)
+            neverPictured: previews && PreviewProvider.neverPictured(window)
         )
     }
 
