@@ -39,7 +39,7 @@ struct OnboardingView: View {
     private var footer: some View {
         HStack(spacing: 12) {
             HStack(spacing: 6) {
-                ForEach(OnboardingModel.Step.allCases, id: \.rawValue) { step in
+                ForEach(model.steps, id: \.rawValue) { step in
                     Capsule()
                         .fill(step == model.step ? Color.accentColor : Color.primary.opacity(0.15))
                         .frame(width: step == model.step ? 22 : 7, height: 7)

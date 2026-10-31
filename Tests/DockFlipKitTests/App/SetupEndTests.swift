@@ -11,6 +11,7 @@ struct SetupEndTests {
     final class FakeSettings: SetupSettings {
         var previewsEnabled = false
         var onboardingCompleted = false
+        var previewsManaged = false
         var loginItem = false
         var loginItemWrites = 0
         /// Set to make the login item refuse writes, as macOS does when DockFlip is
@@ -112,6 +113,44 @@ struct SetupEndTests {
         let problem = SetupEnd.problemToShow(started: started, settings: settings)
 
         #expect(problem == nil)
+    }
+
+    /// The real Settings under a profile that forces thumbnails off: the setup answer
+    /// must not be written, and the managed key must keep its forced value.
+    @Test func managedPreviewsIgnoreTheSetupAnswer() {
+        let name = "DockFlipTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        defaults.set(false, forKey: "previewsEnabled")
+        let settings = Settings(defaults: defaults, isForced: { $0 == "previewsEnabled" }, loginItem: RefusingLoginItem())
+        let started = SetupEnd.save(previews: true, launchAtLogin: false, trusted: true, to: settings)
+        let stored = defaults.object(forKey: "previewsEnabled") as? Bool
+
+        #expect(started)
+        #expect(settings.previewsManaged)
+        #expect(!settings.previewsEnabled)
+        #expect(stored == false)
+    }
+
+    @Test func managedPreviewsSkipTheThumbnailsStep() {
+        let managed = OnboardingModel.Step.shown(previewsManaged: true)
+        let free = OnboardingModel.Step.shown(previewsManaged: false)
+
+        #expect(managed == [.welcome, .accessibility, .finish])
+        #expect(free == [.welcome, .accessibility, .previews, .finish])
+    }
+
+    @Test func nextAndBackStepOverTheManagedStep() {
+        let model = OnboardingModel(previewsManaged: true)
+        model.granted = true
+        model.step = .accessibility
+        model.next()
+        let afterNext = model.step
+        model.back()
+        let afterBack = model.step
+
+        #expect(afterNext == .finish)
+        #expect(afterBack == .accessibility)
     }
 
     @Test func launchAtLoginStartsOnOnlyForAFirstSetup() {

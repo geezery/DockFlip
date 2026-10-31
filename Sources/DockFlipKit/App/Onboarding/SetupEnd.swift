@@ -7,6 +7,8 @@ protocol SetupSettings: AnyObject {
     var previewsEnabled: Bool { get set }
     var launchAtLogin: Bool { get set }
     var onboardingCompleted: Bool { get set }
+    /// True when an MDM profile forces `previewsEnabled`: setup must not write it.
+    var previewsManaged: Bool { get }
     /// Why the last Launch at login write didn't take, if it didn't.
     var launchAtLoginProblem: LoginItemProblem? { get }
 }
@@ -20,10 +22,11 @@ enum SetupEnd {
     /// Saves the choices once Accessibility is allowed and returns true: DockFlip starts.
     /// Without the permission it saves nothing and returns false, so setup comes back.
     /// `previews` is nil when the question wasn't answered: the setting stays as it is.
+    /// A profile-managed setting stays as it is too; the profile decides it, not setup.
     @discardableResult
     static func save(previews: Bool?, launchAtLogin: Bool, trusted: Bool, to settings: SetupSettings) -> Bool {
         guard trusted else { return false }
-        if let previews { settings.previewsEnabled = previews }
+        if let previews, !settings.previewsManaged { settings.previewsEnabled = previews }
         // Each write registers or unregisters the login item: write only a change.
         if launchAtLogin != settings.launchAtLogin { settings.launchAtLogin = launchAtLogin }
         settings.onboardingCompleted = true
