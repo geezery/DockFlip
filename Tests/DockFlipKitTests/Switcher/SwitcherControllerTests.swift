@@ -55,9 +55,14 @@ struct SwitcherControllerTests {
         // ⌘ was let go before the hot key was handled: no release event follows.
         let mac = FakeMac(windowIDs: [10, 20, 30], commandHeld: false)
         let (switcher, presenter) = makeSwitcher(mac)
+        var active: [Bool] = []
+        switcher.onActiveChanged = { active.append($0) }
 
         #expect(switcher.handle(.commandTab(shift: false)))
 
+        let activeChanges = active
+        #expect(activeChanges == [])
+        #expect(presenter.hidden == [])
         #expect(mac.focused == [20])
         #expect(presenter.shown == 0)
         #expect(presenter.drawn == 0)
