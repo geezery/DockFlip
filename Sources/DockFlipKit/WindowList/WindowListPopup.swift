@@ -24,6 +24,11 @@ final class WindowListPopup {
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures are loading or loaded, so a redraw does not start them over.
     private var previewIDs: [CGWindowID] = []
+    /// Windows past the first batch, captured one by one as the mouse reaches them.
+    private var hoverPreviewIDs = Set<CGWindowID>()
+    private var hoverPreviewTasks: [Task<Void, Never>] = []
+    /// The open list's windows, for capturing the hovered one.
+    private var shownWindows: [WindowSnapshot] = []
     /// The hovered icon whose windows had not arrived when its list wanted to open.
     private var waiting = WindowListWait()
 
@@ -35,6 +40,7 @@ final class WindowListPopup {
         self.registry = registry
         // Windows change (titles, minimizing, closing) while the list is open.
         registry.addObserver { [weak self] in self?.refreshIfVisible() }
+        model.peekChanged = { [weak self] id in self?.loadHoveredPreview(id) }
     }
 
     // MARK: - Hover choreography
@@ -92,6 +98,8 @@ final class WindowListPopup {
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
         previewIDs = []
+        cancelHoverPreviews()
+        shownWindows = []
         shownSignature = []
         panel?.orderOut(nil)
         currentKey = nil
@@ -141,7 +149,11 @@ final class WindowListPopup {
         waiting.stop()
         let changedItem = currentKey != key
         currentKey = key
-        if changedItem { model.startNewList() }
+        if changedItem {
+            cancelHoverPreviews()
+            model.startNewList()
+        }
+        shownWindows = item.windows
 
         let activeID = registry.activeWindowID()
         let title = item.isNotResponding ? "\(item.name) — \(L("Not responding"))" : item.name
@@ -187,7 +199,10 @@ final class WindowListPopup {
         model.showsPreviews = previews
 
         showPanel(size: WindowListLayout.size(rows: rows, expanded: model.expanded, previews: previews), at: anchor, edge: source.dockEdge)
-        if previews { loadPreviews(for: Array(item.windows.prefix(8))) }
+        if previews {
+            let first = Set(WindowListPreviews.firstBatch(item.windows.map(\.id)))
+            loadPreviews(for: item.windows.filter { first.contains($0.id) })
+        }
     }
 
     /// Next to the icon on the side away from the Dock's edge (above a bottom
@@ -235,6 +250,29 @@ final class WindowListPopup {
                 self.model.thumbnails[window.id] = image
             }
         }
+    }
+
+    /// The peek pane turned to a window the first batch left out (the 9th
+    /// onwards): capture just that one.
+    private func loadHoveredPreview(_ id: CGWindowID) {
+        guard isVisible, model.showsPreviews,
+              let target = WindowListPreviews.onHover(id, listed: shownWindows.map(\.id),
+                                                      requested: Set(previewIDs).union(hoverPreviewIDs),
+                                                      shown: Set(model.thumbnails.keys)),
+              let window = shownWindows.first(where: { $0.id == target }) else { return }
+        hoverPreviewIDs.insert(target)
+        if let cached = PreviewProvider.shared.cachedThumbnail(for: target) { model.thumbnails[target] = cached }
+        hoverPreviewTasks.append(Task { @MainActor [weak self] in
+            let image = await PreviewProvider.shared.thumbnail(for: window)
+            guard !Task.isCancelled, let self, self.isVisible, let image else { return }
+            self.model.thumbnails[target] = image
+        })
+    }
+
+    private func cancelHoverPreviews() {
+        hoverPreviewTasks.forEach { $0.cancel() }
+        hoverPreviewTasks = []
+        hoverPreviewIDs = []
     }
 
     private func makePanel() -> NSPanel {

@@ -58,7 +58,12 @@ final class WindowListModel: ObservableObject {
     /// The window whose "Show all N tabs" or "Show fewer" line the mouse is on.
     @Published var hoveredFold: CGWindowID?
     /// The window whose picture the peek pane shows (previews on, with tabs).
-    @Published var peekWindow: CGWindowID?
+    @Published var peekWindow: CGWindowID? {
+        didSet { if let peekWindow, peekWindow != oldValue { peekChanged?(peekWindow) } }
+    }
+    /// Called when the peek pane turns to another window, so the popup can
+    /// capture a window that the first batch of pictures left out.
+    var peekChanged: ((CGWindowID) -> Void)?
     /// The mouse is on the peek pane's picture.
     @Published var hoveringPeek = false
     /// Windows whose long tab list is shown in full.
