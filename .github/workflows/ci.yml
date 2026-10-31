@@ -41,6 +41,13 @@ jobs:
             exit 1
           }
 
+      # SwitcherViewTimingTests holds the Cmd-Tab switcher to SCOPE.md's budget with 60
+      # windows; its timings go on the run as notices, passed or failed.
+      - name: Switcher timing
+        if: ${{ !cancelled() }}
+        run: |
+          grep -ho 'SwitcherView timing: .*' test.log | sed 's/^/::notice::/' || true
+
       - name: Check bundle
         run: |
           plutil -lint build/DockFlip.app/Contents/Info.plist

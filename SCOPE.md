@@ -42,6 +42,11 @@ settings.
 | Launch to usable | < 0.5 s |
 | ⌘Tab: key press to switcher visible | < 50 ms |
 
+CI holds ⌘Tab to its budget with 60 windows: `SwitcherViewTimingTests` opens the
+stack and takes a step, allowing 3× on CI's virtual Mac and debug build, and fails
+if 60 windows cost much more than 10. The stack is drawn only after a 150 ms hold, so
+a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in the hold.
+
 ## In scope (v1)
 
 ### The Dock
