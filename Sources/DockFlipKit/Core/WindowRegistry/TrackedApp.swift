@@ -7,6 +7,9 @@ final class TrackedApp {
     let app: NSRunningApplication
     let element: AXUIElement
     var observer: AXObserver?
+    /// Subscribes a newly seen window to `observer`, on the app's queue: set once
+    /// the app accepted notifications. Tests stand in their own.
+    var subscribeWindow: (@Sendable (SendableElement) -> Void)?
     var windowElements: [CGWindowID: AXUIElement] = [:]
     weak var registry: WindowRegistry?
     /// A re-read is scheduled because the app did not answer in time.
@@ -19,6 +22,14 @@ final class TrackedApp {
     /// Once its windows are read, put its focused window first in the MRU order
     /// if it is the active app: a new window is known only after the read.
     var bringFocusedForward = false
+    /// Windows whose state is being read on the app's queue after a notification.
+    var updating = Set<CGWindowID>()
+    /// Windows that changed again during that read: read once more after it.
+    var updateAgain = Set<CGWindowID>()
+    /// Reads one window's state on its queue; tests stand in their own.
+    var readWindow: @Sendable (CGWindowID, SendableElement) -> WindowsRead.Window = {
+        WindowsRead.Window.read(id: $0, element: $1.element).window
+    }
     /// Reads the app's windows on its queue; tests stand in an app of their own.
     var readWindows: @Sendable (AXUIElement) -> WindowsRead = { WindowsRead.read(app: $0) }
     /// Asks the app for its focused window on its queue; tests stand in their own.
@@ -30,6 +41,11 @@ final class TrackedApp {
         WindowsRead.read(known: $0)
     }
 
+    /// Moves and resizes a window on its queue; tests stand in their own.
+    var setWindowFrame: @Sendable (CGRect, AXUIElement) -> FrameSetter.Answer = {
+        FrameSetter.set($0, on: $1)
+    }
+
     var pid: pid_t { app.processIdentifier }
 
     init(app: NSRunningApplication, registry: WindowRegistry) {
@@ -39,9 +55,12 @@ final class TrackedApp {
     }
 
     func id(of element: AXUIElement) -> CGWindowID? {
+        // It runs in the Accessibility callback on the main thread: the elements
+        // known are compared first, in memory, before the window id is asked for.
+        if let id = windowElements.first(where: { CFEqual($0.value, element) })?.key { return id }
         // Often a window that is already gone (its destroyed notification): kept
         // out of the self-check, where its failed lookup would read as macOS's.
         if let id = element.windowIDOfAnyElement, windowElements[id] != nil { return id }
-        return windowElements.first { CFEqual($0.value, element) }?.key
+        return nil
     }
 }

@@ -19,6 +19,8 @@ final class Settings: ObservableObject {
     /// True for a key an MDM profile sets (managed preferences, see docs/IT.md).
     private let isForced: (String) -> Bool
     private let loginItem: any LoginItem
+    /// Tokens for the managed-preferences observers; Settings lives as long as the app.
+    private var managedObservers: [NSObjectProtocol] = []
 
     /// Window pictures in the Dock list and ⌘Tab (needs Screen Recording).
     @Published var previewsEnabled: Bool {
@@ -90,6 +92,33 @@ final class Settings: ObservableObject {
         switcherStyle = SwitcherStyle(stored: defaults.string(forKey: Key.switcherStyle))
         onboardingCompleted = defaults.bool(forKey: Key.onboarded)
         debugLogging = defaults.bool(forKey: Key.debug)
+        observeManagedChanges()
+    }
+
+    /// An MDM profile installed or removed while DockFlip runs: macOS posts the MCX
+    /// notification (and UserDefaults its change) but nothing re-reads our copies, so
+    /// without this the profile only took effect after a relaunch.
+    private func observeManagedChanges() {
+        let reload: @Sendable (Notification) -> Void = { [weak self] _ in
+            MainActor.assumeIsolated { self?.reloadManaged() }
+        }
+        managedObservers = [
+            NotificationCenter.default.addObserver(
+                forName: UserDefaults.didChangeNotification, object: defaults, queue: .main, using: reload),
+            DistributedNotificationCenter.default().addObserver(
+                forName: NSNotification.Name("com.apple.MCX._managementStatusChangedForDomains"),
+                object: nil, queue: .main, using: reload)
+        ]
+    }
+
+    /// Reads the profile-managed keys again: a newly forced value wins, and a removed
+    /// profile hands the key back to the user's own saved value.
+    func reloadManaged() {
+        objectWillChange.send() // previewsManaged / shortcutsManaged may have changed.
+        let previews = defaults.bool(forKey: Key.previews)
+        if previewsEnabled != previews { previewsEnabled = previews }
+        let shortcuts = defaults.bool(forKey: Key.shortcuts)
+        if shortcutsEnabled != shortcuts { shortcutsEnabled = shortcuts }
     }
 
     /// The value a profile forces for `key`, or nil when the user may change it.

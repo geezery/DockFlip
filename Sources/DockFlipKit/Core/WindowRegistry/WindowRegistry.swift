@@ -134,12 +134,16 @@ public final class WindowRegistry {
 
     /// Moves and resizes a window (`FrameSetter`). Returns before the app is
     /// asked: the calls run on the app's queue, and where the window ended up
-    /// comes back into the registry.
+    /// comes back into the registry. Until then memory holds the rect asked for,
+    /// so a second snap key pressed before a slow app answers decides from where
+    /// the window is going, not where it was; the app's answer corrects it.
     func setFrame(of id: CGWindowID, to rect: CGRect) {
-        guard let pid = windows[id]?.pid, let element = element(for: id) else { return }
+        guard let pid = windows[id]?.pid, let tracked = apps[pid], let element = element(for: id) else { return }
+        remember(rect, of: id)
         let target = SendableElement(element: element)
+        let setWindowFrame = tracked.setWindowFrame
         let start = Perf.now()
-        appQueues.run(for: pid, { FrameSetter.set(rect, on: target.element) }, then: { [weak self] answer in
+        appQueues.run(for: pid, { setWindowFrame(rect, target.element) }, then: { [weak self] answer in
             self?.frameSet(of: id, pid: pid, answer: answer, start: start)
         })
     }

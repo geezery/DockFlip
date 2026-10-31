@@ -7,6 +7,9 @@ import SwiftUI
 protocol SwitcherPresenter: AnyObject {
     /// Keys pressed while the switcher is shown, handed to the controller.
     var onInput: ((SwitcherInput) -> Void)? { get set }
+    /// Builds what `show()` needs ahead of time, off screen, so the first ⌘Tab
+    /// after launch does not wait for it.
+    func prepare()
     /// Orders the switcher in and takes the keyboard, but invisible and
     /// click-through until `draw()`: keys pressed during the hold (⌘Q, arrows)
     /// reach the switcher, not the app you are leaving.
@@ -39,6 +42,23 @@ final class SwitcherPanel: SwitcherPresenter {
 
     init(model: SwitcherModel) {
         self.model = model
+    }
+
+    /// Whether the panel exists yet; tests check that `prepare()` built it.
+    var isBuilt: Bool { panel != nil }
+    /// Whether the panel is on screen; `prepare()` must leave it off.
+    var isOnScreen: Bool { panel?.isVisible ?? false }
+
+    /// The first `show()` in a process would otherwise build the panel and its
+    /// SwiftUI host and lay out SwiftUI cold (fonts, symbols, materials) while ⌘Tab
+    /// waits. Doing it once at launch, never ordered in, moves that cost out of the
+    /// 50 ms budget (SCOPE.md). Idempotent.
+    func prepare() {
+        guard panel == nil else { return }
+        let panel = makePanel()
+        self.panel = panel
+        if let screen = NSScreen.main { panel.setFrame(screen.frame, display: false) }
+        panel.contentView?.layoutSubtreeIfNeeded()
     }
 
     func show() {

@@ -47,6 +47,8 @@ extension WindowRegistry {
         if subscribed, let observer {
             CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
             tracked.observer = observer
+            let subscriber = WindowSubscriber(observer: observer, refcon: Unmanaged.passUnretained(tracked).toOpaque())
+            tracked.subscribeWindow = { subscriber.subscribe($0) }
         } else {
             // Some apps (seen with Microsoft Excel) never accept notifications. Track
             // them anyway: their windows are read when the app is activated, pointed
@@ -86,19 +88,12 @@ extension WindowRegistry {
         notifyChange()
     }
 
+    /// Subscribes a newly seen window on the app's queue: each of its six
+    /// registrations waits on the app (see `WindowSubscriber`).
     private func observeWindow(_ element: AXUIElement, of tracked: TrackedApp) {
-        guard let observer = tracked.observer else { return }
-        let refcon = Unmanaged.passUnretained(tracked).toOpaque()
-        for name in [
-            kAXUIElementDestroyedNotification,
-            kAXWindowMiniaturizedNotification,
-            kAXWindowDeminiaturizedNotification,
-            kAXTitleChangedNotification,
-            kAXMovedNotification,
-            kAXResizedNotification
-        ] {
-            _ = AXObserverAddNotification(observer, element, name as CFString, refcon)
-        }
+        guard let subscribe = tracked.subscribeWindow else { return }
+        let window = SendableElement(element: element)
+        appQueues.run(for: tracked.pid, { subscribe(window) })
     }
 
     /// Re-reads one app's windows from Accessibility and reconciles the model.
@@ -164,8 +159,7 @@ extension WindowRegistry {
         }
         if tracked.bringFocusedForward {
             tracked.bringFocusedForward = false
-            // It just answered, so this one more call on the main thread is quick.
-            if tracked.app.isActive { bringFocusedWindowToFront(of: tracked) }
+            bringFocusedWindowToFrontIfActive(of: tracked)
         }
         searchOtherSpaces(of: tracked, inventory: inventory)
         notifyChange()
@@ -240,10 +234,34 @@ extension WindowRegistry {
         }
     }
 
-    /// Reads one window's state from Accessibility, on the main thread: only for an
-    /// app that just sent a notification about it, so it answers.
-    func update(id: CGWindowID, element: AXUIElement, tracked: TrackedApp) {
-        update(id: id, with: WindowsRead.Window.read(id: id, element: element).window.attributes, tracked: tracked)
+    /// The app said a window moved, resized, was retitled or (de)miniaturized. Its
+    /// state is read on the app's queue: an app that hangs right after (a long drag,
+    /// a beachball while resizing) would hold up every click for 1 s on the main
+    /// thread. One read at a time per window: a drag's hundreds of moves make one
+    /// more read after the one on its way, not one each.
+    func windowChanged(_ id: CGWindowID, of tracked: TrackedApp) {
+        guard let element = tracked.windowElements[id] else { return }
+        guard !tracked.updating.contains(id) else {
+            tracked.updateAgain.insert(id)
+            return
+        }
+        tracked.updating.insert(id)
+        let window = SendableElement(element: element)
+        let read = tracked.readWindow
+        appQueues.run(for: tracked.pid, { read(id, window) }, then: { [weak self] answer in
+            tracked.updating.remove(id)
+            guard let self, self.apps[tracked.pid] === tracked else { return }
+            // A window closed meanwhile stays gone.
+            guard tracked.windowElements[id] != nil else {
+                tracked.updateAgain.remove(id)
+                return
+            }
+            self.update(id: id, with: answer.attributes, tracked: tracked)
+            self.notifyChange()
+            if tracked.updateAgain.remove(id) != nil {
+                self.windowChanged(id, of: tracked)
+            }
+        })
     }
 
     /// What the app did not say keeps its last known value.
@@ -263,11 +281,14 @@ extension WindowRegistry {
         )
     }
 
-    /// Asks for the focused window on the main thread: only for an app that just
-    /// sent a notification about it, or just answered a read, so it answers.
-    func bringFocusedWindowToFront(of tracked: TrackedApp) {
-        guard let focused = tracked.element.element(kAXFocusedWindowAttribute) else { return }
-        moveToFront(focused, of: tracked)
+    /// The app's focused window changed, or its windows were just read: if it is
+    /// the active app, its focused window comes first once it says which, asked on
+    /// its queue (an app can hang right after it notified).
+    func bringFocusedWindowToFrontIfActive(of tracked: TrackedApp) {
+        guard tracked.app.isActive else { return }
+        // Active since before DockFlip started: no activation was seen to set it.
+        if activePID == nil { activePID = tracked.pid }
+        bringFocusedWindowToFrontLater(of: tracked)
     }
 
     private func moveToFront(_ focused: AXUIElement, of tracked: TrackedApp) {

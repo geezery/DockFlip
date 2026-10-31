@@ -196,6 +196,103 @@ struct WindowRegistryTests {
         #expect(registry.window(7) == nil)
     }
 
+    @Test(.timeLimit(.minutes(1)))
+    func aMovedWindowIsReadOffTheMainThread() async {
+        // An app that hangs while its window is dragged must not hold up clicks.
+        let (registry, tracked) = makeRegistry()
+        addWindow(7, element: AXUIElementCreateApplication(101), to: registry, tracked, title: "Old")
+        let reads = Reads()
+        let answer = DispatchSemaphore(value: 0)
+        tracked.readWindow = { id, element in
+            _ = reads.add()
+            _ = answer.wait(timeout: .now() + 5)
+            return WindowsRead.Window(id: id, element: element.element, isStandard: true, attributes: WindowAttributes(title: "New"))
+        }
+        registry.windowChanged(7, of: tracked)
+        // Back before the app answered.
+        #expect(registry.window(7)?.title == "Old")
+        answer.signal()
+        await answered(registry, tracked)
+        #expect(registry.window(7)?.title == "New")
+        #expect(reads.total == 1)
+        #expect(!reads.anyOnMain)
+    }
+
+    @Test(.timeLimit(.minutes(1)))
+    func aDragMakesOneMoreReadNotOneEach() async {
+        // Hundreds of moves during a read on its way queue one more read, which
+        // carries where the window ended up.
+        let (registry, tracked) = makeRegistry()
+        addWindow(7, element: AXUIElementCreateApplication(101), to: registry, tracked)
+        let reads = Reads()
+        let answer = DispatchSemaphore(value: 0)
+        tracked.readWindow = { id, element in
+            let count = reads.add()
+            if count == 1 { _ = answer.wait(timeout: .now() + 5) }
+            let frame = CGRect(x: count * 100, y: 0, width: 400, height: 300)
+            return WindowsRead.Window(id: id, element: element.element, isStandard: true, attributes: WindowAttributes(frame: frame))
+        }
+        let changes = changeStream(of: registry)
+        for _ in 0..<50 { registry.windowChanged(7, of: tracked) }
+        answer.signal()
+        for await _ in changes where reads.total >= 2 && tracked.updating.isEmpty { break }
+        let frame = registry.window(7)?.frame
+        #expect(reads.total == 2)
+        #expect(frame?.minX == 200)
+        #expect(tracked.updateAgain.isEmpty)
+    }
+
+    @Test(.timeLimit(.minutes(1)))
+    func aWindowClosedDuringItsMoveReadStaysGone() async {
+        let (registry, tracked) = makeRegistry()
+        addWindow(7, element: AXUIElementCreateApplication(101), to: registry, tracked)
+        let answer = DispatchSemaphore(value: 0)
+        tracked.readWindow = { id, element in
+            _ = answer.wait(timeout: .now() + 5)
+            return WindowsRead.Window(id: id, element: element.element, isStandard: true, attributes: WindowAttributes(title: "New"))
+        }
+        registry.windowChanged(7, of: tracked)
+        tracked.windowElements[7] = nil
+        registry.windows[7] = nil
+        answer.signal()
+        await answered(registry, tracked)
+        #expect(registry.window(7) == nil)
+        #expect(tracked.updating.isEmpty)
+    }
+
+    @Test(.timeLimit(.minutes(1)))
+    func aNewWindowIsSubscribedOffTheMainThreadOnce() async {
+        // Each of a new window's six notification registrations waits on the app:
+        // an app that stalls right after listing its windows must not hold up clicks.
+        let (registry, tracked) = makeRegistry()
+        let window = SendableElement(element: AXUIElementCreateApplication(101))
+        tracked.readWindows = { _ in
+            WindowsRead(error: .success, windows: [
+                WindowsRead.Window(id: 7, element: window.element, isStandard: true, attributes: WindowAttributes(title: "Report"))
+            ])
+        }
+        let subscriptions = Reads()
+        let answer = DispatchSemaphore(value: 0)
+        tracked.subscribeWindow = { _ in
+            _ = subscriptions.add()
+            _ = answer.wait(timeout: .now() + 5)
+        }
+        let changes = changeStream(of: registry)
+        registry.refreshWindows(of: tracked)
+        // The window is known while the app still holds up its subscription.
+        for await _ in changes where registry.window(7) != nil { break }
+        #expect(registry.window(7)?.title == "Report")
+        answer.signal()
+        await answered(registry, tracked)
+        // Read again: a window already known is not subscribed twice.
+        answer.signal()
+        registry.refreshWindows(of: tracked)
+        await answered(registry, tracked)
+        await answered(registry, tracked)
+        #expect(subscriptions.total == 1)
+        #expect(!subscriptions.anyOnMain)
+    }
+
     /// Waits until the calls asked of the app so far have answered on the main actor:
     /// its queue runs them in order, and their answers come back in that order.
     private func answered(_ registry: WindowRegistry, _ tracked: TrackedApp) async {

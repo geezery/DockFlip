@@ -40,4 +40,38 @@ struct WindowRegistryFrameTests {
         registry.remember(snapped, of: 8)
         #expect(registry.window(8) == nil)
     }
+
+    @Test(.timeLimit(.minutes(1)))
+    func setFrameKeepsTheAskedRectUntilTheAppAnswers() async {
+        // A second snap key pressed before a slow app answers must decide from
+        // where the first press sent the window, not from where it was.
+        let registry = WindowRegistry()
+        let tracked = TrackedApp(app: .current, registry: registry)
+        registry.apps[tracked.pid] = tracked
+        tracked.windowElements[7] = AXUIElementCreateApplication(tracked.pid)
+        registry.windows[7] = WindowSnapshot(
+            id: 7, pid: tracked.pid, bundleID: nil, appName: "App", icon: nil,
+            title: "", frame: CGRect(x: 0, y: 25, width: 900, height: 700),
+            isMinimized: false, isAppHidden: false
+        )
+        let asked = CGRect(x: 0, y: 25, width: 720, height: 875)
+        let clamped = CGRect(x: 0, y: 25, width: 720, height: 860)
+        let answer = DispatchSemaphore(value: 0)
+        tracked.setWindowFrame = { _, _ in
+            _ = answer.wait(timeout: .now() + 5)
+            return FrameSetter.Answer(error: .success, frame: clamped)
+        }
+
+        registry.setFrame(of: 7, to: asked)
+        let before = registry.knownFrame(of: 7)
+        #expect(before == asked)
+
+        // The app's answer (here it clamped the height) corrects memory.
+        answer.signal()
+        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
+            registry.appQueues.run(for: tracked.pid, {}, then: { _ in done.resume() })
+        }
+        let after = registry.knownFrame(of: 7)
+        #expect(after == clamped)
+    }
 }

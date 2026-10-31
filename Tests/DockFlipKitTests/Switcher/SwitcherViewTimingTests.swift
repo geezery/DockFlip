@@ -24,6 +24,19 @@ struct SwitcherViewTimingTests {
     /// A MacBook Air's screen, so runs on different displays compare.
     static let screen = CGSize(width: 1440, height: 900)
 
+    /// The first ⌘Tab after launch must not build the panel: launch has built it,
+    /// off screen. Needs a window server, as the rest of this suite does.
+    @Test func prepareBuildsThePanelOffScreen() {
+        let panel = SwitcherPanel(model: SwitcherModel())
+        #expect(!panel.isBuilt)
+
+        panel.prepare()
+        panel.prepare()
+
+        #expect(panel.isBuilt)
+        #expect(!panel.isOnScreen)
+    }
+
     @Test func sixtyWindowsOpenAndStepWithinTheBudget() {
         let stage = Stage(size: Self.screen)
         defer { stage.close() }

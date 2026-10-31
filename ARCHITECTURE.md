@@ -51,8 +51,8 @@ Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherGrid`, `SwitcherStyle`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
-`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
-`QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
+`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
+`QuitFollowUp`, `UsageDates`, `BootTime`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
 
 The tests mirror the source folders: each type's suite is in
@@ -97,7 +97,7 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
   click's work after it has answered. The registry's calls to an app (focus,
   minimize, close and its follow-up looks, moving and resizing, the hover probe,
   the focused window when it is activated, its windows' state when it is hidden
-  or shown)
+  or shown, subscribing a new window to its notifications)
   run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 

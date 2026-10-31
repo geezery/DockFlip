@@ -143,13 +143,13 @@ final class PlacementMemory {
         guard layouts != storedLayouts else { return }
         let defaults = UserDefaults.standard
         defaults.set(layouts.propertyList, forKey: Key.layouts)
-        defaults.set(UsageTracker.bootTime(), forKey: Key.boot)
+        defaults.set(BootTime.now(), forKey: Key.boot)
         storedLayouts = layouts
     }
 
     private func load() {
         let defaults = UserDefaults.standard
-        guard PlacementLayouts.isSameBoot(saved: defaults.double(forKey: Key.boot), now: UsageTracker.bootTime()) else { return }
+        guard BootTime.isSameBoot(saved: defaults.double(forKey: Key.boot)) else { return }
         layouts = PlacementLayouts(propertyList: defaults.array(forKey: Key.layouts))
         storedLayouts = layouts
         Log.app.notice("Loaded window positions for \(self.layouts.order.count, privacy: .public) display set(s)")

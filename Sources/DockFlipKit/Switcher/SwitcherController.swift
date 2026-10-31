@@ -62,6 +62,13 @@ final class SwitcherController {
             style: { Settings.shared.switcherStyle },
             presenter: nil
         )
+        // On the next turn, so launch itself is not held up by it.
+        Task { @MainActor [weak self] in self?.prepare() }
+    }
+
+    /// Builds the panel ahead of the first ⌘Tab (`SwitcherPresenter.prepare`).
+    func prepare() {
+        presenter.prepare()
     }
 
     /// Tests pass fakes; `presenter` nil means the real panel.
