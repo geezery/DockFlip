@@ -48,9 +48,9 @@ thread.
 | `Diagnostics/` | Logging, timing statistics, the debug log export. |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
-`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
+`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
-that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
+that acts on them: `DockAppOrder`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
