@@ -70,6 +70,13 @@
     if (select) select.value = lang;
   }
 
+  // A page that scripts/build-site.mjs already wrote in one language (/fi/ and
+  // so on, for search engines) keeps that language: its text is not English,
+  // so swapping in place would mix languages. Choosing another one goes to
+  // that language's page instead.
+  const fixed = document.documentElement.dataset.lang;
+  const urlOf = code => '../' + (code === 'en' ? '' : code + '/');
+
   const select = document.getElementById('lang');
   if (select) {
     Object.entries(LANGS).forEach(([code, l]) => {
@@ -79,8 +86,10 @@
     });
     select.addEventListener('change', () => {
       try { localStorage.setItem('dockflip-lang', select.value); } catch (e) {}
-      apply(select.value);
+      if (fixed) location.href = urlOf(select.value);
+      else apply(select.value);
     });
   }
-  apply(pick());
+  if (fixed) { if (select) select.value = fixed; }
+  else apply(pick());
 })();

@@ -5,7 +5,7 @@ name: Homepage
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'docs/assets/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'docs/assets/**', 'scripts/build-site.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -30,6 +30,8 @@ jobs:
           mkdir -p _site/assets
           cp -R site/. _site/
           cp docs/assets/*.gif docs/assets/social-preview.png _site/assets/
+          # One page per language (/fi/, /de/ ...) with hreflang links, and sitemap.xml.
+          node scripts/build-site.mjs _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
