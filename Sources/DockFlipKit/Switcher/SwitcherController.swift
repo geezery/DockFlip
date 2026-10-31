@@ -176,25 +176,8 @@ final class SwitcherController {
         model.query = ""
         model.thumbnails = [:]
         model.style = style()
-        let windowItems: [SwitcherItem] = windows.map { window in
-            let placement = WindowAppearance.placement(of: window.frame)
-            return SwitcherItem(
-                windowID: window.id,
-                title: window.title.isEmpty ? window.appName : window.title,
-                appName: window.appName,
-                icon: window.icon,
-                minimap: placement?.minimap,
-                isMinimized: window.isMinimized,
-                isOnOtherSpace: window.isOnOtherSpace,
-                document: window.document,
-                screenName: placement?.screen.localizedName,
-                sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
-                windowSize: window.frame.size,
-                tint: WindowAppearance.tint(of: window),
-                neverPictured: previews && PreviewProvider.neverPictured(window)
-            )
-        }
-        model.items = apps.map(Self.appCard) + windowItems
+        let windowItems = windows.map { SwitcherItem(window: $0, previews: previews) }
+        model.items = apps.map { Self.appCard($0) } + windowItems
         allItems = model.items
 
         let selection = SwitcherSelection(count: model.items.count, reverse: reverse)

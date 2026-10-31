@@ -238,7 +238,7 @@ final class WindowListPopup {
         previewTasks.forEach { $0.cancel() }
         previewIDs = ids
         // A window that turned private keeps no earlier picture; thumbnail(for:) drops it from memory.
-        let skipped = Set(windows.filter(PreviewProvider.neverPictured).map(\.id))
+        let skipped = Set(windows.filter { PreviewProvider.neverPictured($0) }.map(\.id))
         for id in ids where model.thumbnails[id] == nil && !skipped.contains(id) {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: id) { model.thumbnails[id] = cached }
         }
@@ -259,7 +259,9 @@ final class WindowListPopup {
               let target = WindowListPreviews.onHover(id, listed: shownWindows.map(\.id),
                                                       requested: Set(previewIDs).union(hoverPreviewIDs),
                                                       shown: Set(model.thumbnails.keys)),
-              let window = shownWindows.first(where: { $0.id == target }) else { return }
+              let window = shownWindows.first(where: { $0.id == target }),
+              // A picture memory kept from before the window turned private stays unshown.
+              !PreviewProvider.neverPictured(window) else { return }
         hoverPreviewIDs.insert(target)
         if let cached = PreviewProvider.shared.cachedThumbnail(for: target) { model.thumbnails[target] = cached }
         hoverPreviewTasks.append(Task { @MainActor [weak self] in
