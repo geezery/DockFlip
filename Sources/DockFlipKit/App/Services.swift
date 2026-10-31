@@ -107,6 +107,7 @@ final class Services {
         guard !suspended else { return }
         suspended = true
         if switcher.isActive { _ = switcher.handle(.escape) }
+        snapper.stop()
         applyShortcutSetting()
     }
 

@@ -36,6 +36,18 @@ final class SnapController {
         monitors = [down, dragged, up].compactMap { $0 }
     }
 
+    /// Accessibility was switched off: drag snapping and Snap Assist would show their
+    /// overlay and cards but could move no window, so both stop until DockFlip restarts.
+    func stop() {
+        monitors.forEach { NSEvent.removeMonitor($0) }
+        monitors = []
+        assist.dismiss()
+        drag = nil
+        dragZone = nil
+        unsnappedTo = nil
+        overlay.hide()
+    }
+
     // MARK: - Keyboard
 
     func handle(_ key: SnapKey) -> Bool {

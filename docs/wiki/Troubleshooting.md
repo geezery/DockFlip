@@ -29,8 +29,8 @@ once, and the native switcher is back.
 ## I switched Accessibility off while DockFlip was running
 
 Without the permission DockFlip can show windows but can't switch to them, so
-it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second and opens its
-setup at the Accessibility step. Switch DockFlip back on in *System Settings →
+it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second, stops drag
+snapping and Snap Assist, and opens its setup at the Accessibility step. Switch DockFlip back on in *System Settings →
 Privacy & Security → Accessibility* and it restarts by itself with its own ⌘Tab.
 If you'd rather not, close the setup window: macOS keeps ⌘Tab until you allow
 DockFlip again (**Grant Accessibility…** in the menu) or quit it.
