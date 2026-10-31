@@ -76,6 +76,47 @@ test('every page\'s description fits a search result and starts with the privacy
   expect(/^[^:]*one permission, no screen recording:/.test(en), 'English description: the privacy point is not first');
 });
 
+// Runs site/i18n.js against a page's <html> attributes with a stand-in DOM,
+// picks a language in the footer menu, and returns where the browser went
+// (or null when the text was swapped in place).
+function chooseLanguage(html, code) {
+  const attrs = {};
+  for (const [, k, v] of html.match(/<html\b[^>]*>/)[0].matchAll(/\s([a-z-]+)(?:="([^"]*)")?/g)) attrs[k] = v ?? '';
+  let onChange = null;
+  const select = { value: '', appendChild() {}, addEventListener: (_, f) => { onChange = f; } };
+  const documentElement = {
+    lang: attrs.lang,
+    dataset: attrs['data-lang'] ? { lang: attrs['data-lang'] } : {},
+    hasAttribute: name => name in attrs,
+  };
+  const location = { href: 'unchanged', search: '' };
+  const context = {
+    window: { DockFlipI18n: T },
+    document: {
+      documentElement, title: '',
+      querySelectorAll: () => [],
+      getElementById: id => (id === 'lang' ? select : null),
+      createElement: () => ({}),
+    },
+    location, URLSearchParams, localStorage: { getItem: () => null, setItem() {} },
+    navigator: { languages: ['en'] },
+  };
+  vm.runInNewContext(fs.readFileSync(path.join(site, 'i18n.js'), 'utf8'), context);
+  select.value = code;
+  onChange();
+  return location.href === 'unchanged' ? null : location.href;
+}
+
+test('the language menu on the deployed root page goes to that language\'s page', () => {
+  expect(chooseLanguage(english, 'fi') === './fi/', `root page, Suomi: went to ${chooseLanguage(english, 'fi')}`);
+  expect(chooseLanguage(english, 'en') === './', 'root page, English: did not stay on the root');
+  expect(chooseLanguage(pageOf('de'), 'fi') === '../fi/', 'German page, Suomi: did not go to ../fi/');
+  expect(chooseLanguage(pageOf('de'), 'en') === '../', 'German page, English: did not go to the root');
+  // site/index.html opened from disk has no language pages beside it.
+  const raw = fs.readFileSync(path.join(site, 'index.html'), 'utf8');
+  expect(chooseLanguage(raw, 'fi') === null, 'site/index.html: should swap text in place, not navigate');
+});
+
 fs.rmSync(out, { recursive: true, force: true });
 if (failed) { console.log(`${failed} failed`); process.exit(1); }
 console.log('all passed');

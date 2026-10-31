@@ -121,6 +121,9 @@ function render(code) {
     // The page sits one folder down: point relative links back up.
     html = html.replace(/(\s(?:src|href)=")(?![a-z][a-z0-9+.-]*:|#|\/)/gi, '$1../');
     html = html.replace(/url\((?![a-z]+:|\/)/g, 'url(../');
+  } else {
+    // The root page's language menu then goes to /<lang>/ (see i18n.js).
+    html = html.replace(/<html lang="en">/, '<html lang="en" data-pages>');
   }
   html = html.replace(/<!-- hreflang alternates[^>]*-->/, alternates);
   if (!html.includes('hreflang="x-default"')) throw new Error('index.html: hreflang marker missing');

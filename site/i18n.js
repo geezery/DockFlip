@@ -81,8 +81,13 @@
   // so on, for search engines) keeps that language: its text is not English,
   // so swapping in place would mix languages. Choosing another one goes to
   // that language's page instead.
+  // The English root page that build-site.mjs wrote is marked data-pages: the
+  // other languages have their own pages beside it, so it goes there too and
+  // the address can be shared. site/index.html opened as it is has no
+  // such pages, and swaps text in place.
   const fixed = document.documentElement.dataset.lang;
-  const urlOf = code => '../' + (code === 'en' ? '' : code + '/');
+  const pages = fixed || document.documentElement.hasAttribute('data-pages');
+  const urlOf = code => (fixed ? '../' : './') + (code === 'en' ? '' : code + '/');
 
   const select = document.getElementById('lang');
   if (select) {
@@ -93,7 +98,7 @@
     });
     select.addEventListener('change', () => {
       try { localStorage.setItem('dockflip-lang', select.value); } catch (e) {}
-      if (fixed) location.href = urlOf(select.value);
+      if (pages) location.href = urlOf(select.value);
       else apply(select.value);
     });
   }
