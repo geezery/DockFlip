@@ -4,15 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="meta.title">DockFlip: the best bits of Windows, on your Mac</title>
-<meta name="description" content="Window lists in your Dock, a Flip 3D ⌘Tab that switches windows, and snapping. One permission, no screen recording. Free and open source.">
+<meta name="description" data-i18n-content="meta.desc" content="Free macOS app: window lists with browser tabs above Dock icons, a Flip 3D ⌘Tab that switches windows, and Windows-style snapping. One permission, no screen recording.">
+<link rel="canonical" href="https://geezery.github.io/DockFlip/">
+<!-- hreflang alternates for the per-language pages are added by scripts/build-site.mjs at deploy. -->
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<meta property="og:title" content="DockFlip: the best bits of Windows, on your Mac">
-<meta property="og:description" content="Window lists in your Dock, a Flip 3D ⌘Tab that switches windows, and snapping. One permission, no screen recording. Free and open source.">
+<meta property="og:site_name" content="DockFlip">
+<meta property="og:title" data-i18n-content="meta.title" content="DockFlip: the best bits of Windows, on your Mac">
+<meta property="og:description" data-i18n-content="meta.desc" content="Free macOS app: window lists with browser tabs above Dock icons, a Flip 3D ⌘Tab that switches windows, and Windows-style snapping. One permission, no screen recording.">
 <meta property="og:image" content="https://geezery.github.io/DockFlip/assets/social-preview.png">
 <meta property="og:url" content="https://geezery.github.io/DockFlip/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "DockFlip",
+  "url": "https://geezery.github.io/DockFlip/",
+  "description": "Window lists with browser tabs above Dock icons, a Flip 3D ⌘Tab that switches windows, and Windows-style snapping for macOS. One permission, no screen recording.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "macOS 26 or later",
+  "downloadUrl": "https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "image": "https://geezery.github.io/DockFlip/icon.png",
+  "screenshot": "https://geezery.github.io/DockFlip/assets/social-preview.png",
+  "codeRepository": "https://github.com/geezery/DockFlip"
+}
+</script>
 <style>
 @font-face{font-family:Geist;font-weight:400;font-display:swap;src:url(fonts/geist-400.woff2) format("woff2")}
 @font-face{font-family:Geist;font-weight:500;font-display:swap;src:url(fonts/geist-500.woff2) format("woff2")}
@@ -41,7 +62,7 @@ nav .links a:hover{color:var(--ink)}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:12px;font-weight:600;font-size:16px;text-decoration:none;transition:transform .15s ease,background .15s ease}
 .btn:active{transform:translateY(1px)}
 .btn.primary{background:var(--em);color:#06120d;box-shadow:0 10px 30px rgba(31,196,141,.25)}
-.btn.primary:hover{background:#2bd59c}
+.btn.primary:hover{background:#2bd59c;color:#06120d}
 .btn.ghost{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
 .btn.ghost:hover{background:rgba(255,255,255,.04)}
 .btn.small{padding:8px 14px;font-size:14px;border-radius:10px}
@@ -84,15 +105,16 @@ kbd{font:600 .85em Geist,sans-serif;padding:2px 7px;border-radius:6px;background
 .keys span{min-width:150px;color:var(--muted);font-size:15px}
 
 .table{margin-top:32px;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
-.tr{display:grid;grid-template-columns:1.4fr 1fr 1fr;border-top:1px solid var(--line)}
+.tr{display:grid;grid-template-columns:1.5fr repeat(4,1fr);border-top:1px solid var(--line)}
 .tr:first-child{border-top:0}
-.tr div{padding:14px 18px;font-size:15.5px}
+.tr div{padding:14px 16px;font-size:15px}
 .tr div:first-child{color:var(--ink)}
 .th div{font-weight:600;color:var(--ink);background:var(--card)}
 .th div:nth-child(2){color:var(--em)}
 .y{color:var(--em);font-weight:500}
 .n{color:var(--muted)}
-@media (max-width:640px){.tr{grid-template-columns:1.2fr 1fr 1fr}.tr div{padding:12px 10px;font-size:14px}}
+/* Five columns don't fit a phone: the table scrolls sideways, row names stay put. */
+@media (max-width:720px){.table{overflow-x:auto}.tr{min-width:640px;grid-template-columns:150px repeat(4,1fr)}.tr div{padding:12px 10px;font-size:14px}.tr div:first-child{position:sticky;left:0;background:var(--bg);box-shadow:1px 0 0 var(--line)}.th div:first-child{background:var(--card)}}
 
 
 .who{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
@@ -192,6 +214,7 @@ footer .right{margin-left:auto}
         <li data-i18n="flip.l1"><b>Type to filter.</b> Type "plan" and only your plans are left. Return opens the one in front.</li>
         <li data-i18n="flip.l2">Minimized, full-screen and other-desktop windows are all in the stack.</li>
         <li data-i18n="flip.l3">Keeps working next to password fields, where lesser switchers give up.</li>
+        <li data-i18n="flip.l4"><b>Or the Windows 11 look:</b> a grid of window tiles, one choice in Settings.</li>
       </ul>
     </div>
     <div class="keys">
@@ -254,19 +277,21 @@ footer .right{margin-left:auto}
   </section>
 
   <section id="compare">
-    <div class="kicker" data-i18n="cmp.kicker">One app instead of three</div>
+    <div class="kicker" data-i18n="cmp.kicker">How it compares</div>
     <h2 data-i18n="cmp.h">Built for people who never open the settings.</h2>
-    <p class="lede" style="margin-left:0;text-align:left" data-i18n="cmp.p">The usual fix for missing Windows is three apps: a Dock preview app, an Alt-Tab clone and a window manager. They're good apps, and DockFlip learned a lot from AltTab, DockDoor and Rectangle. But most people just want it to work like Windows, with good defaults, so DockFlip does that in one app.</p>
+    <p class="lede" style="margin-left:0;text-align:left" data-i18n="cmp.p">DockFlip is the one app here that does all three jobs, free, without Screen Recording. It learned a lot from AltTab, DockDoor and Rectangle, and they do more where you want more: older macOS versions, many looks, thirds and gaps.</p>
+    <!-- Rows follow README "How it compares" (checked 2026-10-30); change both together. -->
     <div class="table">
-      <div class="tr th"><div></div><div>DockFlip</div><div data-i18n="cmp.other">Three separate apps</div></div>
-      <div class="tr"><div data-i18n="cmp.r1a">Window lists and tabs in the Dock</div><div class="y">✓</div><div data-i18n="cmp.r1c">App 1</div></div>
-      <div class="tr"><div data-i18n="cmp.r2a">⌘Tab that switches windows</div><div class="y" data-i18n="cmp.r2b">✓ Flip 3D, type to filter</div><div data-i18n="cmp.r2c">App 2</div></div>
-      <div class="tr"><div data-i18n="cmp.r3a">Win-style snapping</div><div class="y">✓</div><div data-i18n="cmp.r3c">App 3</div></div>
-      <div class="tr"><div data-i18n="cmp.r4a">Permissions to grant</div><div class="y" data-i18n="cmp.r4b">1 (Accessibility)</div><div data-i18n="cmp.r4c">Up to 2 per app</div></div>
-      <div class="tr"><div data-i18n="cmp.r5a">Settings to tune</div><div class="y" data-i18n="cmp.r5b">3, all sensible by default</div><div data-i18n="cmp.r5c">Plenty, in three places</div></div>
-      <div class="tr"><div data-i18n="cmp.r6a">Price</div><div class="y" data-i18n="cmp.r6b">Free, open source</div><div data-i18n="cmp.r6c">Free to paid</div></div>
-      <div class="tr"><div data-i18n="cmp.r7a">Thirds, gaps, per-app rules, themes</div><div class="n" data-i18n="cmp.r7b">No, on purpose</div><div data-i18n="cmp.r7c">Yes, if you want them</div></div>
+      <div class="tr th"><div></div><div>DockFlip</div><div>AltTab</div><div>DockDoor</div><div data-i18n="cmp.mac">macOS alone</div></div>
+      <div class="tr"><div data-i18n="cmp.r1a">Windows above a Dock icon</div><div class="y">✓</div><div class="n">–</div><div>✓</div><div data-i18n="cmp.r1e">Titles in the right-click menu</div></div>
+      <div class="tr"><div data-i18n="cmp.r2a">Browser tabs under each window</div><div class="y">✓</div><div class="n">–</div><div class="n">–</div><div class="n">–</div></div>
+      <div class="tr"><div data-i18n="cmp.r3a">A switcher for windows, not apps</div><div class="y" data-i18n="cmp.r3b">✓ Flip 3D or grid</div><div>✓</div><div>✓</div><div data-i18n="cmp.r3e">Within one app (⌘`)</div></div>
+      <div class="tr"><div data-i18n="cmp.r4a">Type to search in the switcher</div><div class="y">✓</div><div data-i18n="cmp.r4c">Pro only</div><div>✓</div><div class="n">–</div></div>
+      <div class="tr"><div data-i18n="cmp.r5a">Snapping</div><div class="y" data-i18n="cmp.r5b">✓ ⌃⌥ arrows, drag to edges</div><div class="n">–</div><div data-i18n="cmp.r5d">Off by default</div><div>✓</div></div>
+      <div class="tr"><div data-i18n="cmp.r6a">Screen Recording</div><div class="y" data-i18n="cmp.r6b">Not needed</div><div data-i18n="cmp.r6c">For thumbnails</div><div data-i18n="cmp.r6d">Required</div><div class="n">–</div></div>
+      <div class="tr"><div data-i18n="cmp.r7a">Price</div><div class="y" data-i18n="cmp.r7b">Free</div><div data-i18n="cmp.r7c">Free; Pro from $9.99</div><div data-i18n="cmp.r7b">Free</div><div data-i18n="cmp.r7e">Included</div></div>
     </div>
+    <p style="font-size:15px;color:var(--muted)" data-i18n="cmp.src">Checked on 30 October 2026 against each app's own site. <a href="https://github.com/geezery/DockFlip#how-it-compares">The full table, with sources</a>.</p>
     <p style="font-size:15px;color:var(--muted)" data-i18n="cmp.it">Rolling out Macs to a team? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip for IT</a>: a package and a profile that pre-approves the permission, so nobody sees a prompt.</p>
   </section>
 

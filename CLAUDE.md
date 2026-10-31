@@ -24,7 +24,7 @@ rules), `ARCHITECTURE.md` (how the parts fit), `SECURITY.md` (privacy claims the
 | `Sources/DockFlipKit/{Previews,Placement,Cleanup,UI,Diagnostics}/` | Opt-in thumbnails; positions per display setup; Clean Up window; shared views; logging. |
 | `Tests/DockFlipKitTests/` | Swift Testing (`import Testing`, `@Suite`, `@Test`, `#expect`) for the pure rules. |
 | `Resources/` | `Info.plist` template (`__VERSION__`, `__BUILD__`, `__COMMIT__`, `__BUNDLE_ID__`), app icon, 15 `*.lproj/Localizable.strings`. |
-| `site/` | Homepage (static HTML; `i18n.js` holds the language switcher, `i18n/<language>.js` each language's strings), deployed by `.github/workflows/pages.yml`. |
+| `site/` | Homepage (static HTML; `i18n.js` holds the language switcher, `i18n/<language>.js` each language's strings), deployed by `.github/workflows/pages.yml`, which runs `scripts/build-site.mjs` to write one static page per language (`/fi/` …) with hreflang links and `sitemap.xml`; it fails on a string key the page no longer has. |
 | `docs/wiki/` | GitHub wiki pages, synced by `.github/workflows/wiki.yml`; `docs/IT.md` for admins. |
 | `scripts/` | Signing certificate, release identity, app icon and PPPC profile helpers. |
 | `.github/workflows/` | `ci.yml` (build + test on `macos-26`), `release.yml` (on a `v*` tag), `pages.yml`, `wiki.yml`. |
