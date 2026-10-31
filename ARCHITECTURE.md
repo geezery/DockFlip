@@ -94,7 +94,9 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 - **No tap waits on an app.** The Dock click tap answers from memory
   (`DockClick`: the highlighted icon, the registry's windows) and does the
   click's work after it has answered. The registry's calls to an app (focus,
-  minimize, close and its follow-up looks, moving and resizing, the hover probe)
+  minimize, close and its follow-up looks, moving and resizing, the hover probe,
+  the focused window when it is activated, its windows' state when it is hidden
+  or shown)
   run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 

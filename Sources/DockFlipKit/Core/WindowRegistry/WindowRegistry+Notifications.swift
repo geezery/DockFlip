@@ -69,16 +69,9 @@ extension WindowRegistry {
             guard let active = WindowRegistry.runningApp(from: note) else { return }
             MainActor.assumeIsolated {
                 guard let self else { return }
+                self.activePID = active.processIdentifier
                 if let tracked = self.apps[active.processIdentifier] {
-                    // Windows missed earlier because the app was busy: read them now.
-                    // Its focused window comes forward once they are read.
-                    if tracked.windowElements.isEmpty || tracked.observer == nil {
-                        tracked.retryCount = 0
-                        tracked.bringFocusedForward = true
-                        self.refreshWindows(of: tracked)
-                    } else {
-                        self.bringFocusedWindowToFront(of: tracked)
-                    }
+                    self.appActivated(tracked)
                 } else if self.shouldTrack(active) {
                     // It refused Accessibility at launch; it answers now that it is in use.
                     self.track(active)
@@ -92,10 +85,7 @@ extension WindowRegistry {
                 guard let changed = WindowRegistry.runningApp(from: note) else { return }
                 MainActor.assumeIsolated {
                     guard let self, let tracked = self.apps[changed.processIdentifier] else { return }
-                    for (id, element) in tracked.windowElements {
-                        self.update(id: id, element: element, tracked: tracked)
-                    }
-                    self.notifyChange()
+                    self.appHiddenOrShown(tracked)
                 }
             })
         }

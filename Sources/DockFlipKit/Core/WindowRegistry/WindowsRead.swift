@@ -53,6 +53,19 @@ struct WindowsRead: @unchecked Sendable {
         }
         return WindowsRead(error: error, windows: windows)
     }
+
+    /// Reads the state of windows already known, without their app's window list
+    /// (it was hidden or shown). After one timeout it stops asking: the windows not
+    /// read keep what was known. Blocks: call it on the app's queue only.
+    static func read(known: [CGWindowID: SendableElement]) -> [Window] {
+        var windows: [Window] = []
+        for (id, element) in known {
+            let (window, timedOut) = Window.read(id: id, element: element.element)
+            windows.append(window)
+            if timedOut { break }
+        }
+        return windows
+    }
 }
 
 extension WindowsRead.Window {
