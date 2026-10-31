@@ -39,6 +39,22 @@ enum ShortcutConflicts {
         return names
     }
 
+    /// What Settings says under Keyboard shortcuts: every shortcut another app
+    /// holds (⌘Tab first) and the known apps that run and may hold them.
+    struct Warning: Equatable {
+        let shortcuts: [String]
+        let apps: [String]
+    }
+
+    /// The Settings warning, or nil when DockFlip got every shortcut it asked for.
+    static func warning(commandTabHeld: Bool, layoutHeld: [String], bundleIDs: [String]) -> Warning? {
+        guard commandTabHeld || !layoutHeld.isEmpty else { return nil }
+        var apps: [String] = []
+        if commandTabHeld { apps += running(commandTabApps, bundleIDs: bundleIDs) }
+        if !layoutHeld.isEmpty { apps += running(layoutApps, bundleIDs: bundleIDs) }
+        return Warning(shortcuts: (commandTabHeld ? ["⌘Tab"] : []) + layoutHeld, apps: apps)
+    }
+
     /// The names of `apps` that are running, in the list's order.
     static func running(_ apps: [App], bundleIDs: [String]) -> [String] {
         apps.filter { bundleIDs.contains($0.bundleID) }.map(\.name)

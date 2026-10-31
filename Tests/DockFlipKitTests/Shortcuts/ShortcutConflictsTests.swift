@@ -29,6 +29,27 @@ struct ShortcutConflictsTests {
         #expect(ShortcutConflicts.layoutShortcutNames(failed: [.dockItem(0), .dockItem(2)]) == ["⌃⌥1", "⌃⌥3"])
     }
 
+    @Test func settingsWarnsWhenAltTabHoldsCommandTab() {
+        let warning = ShortcutConflicts.warning(commandTabHeld: true, layoutHeld: [],
+                                                bundleIDs: ["com.lwouis.alt-tab-macos", "com.knollsoft.Rectangle"])
+        // Rectangle runs but holds nothing of ours: only AltTab is named.
+        #expect(warning == ShortcutConflicts.Warning(shortcuts: ["⌘Tab"], apps: ["AltTab"]))
+    }
+
+    @Test func settingsWarningNamesCommandTabFirstThenTheLayoutKeys() {
+        let warning = ShortcutConflicts.warning(commandTabHeld: true, layoutHeld: ["⌃⌥←", "⌃⌥D"],
+                                                bundleIDs: ["com.knollsoft.Rectangle", "com.lwouis.alt-tab-macos"])
+        #expect(warning == ShortcutConflicts.Warning(shortcuts: ["⌘Tab", "⌃⌥←", "⌃⌥D"], apps: ["AltTab", "Rectangle"]))
+        let unknown = ShortcutConflicts.warning(commandTabHeld: false, layoutHeld: ["⌃⌥←"], bundleIDs: [])
+        #expect(unknown == ShortcutConflicts.Warning(shortcuts: ["⌃⌥←"], apps: []))
+    }
+
+    @Test func settingsWarningClearsOnceDockFlipHoldsEverything() {
+        // After the other app quits and Try Again succeeds, nothing is held elsewhere.
+        #expect(ShortcutConflicts.warning(commandTabHeld: false, layoutHeld: [],
+                                          bundleIDs: ["com.lwouis.alt-tab-macos"]) == nil)
+    }
+
     @Test func onlyRunningKnownAppsAreNamed() {
         #expect(ShortcutConflicts.running(ShortcutConflicts.layoutApps, bundleIDs: []).isEmpty)
         #expect(ShortcutConflicts.running(ShortcutConflicts.layoutApps, bundleIDs: ["com.lwouis.alt-tab-macos"]).isEmpty)
