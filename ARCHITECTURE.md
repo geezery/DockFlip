@@ -53,7 +53,7 @@ in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
-`LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
+`LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
