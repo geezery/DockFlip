@@ -105,7 +105,7 @@ final class UsageTracker {
         let defaults = UserDefaults.standard
         defaults.set(Dictionary(uniqueKeysWithValues: windowLastUsed.map { (String($0.key), $0.value.timeIntervalSince1970) }), forKey: Key.windows)
         defaults.set(appLastUsed.mapValues { $0.timeIntervalSince1970 }, forKey: Key.apps)
-        defaults.set(Self.bootTime(), forKey: Key.boot)
+        defaults.set(BootTime.now(), forKey: Key.boot)
     }
 
     private func load() {
@@ -114,17 +114,10 @@ final class UsageTracker {
             appLastUsed = apps.mapValues { Date(timeIntervalSince1970: $0) }
         }
         // Window ids are reused after a restart; only trust them from this boot.
-        guard abs(defaults.double(forKey: Key.boot) - Self.bootTime()) < 60,
+        guard BootTime.isSameBoot(saved: defaults.double(forKey: Key.boot)),
               let stored = defaults.dictionary(forKey: Key.windows) as? [String: Double] else { return }
         for (key, value) in stored {
             if let id = UInt32(key) { windowLastUsed[CGWindowID(id)] = Date(timeIntervalSince1970: value) }
         }
-    }
-
-    static func bootTime() -> TimeInterval {
-        var time = timeval()
-        var size = MemoryLayout<timeval>.size
-        guard sysctlbyname("kern.boottime", &time, &size, nil, 0) == 0 else { return 0 }
-        return TimeInterval(time.tv_sec)
     }
 }

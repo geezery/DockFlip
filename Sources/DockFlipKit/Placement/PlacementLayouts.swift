@@ -75,11 +75,4 @@ struct PlacementLayouts: Equatable {
     }
 
     init() {}
-
-    /// Whether layouts saved at `savedBoot` belong to this boot: macOS reuses window ids
-    /// after a restart, so older ones would move the wrong windows. The boot time read
-    /// back can drift a little, hence the minute's slack; 0 means it couldn't be read.
-    static func isSameBoot(saved savedBoot: TimeInterval, now: TimeInterval) -> Bool {
-        savedBoot > 0 && now > 0 && abs(savedBoot - now) < 60
-    }
 }

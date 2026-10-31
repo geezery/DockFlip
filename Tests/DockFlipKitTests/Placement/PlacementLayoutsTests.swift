@@ -82,14 +82,4 @@ struct PlacementLayoutsTests {
         #expect(restored.isDisplayChange(to: docked))
         #expect(!restored.isDisplayChange(to: laptop))
     }
-
-    /// Window ids are reused after the Mac restarts: only this boot's layouts are trusted.
-    @Test func onlyThisBootsLayoutsAreTrusted() {
-        let boot: TimeInterval = 1_800_000_000
-        #expect(PlacementLayouts.isSameBoot(saved: boot, now: boot))
-        #expect(PlacementLayouts.isSameBoot(saved: boot - 2, now: boot))
-        #expect(!PlacementLayouts.isSameBoot(saved: boot - 3_600, now: boot))
-        #expect(!PlacementLayouts.isSameBoot(saved: 0, now: boot)) // never saved
-        #expect(!PlacementLayouts.isSameBoot(saved: 0, now: 0)) // boot time unreadable
-    }
 }
