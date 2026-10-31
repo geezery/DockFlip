@@ -66,9 +66,12 @@ function Get-WatchedEvents {
 $watched = Get-WatchedEvents
 
 Test 'the scan finds the Dock click tap and the snap drag monitors' {
-    foreach ($f in 'DockController.swift', 'SnapController.swift') {
-        if (-not $watched.ContainsKey('leftMouseDown') -or $watched['leftMouseDown'] -notcontains $f) {
-            throw "no leftMouseDown found in $($f): the scan's patterns no longer match the code"
+    # By type, so a split file (DockController+Clicks.swift holds the click tap) still counts.
+    foreach ($f in 'DockController', 'SnapController') {
+        $found = $watched.ContainsKey('leftMouseDown') -and
+            @($watched['leftMouseDown'] | Where-Object { $_ -like "$f.swift" -or $_ -like "$f+*.swift" }).Count -gt 0
+        if (-not $found) {
+            throw "no leftMouseDown found in $f's files: the scan's patterns no longer match the code"
         }
     }
 }
