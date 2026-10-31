@@ -142,7 +142,8 @@ final class CleanupController {
         var kept = self.kept
         kept.remove(bundleID)
         self.kept = kept
-        reload()
+        // "Suggest again" is not "close": its windows come back listed but unticked.
+        reload(comeBackUntickedBundleID: bundleID)
     }
 
     func toggle(_ target: CleanupRow.Target) {
@@ -155,15 +156,23 @@ final class CleanupController {
 
     // MARK: - Data
 
-    func reload() {
+    /// `comeBackUntickedBundleID`: the app just removed from "Kept Apps", whose rows
+    /// are listed again but must not come in ticked for the next Close Selected.
+    func reload(comeBackUntickedBundleID: String? = nil) {
         let (windowRows, appRows) = candidates()
         let previouslyListed = Set(model.windows.map(\.id) + model.apps.map(\.id))
+        let comeBackUnticked = Set(
+            (windowRows + appRows)
+                .filter { comeBackUntickedBundleID != nil && $0.bundleID == comeBackUntickedBundleID }
+                .map(\.id)
+        )
         model.windows = windowRows
         model.apps = appRows
         model.selected = CleanupSelection.afterReload(
             listed: windowRows.map(\.id) + appRows.map(\.id),
             previouslyListed: previouslyListed,
-            selected: model.selected
+            selected: model.selected,
+            comeBackUnticked: comeBackUnticked
         )
         model.kept = keptRows()
         if model.kept.isEmpty { model.showsKept = false }
