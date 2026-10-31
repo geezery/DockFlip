@@ -30,6 +30,11 @@ final class TrackedApp {
         WindowsRead.read(known: $0)
     }
 
+    /// Moves and resizes a window on its queue; tests stand in their own.
+    var setWindowFrame: @Sendable (CGRect, AXUIElement) -> FrameSetter.Answer = {
+        FrameSetter.set($0, on: $1)
+    }
+
     var pid: pid_t { app.processIdentifier }
 
     init(app: NSRunningApplication, registry: WindowRegistry) {
