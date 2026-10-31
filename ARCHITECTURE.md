@@ -47,7 +47,7 @@ thread.
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`, `ThumbnailCover` (where the app's icon covers a window's buttons in its picture). |
 | `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
-Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
+Pure rules with no AppKit in them (`SnapEngine`, `SnapAssist`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherCommandArm`, `SwitcherStack`, `SwitcherGrid`, `SwitcherStyle`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
