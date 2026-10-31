@@ -40,6 +40,45 @@ struct SettingsManagedTests {
         #expect(settings.shortcutsEnabled)
     }
 
+    /// Stands in for a profile that can be installed and removed while the app runs.
+    private final class Profile: @unchecked Sendable { var forced: Set<String> = [] }
+
+    @Test func profileInstalledWhileRunningTakesEffectAtOnce() {
+        let (defaults, suite) = makeDefaults(["previewsEnabled": true])
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let profile = Profile()
+        let settings = Settings(defaults: defaults, isForced: { profile.forced.contains($0) })
+        #expect(settings.previewsEnabled)
+        #expect(!settings.previewsManaged)
+
+        // The profile lands: the key is forced off.
+        profile.forced = ["previewsEnabled"]
+        defaults.set(false, forKey: "previewsEnabled")
+        settings.reloadManaged()
+
+        #expect(!settings.previewsEnabled)
+        #expect(settings.previewsManaged)
+        settings.previewsEnabled = true
+        #expect(!settings.previewsEnabled)
+    }
+
+    @Test func profileRemovedWhileRunningHandsTheKeyBack() {
+        let (defaults, suite) = makeDefaults(["shortcutsEnabled": true])
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let profile = Profile()
+        profile.forced = ["shortcutsEnabled"]
+        let settings = Settings(defaults: defaults, isForced: { profile.forced.contains($0) })
+
+        profile.forced = []
+        defaults.set(false, forKey: "shortcutsEnabled") // The user's own value shows again.
+        settings.reloadManaged()
+
+        #expect(!settings.shortcutsManaged)
+        #expect(!settings.shortcutsEnabled)
+        settings.shortcutsEnabled = true
+        #expect(settings.shortcutsEnabled)
+    }
+
     @Test func unmanagedKeysAreSavedAndEditable() {
         let (defaults, suite) = makeDefaults([:])
         defer { defaults.removePersistentDomain(forName: suite) }
