@@ -96,7 +96,7 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
   click's work after it has answered. The registry's calls to an app (focus,
   minimize, close and its follow-up looks, moving and resizing, the hover probe,
   the focused window when it is activated, its windows' state when it is hidden
-  or shown)
+  or shown, subscribing a new window to its notifications)
   run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 
