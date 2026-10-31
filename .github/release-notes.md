@@ -6,3 +6,14 @@
 4. DockFlip's setup opens. Switch DockFlip on under **Accessibility** when it asks. That's it.
 
 Steps 2 and 3 are Apple's warning for apps from developers who don't pay 99 € a year. DockFlip is open source, and this file was built and signed by GitHub Actions from the tagged code; its build provenance is attested. Updating? Quit DockFlip, replace the app, and repeat steps 2–3. Your permission stays.
+
+## Check the download (optional)
+
+In Terminal, in the folder with the download, either line shows the file is the one GitHub Actions built from this tag:
+
+```
+gh attestation verify DockFlip-VERSION.dmg --repo geezery/DockFlip
+shasum -a 256 -c DockFlip-VERSION.dmg.sha256
+```
+
+For the installer package and the Accessibility profile, see [DockFlip for IT](https://github.com/geezery/DockFlip/blob/main/docs/IT.md).
