@@ -84,6 +84,12 @@ final class PreviewProvider {
         NeverPictured.contains(bundleID: window.bundleID, title: window.title)
     }
 
+    /// Apps never pictured, by bundle ID alone; prefer `neverPictured(_ window:)`,
+    /// which also catches private browser windows. Kept for callers on other branches.
+    static func neverPictured(_ bundleID: String?) -> Bool {
+        bundleID.map { NeverPictured.bundleIDs.contains($0) } ?? false
+    }
+
     /// Asks macOS for Screen Recording. macOS may require DockFlip to restart before it applies.
     static func requestPermission() {
         _ = CGRequestScreenCaptureAccess()
