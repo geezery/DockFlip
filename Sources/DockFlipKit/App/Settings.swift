@@ -75,11 +75,13 @@ final class Settings: ObservableObject {
     init(
         defaults: UserDefaults = .standard,
         isForced: ((String) -> Bool)? = nil,
-        loginItem: any LoginItem = MainAppLoginItem()
+        loginItem: (any LoginItem)? = nil
     ) {
         self.defaults = defaults
         self.isForced = isForced ?? { defaults.objectIsForced(forKey: $0) }
-        self.loginItem = loginItem
+        // Made here, not as the default value: a default argument is evaluated outside
+        // the main actor, and MainAppLoginItem is main-actor isolated (`LoginItem`).
+        self.loginItem = loginItem ?? MainAppLoginItem()
         defaults.register(defaults: [
             Key.previews: false,
             Key.shortcuts: true,
