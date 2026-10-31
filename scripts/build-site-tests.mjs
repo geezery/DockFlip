@@ -233,6 +233,16 @@ test('the deploy names the latest release in llms.txt and llms-full.txt, and cha
   expect(threw, 'a file without the Version lines must fail the deploy, not ship unstamped');
 });
 
+test('every language page links to llms.txt and llms-full.txt in its head', () => {
+  for (const code of Object.keys(LANGS)) {
+    const head = pageOf(code).split('</head>')[0];
+    for (const f of ['llms.txt', 'llms-full.txt']) {
+      expect(head.includes(`rel="alternate" type="text/plain"`) && head.includes(`href="https://geezery.github.io/DockFlip/${f}"`),
+        `${code}: no <link rel="alternate"> to ${f}`);
+    }
+  }
+});
+
 fs.rmSync(out, { recursive: true, force: true });
 if (failed) { console.log(`${failed} failed`); process.exit(1); }
 console.log('all passed');
