@@ -161,6 +161,10 @@ public final class WindowRegistry {
     func remember(_ frame: CGRect, of id: CGWindowID) {
         guard windows[id] != nil, windows[id]?.frame != frame else { return }
         windows[id]?.frame = frame
+        // A hide/unhide read still out read the window before this frame.
+        if let tracked = windows[id].flatMap({ apps[$0.pid] }), tracked.knownReadsOut > 0 {
+            tracked.framesNewerThanKnownRead.insert(id)
+        }
         notifyChange()
     }
 
