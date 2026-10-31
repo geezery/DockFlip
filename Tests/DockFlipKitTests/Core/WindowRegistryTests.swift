@@ -319,11 +319,79 @@ struct WindowRegistryTests {
         #expect(!subscriptions.anyOnMain)
     }
 
+    @Test(.timeLimit(.minutes(1)))
+    func trackingSubscribesTheAppOffTheMainThread() async {
+        // An app busy at launch answers each of its three subscriptions only after
+        // the 1 s timeout: tracking it must not hold up the main thread meanwhile.
+        let registry = WindowRegistry()
+        let pid = NSRunningApplication.current.processIdentifier
+        let subscriptions = Reads()
+        let answer = DispatchSemaphore(value: 0)
+        registry.subscribeApp = { _, _ in
+            _ = subscriptions.add()
+            _ = answer.wait(timeout: .now() + 5)
+            return AppSubscriber.notifications.map { _ in AXError.success.rawValue }
+        }
+        registry.track(.current)
+        // Back before the app answered; asked again meanwhile, it subscribes once.
+        #expect(registry.apps[pid] == nil)
+        registry.track(.current)
+        answer.signal()
+        await answered(registry, pid: pid)
+        #expect(registry.apps[pid] != nil)
+        #expect(registry.apps[pid]?.observer != nil)
+        #expect(subscriptions.total == 1)
+        #expect(!subscriptions.anyOnMain)
+        registry.untrack(pid: pid)
+    }
+
+    @Test(.timeLimit(.minutes(1)))
+    func anAppThatQuitsDuringItsSubscriptionStaysUntracked() async {
+        let registry = WindowRegistry()
+        let pid = NSRunningApplication.current.processIdentifier
+        let answer = DispatchSemaphore(value: 0)
+        registry.subscribeApp = { _, _ in
+            _ = answer.wait(timeout: .now() + 5)
+            return AppSubscriber.notifications.map { _ in AXError.success.rawValue }
+        }
+        registry.track(.current)
+        registry.untrack(pid: pid)
+        answer.signal()
+        await answered(registry, pid: pid)
+        #expect(registry.apps[pid] == nil)
+        #expect(!registry.appOrder.contains(pid))
+    }
+
+    @Test(.timeLimit(.minutes(1)))
+    func anAppThatRefusesItsSubscriptionsIsAskedAgain() async {
+        let registry = WindowRegistry()
+        let pid = NSRunningApplication.current.processIdentifier
+        let subscriptions = Reads()
+        registry.subscribeApp = { _, _ in
+            // Refused the first time, accepted the next.
+            let status = subscriptions.add() == 1 ? AXError.cannotComplete : .success
+            return AppSubscriber.notifications.map { _ in status.rawValue }
+        }
+        registry.track(.current)
+        await answered(registry, pid: pid)
+        #expect(registry.apps[pid] == nil)
+        // The retry waits 400 ms, then subscribes on the queue again.
+        try? await Task.sleep(for: .milliseconds(1000))
+        await answered(registry, pid: pid)
+        #expect(registry.apps[pid] != nil)
+        #expect(subscriptions.total == 2)
+        registry.untrack(pid: pid)
+    }
+
     /// Waits until the calls asked of the app so far have answered on the main actor:
     /// its queue runs them in order, and their answers come back in that order.
     private func answered(_ registry: WindowRegistry, _ tracked: TrackedApp) async {
+        await answered(registry, pid: tracked.pid)
+    }
+
+    private func answered(_ registry: WindowRegistry, pid: pid_t) async {
         await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
-            registry.appQueues.run(for: tracked.pid, {}, then: { _ in done.resume() })
+            registry.appQueues.run(for: pid, {}, then: { _ in done.resume() })
         }
     }
 
