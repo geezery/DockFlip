@@ -178,6 +178,7 @@ test('every copy of the comparison carries the same "checked" date', () => {
     'README.md': long('README.md', read('README.md')),
     'docs/wiki/Features.md': long('docs/wiki/Features.md', read('docs/wiki/Features.md')),
     'site/llms.txt': iso('site/llms.txt', read('site/llms.txt')),
+    'site/llms-full.txt': iso('site/llms-full.txt', read('site/llms-full.txt')),
     'site/index.html comment': iso('site/index.html', index),
     'site/index.html cmp.src': long('site/index.html', index.match(/data-i18n="cmp\.src">[^<]*/)[0]),
   };
@@ -190,6 +191,22 @@ test('every copy of the comparison carries the same "checked" date', () => {
     expect(src.includes(year) && new RegExp(`(^|\\D)${Number(day)}(\\D|$)`).test(src),
       `i18n/${code}.js: cmp.src does not show ${want}`);
   }
+});
+
+// AI readers are told which release llms.txt and llms-full.txt describe, so a
+// summary is not mixed up with another release's docs: both must say the same.
+test('llms.txt and llms-full.txt name the same release and date', () => {
+  const fields = f => {
+    const text = fs.readFileSync(path.join(root, f), 'utf8');
+    const release = text.match(/^- Current release: DockFlip (\d+\.\d+\.\d+) \(.*releases\/tag\/v(\d+\.\d+\.\d+)\).*released (\d{4}-\d{2}-\d{2})/m);
+    const updated = text.match(/^- Last updated: (\d{4}-\d{2}-\d{2})$/m);
+    const docs = text.match(/^- Documentation version: this file describes DockFlip (\d+\.\d+\.\d+)\./m);
+    expect(release && updated && docs, `${f}: needs "Current release", "Last updated" and "Documentation version" lines`);
+    expect(release[1] === release[2] && release[1] === docs[1], `${f}: the version, its tag link and the documentation version differ`);
+    return `${release[1]} ${release[3]} ${updated[1]}`;
+  };
+  const short = fields('site/llms.txt'), full = fields('site/llms-full.txt');
+  expect(short === full, `site/llms.txt says ${short}, site/llms-full.txt says ${full}`);
 });
 
 fs.rmSync(out, { recursive: true, force: true });

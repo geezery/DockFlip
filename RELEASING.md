@@ -28,12 +28,21 @@ features and prices, and those change. Before you tag:
 
 1. Open each link in the "Sources:" line under that table and check every row.
 2. Fix any row that changed, in every file that repeats it: `README.md`,
-   `site/llms.txt`, `docs/wiki/Features.md`, `docs/wiki/FAQ.md`, and the
+   `site/llms.txt`, `site/llms-full.txt`, `docs/wiki/Features.md`, `docs/wiki/FAQ.md`, and the
    homepage's `cmp.*` strings in `site/index.html` and all of `site/i18n/*.js`.
 3. Set the new date in all of them, also when nothing changed: README's
-   "Checked on", `site/llms.txt`, `docs/wiki/Features.md`, the comment and
-   `cmp.src` in `site/index.html`, and `cmp.src` in each `site/i18n/*.js`.
-   `node scripts/build-site-tests.mjs` fails while the dates disagree.
+   "Checked on", `site/llms.txt`, `site/llms-full.txt`, `docs/wiki/Features.md`,
+   the comment and `cmp.src` in `site/index.html`, and `cmp.src` in each
+   `site/i18n/*.js`. `node scripts/build-site-tests.mjs` fails while the dates
+   disagree.
+
+## After a release: tell AI readers
+
+`site/llms.txt` and `site/llms-full.txt` start with a *Version* section, so a
+language model does not mix one release's docs with another's. Once the release
+is out, set the new version, its tag link, the release date and *Last updated*
+in both, and fix anything the release changed in `site/llms-full.txt`.
+`node scripts/build-site-tests.mjs` fails while the two disagree.
 
 ## Numbering
 
