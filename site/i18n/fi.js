@@ -68,4 +68,9 @@
   'cof.btn': `Tarjoa kahvi`, 'cof.star': `Tai jätä ⭐`,
   'foot.releases': `Julkaisut`, 'foot.security': `Tietoturva`, 'foot.it': `IT:lle`,
   'foot.made': `Tehty Helsingissä. Ei sidoksissa Appleen tai Microsoftiin.`,
+  'alt.icon': `DockFlipin kuvake`,
+  'alt.flip': `Ikkunat seisovat kallistetussa 3D-pinossa; jokainen Tab siirtää etummaisen taakse`,
+  'alt.dock': `Kun hiiri on Dockin kuvakkeen päällä, ohjelman ikkunat aukeavat listaksi ja kunkin ikkunan alla sen selaimen välilehdet`,
+  'alt.snap': `Ikkunat napsahtavat näytön vasempaan ja oikeaan puolikkaaseen ja neljänneksiin`,
+  'alt.priv': `DockFlip pyytää vain Käyttöapu-luvan: ei näytön tallennusta, ei verkkoyhteyttä, ei kolmannen osapuolen koodia`,
 };

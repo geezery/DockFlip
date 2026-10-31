@@ -68,4 +68,9 @@
   'cof.btn': `Postaw kawę`, 'cof.star': `Albo zostaw ⭐`,
   'foot.releases': `Wydania`, 'foot.security': `Bezpieczeństwo`, 'foot.it': `Dla IT`,
   'foot.made': `Zrobione w Helsinkach. Niezwiązane z Apple ani Microsoftem.`,
+  'alt.icon': `Ikona DockFlip`,
+  'alt.flip': `Okna w pochylonym stosie 3D; każdy Tab przenosi przednie na koniec`,
+  'alt.dock': `Najechanie na ikonę w Docku otwiera listę okien aplikacji, z kartami przeglądarki pod każdym oknem`,
+  'alt.snap': `Okna przyciągane do lewej i prawej połowy oraz do ćwiartek ekranu`,
+  'alt.priv': `DockFlip prosi tylko o Dostępność: bez nagrywania ekranu, bez dostępu do sieci, bez cudzego kodu`,
 };

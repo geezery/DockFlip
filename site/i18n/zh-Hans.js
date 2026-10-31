@@ -68,4 +68,9 @@
   'cof.btn': `请喝咖啡`, 'cof.star': `或者点个 ⭐`,
   'foot.releases': `版本`, 'foot.security': `安全`, 'foot.it': `面向 IT`,
   'foot.made': `赫尔辛基出品。与 Apple 和 Microsoft 无关。`,
+  'alt.icon': `DockFlip 图标`,
+  'alt.flip': `窗口立在倾斜的 3D 堆叠中；每按一次 Tab，最前面的窗口就移到最后`,
+  'alt.dock': `指针停在程序坞图标上时，会弹出该应用的窗口列表，每个窗口下列出其浏览器标签页`,
+  'alt.snap': `窗口贴靠到屏幕的左半、右半和四分之一`,
+  'alt.priv': `DockFlip 只请求辅助功能权限：无需屏幕录制，无网络访问，无第三方代码`,
 };

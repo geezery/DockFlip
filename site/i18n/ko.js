@@ -68,4 +68,9 @@
   'cof.btn': `커피 사주기`, 'cof.star': `또는 ⭐ 남기기`,
   'foot.releases': `릴리스`, 'foot.security': `보안`, 'foot.it': `IT 담당자용`,
   'foot.made': `헬싱키에서 제작. Apple 및 Microsoft와 무관합니다.`,
+  'alt.icon': `DockFlip 아이콘`,
+  'alt.flip': `기울어진 3D 더미에 선 윈도우들. Tab을 누를 때마다 맨 앞 윈도우가 뒤로 갑니다`,
+  'alt.dock': `Dock 아이콘에 포인터를 올리면 앱의 윈도우 목록이 열리고, 각 윈도우 아래에 브라우저 탭이 표시됩니다`,
+  'alt.snap': `화면의 왼쪽 절반, 오른쪽 절반, 4분의 1로 스냅되는 윈도우`,
+  'alt.priv': `DockFlip은 손쉬운 사용 권한만 요청합니다. 화면 기록 없음, 네트워크 접근 없음, 서드파티 코드 없음`,
 };

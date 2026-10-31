@@ -68,4 +68,9 @@
   'cof.btn': `Bjud på en kaffe`, 'cof.star': `Eller lämna en ⭐`,
   'foot.releases': `Versioner`, 'foot.security': `Säkerhet`, 'foot.it': `För IT`,
   'foot.made': `Gjord i Helsingfors. Inte associerad med Apple eller Microsoft.`,
+  'alt.icon': `DockFlips symbol`,
+  'alt.flip': `Fönster i en lutande 3D-stapel; varje Tab skickar det främsta längst bak`,
+  'alt.dock': `Muspekaren över en Dock-symbol öppnar en lista över appens fönster, med webbläsarflikar under varje fönster`,
+  'alt.snap': `Fönster fästs i skärmens vänstra och högra halva och i dess fjärdedelar`,
+  'alt.priv': `DockFlip ber bara om Hjälpmedel: ingen skärminspelning, ingen nätverksåtkomst, ingen kod från tredje part`,
 };

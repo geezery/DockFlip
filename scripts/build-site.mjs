@@ -62,6 +62,27 @@ const EN = Object.fromEntries(spots.map(e => [e.key, page.slice(e.start, e.end)]
 EN['meta.desc'] = (page.match(/data-i18n-content="meta\.desc"[^>]*\bcontent="([^"]*)"/) || [])[1];
 if (!EN['meta.desc']) throw new Error('index.html: no meta.desc');
 
+// Pictures: <img data-i18n-alt="key" alt="English">. A picture without a key is
+// decoration and says so (alt="" aria-hidden="true"); every other one needs
+// words, for screen readers and image search, in every language.
+const ALT = /<img\b[^>]*>/g;
+const altOf = tag => (tag.match(/\salt="([^"]*)"/) || [])[1];
+const altKeys = [];
+for (const tag of page.match(ALT) || []) {
+  const key = (tag.match(/\sdata-i18n-alt="([^"]+)"/) || [])[1];
+  if (key) {
+    if (!altOf(tag)) throw new Error(`index.html: <img data-i18n-alt="${key}"> has no English alt`);
+    EN[key] = altOf(tag);
+    altKeys.push(key);
+  } else if (altOf(tag) !== '' || !/\saria-hidden="true"/.test(tag)) {
+    throw new Error(`index.html: ${tag} needs data-i18n-alt, or alt="" aria-hidden="true" if it is decoration`);
+  }
+}
+for (const [code, dict] of Object.entries(T)) {
+  const missing = altKeys.filter(k => !dict[k]);
+  if (missing.length) throw new Error(`i18n/${code}.js: no alt text for ${missing.join(', ')}`);
+}
+
 // A key a language file has but the page doesn't is a leftover from old text.
 for (const [code, dict] of Object.entries(T)) {
   const stale = Object.keys(dict).filter(k => !(k in EN));
@@ -89,6 +110,10 @@ function render(code) {
   if (code !== 'en') {
     html = html.replace(/(data-i18n-content="([^"]+)"[^>]*\bcontent=")[^"]*"/g,
       (_, head, key) => head + attr(text(key)) + '"');
+    html = html.replace(ALT, tag => {
+      const key = (tag.match(/\sdata-i18n-alt="([^"]+)"/) || [])[1];
+      return key ? tag.replace(/(\salt=")[^"]*"/, (_, head) => head + attr(text(key)) + '"') : tag;
+    });
     html = html.replace(/<html lang="en">/, `<html lang="${code}" data-lang="${code}">`);
     html = html.replace(/(<meta property="og:url" content=")[^"]*"/, `$1${urlOf(code)}"`);
     html = html.replace(/(<link rel="canonical" href=")[^"]*"/, `$1${urlOf(code)}"`);

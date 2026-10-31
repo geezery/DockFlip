@@ -68,4 +68,9 @@
   'cof.btn': `Kaffee spendieren`, 'cof.star': `Oder einen ⭐ dalassen`,
   'foot.releases': `Versionen`, 'foot.security': `Sicherheit`, 'foot.it': `Für die IT`,
   'foot.made': `Gemacht in Helsinki. Nicht mit Apple oder Microsoft verbunden.`,
+  'alt.icon': `DockFlip-Symbol`,
+  'alt.flip': `Fenster stehen in einem schrägen 3D-Stapel; jedes Tab schickt das vorderste nach hinten`,
+  'alt.dock': `Zeigt man auf ein Dock-Symbol, öffnet sich eine Liste der Fenster der App, unter jedem Fenster seine Browser-Tabs`,
+  'alt.snap': `Fenster docken an der linken und rechten Bildschirmhälfte und in den Vierteln an`,
+  'alt.priv': `DockFlip fragt nur nach Bedienungshilfen: keine Bildschirmaufnahme, kein Netzwerkzugriff, kein fremder Code`,
 };

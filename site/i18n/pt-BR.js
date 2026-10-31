@@ -68,4 +68,9 @@
   'cof.btn': `Pagar um café`, 'cof.star': `Ou deixe uma ⭐`,
   'foot.releases': `Versões`, 'foot.security': `Segurança`, 'foot.it': `Para TI`,
   'foot.made': `Feito em Helsinque. Sem vínculo com a Apple ou a Microsoft.`,
+  'alt.icon': `Ícone do DockFlip`,
+  'alt.flip': `Janelas em uma pilha 3D inclinada; cada Tab manda a da frente para o fundo`,
+  'alt.dock': `Passar o mouse sobre um ícone do Dock abre a lista de janelas do app, com as abas do navegador abaixo de cada janela`,
+  'alt.snap': `Janelas se encaixando na metade esquerda, na metade direita e nos quartos da tela`,
+  'alt.priv': `O DockFlip pede só Acessibilidade: sem gravação de tela, sem acesso à rede, sem código de terceiros`,
 };

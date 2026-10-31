@@ -30,6 +30,9 @@
   const nodes = Array.from(document.querySelectorAll('[data-i18n]'));
   const EN = {};
   nodes.forEach(el => { EN[el.dataset.i18n] = el.innerHTML; });
+  // Pictures' alt text, translated like the rest: <img data-i18n-alt="key" alt="English">.
+  const pictures = Array.from(document.querySelectorAll('[data-i18n-alt]'));
+  pictures.forEach(el => { EN[el.dataset.i18nAlt] = el.getAttribute('alt'); });
 
   function pick() {
     try {
@@ -59,6 +62,10 @@
     nodes.forEach(el => {
       const key = el.dataset.i18n;
       el.innerHTML = fill(dict[key] !== undefined ? dict[key] : EN[key]);
+    });
+    pictures.forEach(el => {
+      const key = el.dataset.i18nAlt;
+      el.setAttribute('alt', dict[key] !== undefined ? dict[key] : EN[key]);
     });
     // Initials in the two avatar circles.
     const faces = document.querySelectorAll('.person .face');

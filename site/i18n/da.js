@@ -68,4 +68,9 @@
   'cof.btn': `Giv en kop kaffe`, 'cof.star': `Eller giv en ⭐`,
   'foot.releases': `Udgivelser`, 'foot.security': `Sikkerhed`, 'foot.it': `Til IT`,
   'foot.made': `Lavet i Helsinki. Ikke tilknyttet Apple eller Microsoft.`,
+  'alt.icon': `DockFlips symbol`,
+  'alt.flip': `Vinduer i en skrå 3D-stak; hvert Tab sender det forreste bagerst`,
+  'alt.dock': `Når musen hviler på et Dock-symbol, åbnes en liste over appens vinduer med browserfaner under hvert vindue`,
+  'alt.snap': `Vinduer fastgøres i skærmens venstre og højre halvdel og i dens kvarte`,
+  'alt.priv': `DockFlip beder kun om Tilgængelighed: ingen skærmoptagelse, ingen netværksadgang, ingen kode fra tredjeparter`,
 };

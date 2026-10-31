@@ -68,4 +68,9 @@
   'cof.btn': `Trakteer op koffie`, 'cof.star': `Of geef een ⭐`,
   'foot.releases': `Versies`, 'foot.security': `Beveiliging`, 'foot.it': `Voor IT`,
   'foot.made': `Gemaakt in Helsinki. Niet verbonden aan Apple of Microsoft.`,
+  'alt.icon': `DockFlip-symbool`,
+  'alt.flip': `Vensters in een schuine 3D-stapel; elke Tab stuurt het voorste naar achteren`,
+  'alt.dock': `Wijzen naar een Dock-symbool opent een lijst van de vensters van de app, met de browsertabbladen onder elk venster`,
+  'alt.snap': `Vensters klikken vast in de linker- en rechterhelft en de kwarten van het scherm`,
+  'alt.priv': `DockFlip vraagt alleen om Toegankelijkheid: geen schermopname, geen netwerktoegang, geen code van derden`,
 };

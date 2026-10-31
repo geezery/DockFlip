@@ -5,7 +5,7 @@ name: Homepage
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'docs/assets/**', 'scripts/build-site.mjs', '.github/workflows/pages.yml']
+    paths: ['site/**', 'docs/assets/**', 'scripts/build-site.mjs', 'scripts/build-site-tests.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -25,6 +25,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
+      - name: Check the homepage
+        # What every per-language page must have: scripts/build-site-tests.mjs.
+        run: node scripts/build-site-tests.mjs
       - name: Assemble
         run: |
           mkdir -p _site/assets
