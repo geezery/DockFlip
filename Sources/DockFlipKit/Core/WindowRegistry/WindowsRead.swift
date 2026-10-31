@@ -95,7 +95,7 @@ extension WindowsRead.Window {
             isStandard: isStandard(role: array[0] as? String, subrole: array[1] as? String),
             attributes: WindowAttributes(
                 title: array[2] as? String,
-                frame: frame(position: array[3], size: array[4]),
+                frame: AXUIElement.frame(position: array[3], size: array[4]),
                 isMinimized: array[5] as? Bool,
                 document: (array[6] as? String).flatMap(documentName)
             )
@@ -125,15 +125,6 @@ extension WindowsRead.Window {
         guard role == kAXWindowRole else { return false }
         guard let subrole else { return nil }
         return subrole == kAXStandardWindowSubrole
-    }
-
-    private static func frame(position: AnyObject, size: AnyObject) -> CGRect? {
-        guard CFGetTypeID(position) == AXValueGetTypeID(), CFGetTypeID(size) == AXValueGetTypeID() else { return nil }
-        var origin = CGPoint.zero
-        var extent = CGSize.zero
-        guard AXValueGetValue(position as! AXValue, .cgPoint, &origin),
-              AXValueGetValue(size as! AXValue, .cgSize, &extent) else { return nil }
-        return CGRect(origin: origin, size: extent)
     }
 
     /// "file:///Users/x/Budget%202026.xlsx" → "Budget 2026.xlsx"
