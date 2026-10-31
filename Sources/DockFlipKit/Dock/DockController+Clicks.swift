@@ -98,6 +98,9 @@ extension DockController {
     /// an app DockFlip knows windows of. No window-server read and no call to
     /// that app here — a hung app would hold up every click on the Mac.
     private func pressOnDock(_ event: CGEvent, at location: CGPoint) -> Bool {
+        // A press on an app with no windows yet (launch, reopen) goes to the Dock:
+        // the window it opens must not pop a list up under the mouse.
+        popup.dockPressed()
         guard let bundleID = iconBundleID(at: location), registry.hasWindows(bundleID: bundleID),
               let down = event.copy() else { return false }
         popup.hideNow()

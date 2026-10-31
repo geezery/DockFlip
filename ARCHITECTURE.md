@@ -45,22 +45,26 @@ thread.
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
-| `Diagnostics/` | Logging, timing statistics, the debug log export. |
+| `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
-`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
+`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
-that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
+that acts on them: `DockAppOrder`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess` and `DebugLogFile`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
-The Dock list's sizing rules (`WindowListLayout`) are tested there too.
+The Dock list's sizing rules (`WindowListLayout`) are tested there too, and so are
+the registry's rules for an app's window reads (`WindowsReconcile`) and moves
+(`FrameSetter`), and the debug log's `SelfCheck`.
 So is the ⌘Tab flow in `SwitcherController` (open, step, release, filter, cancel):
 it gets its windows, focusing and the ⌘ state as closures and draws through a
 `SwitcherPresenter` (`SwitcherPanel` in the app), so tests pass fakes for all of them.
+`SwitcherViewTimingTests` draws the real `SwitcherView` with 60 windows in an
+invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 
 ## Key ideas
 
@@ -79,6 +83,10 @@ it gets its windows, focusing and the ⌘ state as closures and draws through a
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
+- **A list waits for a slow app.** Window reads run off the main thread, so an
+  app's windows can arrive after the 250 ms hover delay; `WindowListWait` keeps
+  the hovered icon whose list found nothing and opens it when they arrive, until
+  the mouse leaves or the Dock is pressed.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
   once the mouse has moved 8 points, and takes the window's frame from the
