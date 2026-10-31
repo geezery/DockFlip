@@ -44,10 +44,31 @@ final class CleanupController {
     private let usage: UsageTracker
     private let model = CleanupModel()
     private var window: NSWindow?
+    private var refresh = CleanupRefresh()
+    private var tokens: [NSObjectProtocol] = []
 
     init(registry: WindowRegistry, usage: UsageTracker) {
         self.registry = registry
         self.usage = usage
+        // Windows closed elsewhere leave the registry; apps quit from the Dock may
+        // have no tracked windows, so their end comes from the workspace instead.
+        registry.addObserver { [weak self] in self?.listChanged() }
+        tokens.append(NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.listChanged() }
+        })
+    }
+
+    /// Something may have gone while Clean Up is open: look again after a short
+    /// one-shot wait, so a burst of changes makes one reload.
+    private func listChanged() {
+        guard refresh.changed(isVisible: window?.isVisible == true) else { return }
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: CleanupRefresh.delay)
+            guard let self, self.refresh.fire(isVisible: self.window?.isVisible == true) else { return }
+            self.reload()
+        }
     }
 
     private var kept: KeptApps {
@@ -71,6 +92,12 @@ final class CleanupController {
             window.isReleasedWhenClosed = false
             window.setContentSize(NSSize(width: 560, height: 520))
             window.center()
+            // Coming back to Clean Up from elsewhere: catch what changed meanwhile.
+            tokens.append(NotificationCenter.default.addObserver(
+                forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.listChanged() }
+            })
             self.window = window
         }
         if let window { WindowPresenter.bringToFront(window) }
