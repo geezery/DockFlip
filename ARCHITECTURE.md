@@ -79,6 +79,10 @@ it gets its windows, focusing and the ⌘ state as closures and draws through a
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
+- **A list waits for a slow app.** Window reads run off the main thread, so an
+  app's windows can arrive after the 250 ms hover delay; `WindowListWait` keeps
+  the hovered icon whose list found nothing and opens it when they arrive, until
+  the mouse leaves or the Dock is pressed.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
   once the mouse has moved 8 points, and takes the window's frame from the
