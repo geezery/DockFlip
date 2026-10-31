@@ -83,7 +83,8 @@ struct SwitcherPreviewsTests {
 
     @Test func gridAsksForTheWindowsAroundTheSelectionNearestFirst() {
         let asked = SwitcherPreviews.toCaptureAround(ids: ids(10), selection: 1, asked: [], limit: 5)
-        #expect(asked == [101, 102, 100, 103, 109])
+        // Not 109: the last window sits in the grid's last row, out of sight.
+        #expect(asked == [101, 102, 100, 103, 104])
     }
 
     @Test func gridAsksForEveryWindowOnceAndOnlyNewOnes() {
