@@ -45,7 +45,7 @@ thread.
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
-| `Diagnostics/` | Logging, timing statistics, the debug log export. |
+| `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
@@ -57,7 +57,9 @@ that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
-The Dock list's sizing rules (`WindowListLayout`) are tested there too.
+The Dock list's sizing rules (`WindowListLayout`) are tested there too, and so are
+the registry's rules for an app's window reads (`WindowsReconcile`) and moves
+(`FrameSetter`), and the debug log's `SelfCheck`.
 So is the ⌘Tab flow in `SwitcherController` (open, step, release, filter, cancel):
 it gets its windows, focusing and the ⌘ state as closures and draws through a
 `SwitcherPresenter` (`SwitcherPanel` in the app), so tests pass fakes for all of them.
