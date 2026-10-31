@@ -26,7 +26,7 @@ struct PlacementRestoreTests {
     }
 
     @Test func skipsClosedOrMinimizedWindows() {
-        #expect(ids([1: .skip]).isEmpty)
+        // Closed or minimized windows have no entry in `known`.
         #expect(ids([:]).isEmpty)
     }
 
