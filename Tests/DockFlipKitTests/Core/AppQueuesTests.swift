@@ -42,15 +42,24 @@ struct AppQueuesTests {
         let queues = AppQueues()
         let log = CallLog()
         let hung = DispatchSemaphore(value: 0)
-        let (finished, finish) = AsyncStream<Void>.makeStream()
+        let (finished, finish) = AsyncStream<[String]>.makeStream()
         queues.run(for: 1, {
-            _ = hung.wait(timeout: .now() + 2)
+            _ = hung.wait(timeout: .now() + 10)
             log.add("hung app")
         })
-        queues.run(for: 2, { log.add("other app") }, then: { _ in finish.yield() })
-        for await _ in finished { break }
-        #expect(log.all == ["other app"])
+        // The log is read as app 2's call runs, not after the hop back to a main actor
+        // that other suites keep busy: on CI that hop once took longer than the hang.
+        queues.run(for: 2, { () -> [String] in
+            log.add("other app")
+            return log.all
+        }, then: { seen in finish.yield(seen) })
+        var seen: [String] = []
+        for await calls in finished {
+            seen = calls
+            break
+        }
         hung.signal()
+        #expect(seen == ["other app"])
     }
 
     @Test func theAnswerComesBackOnTheMainActor() async {
