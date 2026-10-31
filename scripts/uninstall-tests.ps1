@@ -92,7 +92,8 @@ if ($IsMacOS) {
 
     try {
         Test 'the script is executable, as make runs it' {
-            & test -x $restore
+            # /bin/test by path: PowerShell names are case-blind, so a bare `test` is this file's Test.
+            & /bin/test -x $restore
             if ($LASTEXITCODE -ne 0) { throw 'scripts/restore-edge-tiling.sh is not executable (git update-index --chmod=+x)' }
         }
 
