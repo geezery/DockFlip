@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['fi'] = {
   'meta.title': `DockFlip: Windowsin parhaat palat Maciin`,
-  'meta.desc': `Ilmainen macOS-ohjelma: ikkunalistat ja selaimen välilehdet Dockin kuvakkeiden yläpuolelle, Flip 3D ⌘Tab, joka vaihtaa ikkunoita, ja Windows-tyylinen ikkunoiden napsautus. Yksi lupa, ei näytön tallennusta.`,
+  'meta.desc': `Ilmainen Mac-ohjelma, yksi lupa, ei näytön tallennusta: ikkunalistat ja selaimen välilehdet Dockiin, Flip 3D ⌘Tab ikkunoille ja Windows-tyylinen napsautus.`,
   'nav.features': `Ominaisuudet`, 'nav.privacy': `Yksityisyys`, 'nav.download': `Lataa`,
   'hero.title': `Windowsin parhaat palat.<br><em>Sinun Macissasi.</em>`,
   'hero.lede': `Ikkunalistat Dockiin, Flip 3D <span class="sym">⌘</span>Tab, joka vaihtaa <i>ikkunoita</i>, ja ikkunoiden napsautus reunoille. Yksi pieni ohjelma, joka toimii heti. Ilmainen.`,

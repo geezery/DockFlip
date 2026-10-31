@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['ja'] = {
   'meta.title': `DockFlip：Windowsの良いところを、あなたのMacに`,
-  'meta.desc': `無料のmacOSアプリ：Dockアイコンの上にブラウザのタブ付きウインドウリスト、ウインドウを切り替えるFlip 3Dの⌘Tab、Windows風のウインドウスナップ。必要な許可は1つだけ、画面収録は不要です。`,
+  'meta.desc': `無料のMacアプリ。必要な許可は1つ、画面収録なし。Dockにタブ付きウインドウリスト、ウインドウを切り替えるFlip 3Dの⌘Tab、Windows風のスナップ。`,
   'nav.features': `機能`, 'nav.privacy': `プライバシー`, 'nav.download': `ダウンロード`,
   'hero.title': `Windowsの良いところを。<br><em>あなたのMacに。</em>`,
   'hero.lede': `Dockのウインドウリスト、<i>ウインドウ</i>を切り替えるFlip 3Dの<span class="sym">⌘</span>Tab、そしてウインドウのスナップ。開いた瞬間から使える小さなアプリ。無料です。`,

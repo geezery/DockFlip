@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['zh-Hans'] = {
   'meta.title': `DockFlip：把 Windows 最好用的功能带到你的 Mac`,
-  'meta.desc': `免费的 macOS 应用：在程序坞图标上方列出窗口和浏览器标签页，切换窗口的 Flip 3D ⌘Tab，以及 Windows 式的窗口贴靠。只需一项权限，无需屏幕录制。`,
+  'meta.desc': `免费的 Mac 应用，只需一项权限，无需屏幕录制：程序坞上方的窗口和浏览器标签页列表、切换窗口的 Flip 3D ⌘Tab，以及 Windows 式窗口贴靠。`,
   'nav.features': `功能`, 'nav.privacy': `隐私`, 'nav.download': `下载`,
   'hero.title': `Windows 最好用的部分。<br><em>现在在你的 Mac 上。</em>`,
   'hero.lede': `程序坞中的窗口列表、切换<i>窗口</i>的 Flip 3D <span class="sym">⌘</span>Tab，以及窗口贴靠。一个打开就能用的小应用。免费。`,

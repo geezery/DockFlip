@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['fr'] = {
   'meta.title': `DockFlip : le meilleur de Windows, sur votre Mac`,
-  'meta.desc': `App macOS gratuite : listes de fenêtres avec onglets du navigateur au-dessus des icônes du Dock, un ⌘Tab Flip 3D qui change de fenêtre et l’ancrage façon Windows. Une seule autorisation, sans enregistrement de l’écran.`,
+  'meta.desc': `App Mac gratuite, une seule autorisation, sans enregistrement de l’écran : fenêtres et onglets au-dessus du Dock, ⌘Tab Flip 3D et ancrage façon Windows.`,
   'nav.features': `Fonctions`, 'nav.privacy': `Confidentialité`, 'nav.download': `Télécharger`,
   'hero.title': `Le meilleur de Windows.<br><em>Sur votre Mac.</em>`,
   'hero.lede': `Des listes de fenêtres dans le Dock, un <span class="sym">⌘</span>Tab Flip 3D qui passe d’une <i>fenêtre</i> à l’autre, et l’ancrage des fenêtres. Une petite app qui marche dès l’ouverture. Gratuite.`,

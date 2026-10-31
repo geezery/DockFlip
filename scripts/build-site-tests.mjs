@@ -60,6 +60,22 @@ test('the Snapping section names Snap Assist in every language', () => {
   for (const code of Object.keys(T)) expect(T[code]['snap.l4'], `i18n/${code}.js: no snap.l4`);
 });
 
+// Search results cut a description at about 155 characters; the privacy
+// point comes first so that it is never the part cut.
+test('every page\'s description fits a search result and starts with the privacy point', () => {
+  for (const code of Object.keys(LANGS)) {
+    const html = pageOf(code);
+    const desc = (html.match(/<meta name="description"[^>]*\bcontent="([^"]*)"/) || [])[1];
+    expect(desc, `${code}: no meta description`);
+    const length = Array.from(desc.replace(/&amp;/g, '&').replace(/&quot;/g, '"')).length;
+    expect(length <= 155, `${code}: description is ${length} characters, at most 155 show in search results`);
+    const og = (html.match(/<meta property="og:description"[^>]*\bcontent="([^"]*)"/) || [])[1];
+    expect(og === desc, `${code}: og:description differs from the description`);
+  }
+  const en = english.match(/<meta name="description"[^>]*\bcontent="([^"]*)"/)[1];
+  expect(/^[^:]*one permission, no screen recording:/.test(en), 'English description: the privacy point is not first');
+});
+
 fs.rmSync(out, { recursive: true, force: true });
 if (failed) { console.log(`${failed} failed`); process.exit(1); }
 console.log('all passed');

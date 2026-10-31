@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['sv'] = {
   'meta.title': `DockFlip: det bästa från Windows, på din Mac`,
-  'meta.desc': `Gratis macOS-app: fönsterlistor med webbläsarflikar ovanför Dock-symbolerna, en Flip 3D-⌘Tab som växlar fönster och fönsterfästning som i Windows. En behörighet, ingen skärminspelning.`,
+  'meta.desc': `Gratis Mac-app, en behörighet, ingen skärminspelning: fönsterlistor med webbläsarflikar i Dock, Flip 3D-⌘Tab för fönster och fönsterfästning som i Windows.`,
   'nav.features': `Funktioner`, 'nav.privacy': `Integritet`, 'nav.download': `Hämta`,
   'hero.title': `Det bästa från Windows.<br><em>På din Mac.</em>`,
   'hero.lede': `Fönsterlistor i Dock, en Flip 3D-<span class="sym">⌘</span>Tab som växlar mellan <i>fönster</i> och fästa fönster mot kanterna. En liten app som fungerar direkt. Gratis.`,

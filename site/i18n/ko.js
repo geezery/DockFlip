@@ -2,7 +2,7 @@
 // i18n.js, which applies them; see the notes at the top of i18n.js.
 (window.DockFlipI18n = window.DockFlipI18n || {})['ko'] = {
   'meta.title': `DockFlip: Windows의 장점을 Mac에서`,
-  'meta.desc': `무료 macOS 앱: Dock 아이콘 위에 브라우저 탭이 있는 윈도우 목록, 윈도우를 전환하는 Flip 3D ⌘Tab, Windows 스타일의 윈도우 스냅. 권한 하나, 화면 기록 없음.`,
+  'meta.desc': `무료 Mac 앱. 권한 하나, 화면 기록 없음: Dock에 브라우저 탭이 있는 윈도우 목록, 윈도우를 전환하는 Flip 3D ⌘Tab, Windows 스타일 스냅.`,
   'nav.features': `기능`, 'nav.privacy': `개인정보`, 'nav.download': `다운로드`,
   'hero.title': `Windows의 장점만.<br><em>당신의 Mac에서.</em>`,
   'hero.lede': `Dock의 윈도우 목록, <i>윈도우</i>를 전환하는 Flip 3D <span class="sym">⌘</span>Tab, 그리고 윈도우 스냅. 열자마자 작동하는 작은 앱. 무료입니다.`,
