@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="meta.title">DockFlip: the best bits of Windows, on your Mac</title>
-<meta name="description" data-i18n-content="meta.desc" content="Free Mac app, one permission, no screen recording: window lists with browser tabs in the Dock, a Flip 3D ⌘Tab for windows, and Windows-style snapping.">
+<title data-i18n="meta.title">DockFlip: Windows Alt+Tab, Dock window lists and snapping for Mac</title>
+<meta name="description" data-i18n-content="meta.desc" content="Free Mac app, one permission, no screen recording: Dock window lists with browser tabs, ⌘Tab for windows (Flip 3D or Windows 11 grid) and snapping.">
 <link rel="canonical" href="https://geezery.github.io/DockFlip/">
 <!-- hreflang alternates for the per-language pages are added by scripts/build-site.mjs at deploy. -->
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <meta property="og:site_name" content="DockFlip">
-<meta property="og:title" data-i18n-content="meta.title" content="DockFlip: the best bits of Windows, on your Mac">
-<meta property="og:description" data-i18n-content="meta.desc" content="Free Mac app, one permission, no screen recording: window lists with browser tabs in the Dock, a Flip 3D ⌘Tab for windows, and Windows-style snapping.">
+<meta property="og:title" data-i18n-content="meta.title" content="DockFlip: Windows Alt+Tab, Dock window lists and snapping for Mac">
+<meta property="og:description" data-i18n-content="meta.desc" content="Free Mac app, one permission, no screen recording: Dock window lists with browser tabs, ⌘Tab for windows (Flip 3D or Windows 11 grid) and snapping.">
 <meta property="og:image" content="https://geezery.github.io/DockFlip/assets/social-preview.png">
 <meta property="og:url" content="https://geezery.github.io/DockFlip/">
 <meta property="og:type" content="website">
@@ -22,7 +22,7 @@
   "@type": "SoftwareApplication",
   "name": "DockFlip",
   "url": "https://geezery.github.io/DockFlip/",
-  "description": "Window lists with browser tabs above Dock icons, a Flip 3D ⌘Tab that switches windows, and Windows-style snapping for macOS. One permission, no screen recording.",
+  "description": "Window lists with browser tabs above Dock icons, a ⌘Tab that switches windows (Flip 3D or a Windows 11 grid), and Windows-style snapping with Snap Assist for macOS. One permission, no screen recording.",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "macOS 26 or later",
   "downloadUrl": "https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg",
@@ -170,7 +170,7 @@ footer .right{margin-left:auto}
   <div class="wrap">
     <img class="icon" src="icon.png" data-i18n-alt="alt.icon" alt="DockFlip icon">
     <h1 data-i18n="hero.title">The best bits of Windows.<br><em>On your Mac.</em></h1>
-    <p class="lede" data-i18n="hero.lede">Window lists in your Dock, a Flip 3D <span class="sym">⌘</span>Tab that switches <i>windows</i>, and snapping. One small app that works the moment you open it. Free.</p>
+    <p class="lede" data-i18n="hero.lede">Window lists in your Dock, a <span class="sym">⌘</span>Tab that switches <i>windows</i> (Flip 3D or Windows 11 style), and snapping. One small app that works the moment you open it. Free.</p>
     <div class="ctas">
       <a class="btn primary" href="https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 10l6 6 6-6M4 21h16"/></svg>
@@ -178,7 +178,7 @@ footer .right{margin-left:auto}
       <a class="btn ghost" href="https://github.com/geezery/DockFlip" data-i18n="hero.github">View on GitHub</a>
     </div>
     <div class="fine" data-i18n="hero.fine">macOS 26 or later · Apple silicon and Intel · open source (GPL-3.0)</div>
-    <div class="hero-art"><img src="assets/feature-flip.gif" data-i18n-alt="alt.flip" alt="Windows standing in a slanted 3D stack; each Tab sends the front one to the back" width="1280" height="800"></div>
+    <div class="hero-art"><img src="assets/feature-flip.gif" data-i18n-alt="alt.flip" alt="Windows standing in a slanted 3D stack; each Tab sends the front one to the back. Then the ⌘Tab switcher is set to Grid and the windows appear as tiles, as in Windows 11" width="1280" height="800"></div>
 
     <div class="trust">
       <div><b data-i18n="trust.1b">1 permission</b><span data-i18n="trust.1s">Accessibility. That's all.</span></div>
@@ -207,14 +207,14 @@ footer .right{margin-left:auto}
 
   <section class="feature flip">
     <div class="copy">
-      <div class="kicker" data-i18n="flip.kicker"><span class="sym">⌘</span>Tab, Flip 3D edition</div>
+      <div class="kicker" data-i18n="flip.kicker"><span class="sym">⌘</span>Tab: Flip 3D or Windows 11 grid</div>
       <h2 data-i18n="flip.h">Switch windows, not apps.</h2>
       <p data-i18n="flip.p">Hold <kbd class="sym">⌘</kbd> and press <kbd>Tab</kbd>: every window stands in a slanted 3D stack, most recent in front. Windows 7 fans will feel right at home.</p>
       <ul>
         <li data-i18n="flip.l1"><b>Type to filter.</b> Type "plan" and only your plans are left. Return opens the one in front.</li>
         <li data-i18n="flip.l2">Minimized, full-screen and other-desktop windows are all in the stack.</li>
         <li data-i18n="flip.l3">Keeps working next to password fields, where lesser switchers give up.</li>
-        <li data-i18n="flip.l4"><b>Or the Windows 11 look:</b> a grid of window tiles, one choice in Settings.</li>
+        <li data-i18n="flip.l4"><b>Prefer Windows 11?</b> Choose Grid in Settings: window tiles in rows, as in Alt+Tab on Windows 11. Same keys, same filter.</li>
       </ul>
     </div>
     <div class="keys">

@@ -1,6 +1,6 @@
 # DockFlip
 
-> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a Flip 3D ⌘Tab switcher that switches windows (not apps) with type-to-filter, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners, and Snap Assist: the other windows offered as cards for the space beside a snapped one). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
+> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners, and Snap Assist: the other windows offered as cards for the space beside a snapped one). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
 
 DockFlip focuses on Windows-style behaviour with good defaults rather than many settings: it has four settings and deliberately no thirds, gaps, per-app rules or themes.
 
@@ -21,7 +21,7 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 
 ## Docs
 
-- [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, Flip 3D ⌘Tab, snapping, Clean Up
+- [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, ⌘Tab (Flip 3D or Windows 11 grid), snapping and Snap Assist, Clean Up
 - [Keyboard shortcuts](https://github.com/geezery/DockFlip/wiki/Keyboard-Shortcuts): ⌘Tab, ⌃⌥ arrows, ⌃⌥D show desktop, with Windows equivalents
 - [Installation](https://github.com/geezery/DockFlip/wiki/Installation): download, the one-time "Open Anyway" step, building from source
 - [Comparison with AltTab, DockDoor and macOS 27](https://github.com/geezery/DockFlip#how-it-compares): a dated table with sources

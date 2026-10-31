@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <b>Window lists in your Dock · a Flip 3D ⌘Tab that switches <i>windows</i> · Win-style snapping</b><br>
+  <b>Window lists in your Dock · a ⌘Tab that switches <i>windows</i>, Flip 3D or Windows 11 grid · Win-style snapping with Snap Assist</b><br>
   One small, free, open-source app. One permission, no screen recording, and it works the moment you open it.
 </p>
 
@@ -66,9 +66,9 @@ of date, [tell us](https://github.com/geezery/DockFlip/issues).
 |---|---|---|---|---|---|
 | Windows above a Dock icon | ✓ List, or thumbnails | – | ✓ Live previews | ✓ Live previews, in its own Dock | Titles in the right-click menu |
 | Browser tabs under each window | ✓ | – | – | – | – |
-| A switcher for windows, not apps | ✓ ⌘Tab, Flip 3D | ✓ | ✓ ⌥Tab | ✓ | ⌘\` within one app |
+| A switcher for windows, not apps | ✓ ⌘Tab, Flip 3D or grid | ✓ | ✓ ⌥Tab | ✓ | ⌘\` within one app |
 | Type to search in the switcher | ✓ | Pro only | ✓ | ✓ | – |
-| Snapping | ✓ ⌃⌥ arrows, drag to edges | – | Title-bar swipes, off by default | From a preview card | ✓ Drag to edges, shortcuts, green button |
+| Snapping | ✓ ⌃⌥ arrows, drag to edges, Snap Assist | – | Title-bar swipes, off by default | From a preview card | ✓ Drag to edges, shortcuts, green button |
 | Screen Recording | Not needed (only for opt-in thumbnails) | Optional; no thumbnails without it | Required | Needed for live previews | – |
 | IT kit (`.pkg` and PPPC profile) | ✓ [docs/IT.md](docs/IT.md) | – | – | – | – |
 | Price | Free, GPL-3.0 | Free, GPL-3.0; Pro $9.99 or $24.99 lifetime | Free, GPL-3.0 | $20 once, 3 Macs | Included |
@@ -111,9 +111,9 @@ folders, Trash, badges and your settings all keep working.
   window gets a small map of where it sits on screen, which is surprisingly
   good at telling three "Untitled" windows apart.
 
-### 🃏 ⌘Tab, Flip 3D edition
+### 🃏 ⌘Tab: Flip 3D or the Windows 11 grid
 
-<img src="docs/assets/feature-flip.gif" alt="Windows standing in a slanted 3D stack; each Tab sends the front one to the back" width="100%">
+<img src="docs/assets/feature-flip.gif" alt="Windows standing in a slanted 3D stack; each Tab sends the front one to the back. Then the ⌘Tab switcher is set to Grid and the windows appear as tiles, as in Windows 11" width="100%">
 
 ⌘Tab now switches between **windows**, not apps, in a slanted 3D stack that
 Windows 7 fans will recognise from across the room. Most recently used is in
@@ -139,8 +139,8 @@ front.
 
 **⌃⌥ is your Win key.** Use the arrows for halves, maximize and quarters, or
 drag a window to an edge or a corner and let go; drag it away and it takes back
-its earlier size. The space left beside a half or a quarter
-shows your other windows: click one, or pick it with the arrows and Return,
+its earlier size. Then **Snap Assist** shows your other windows in the space
+left beside a half or a quarter: click one, or pick it with the arrows and Return,
 and it fills that space. Esc or a click elsewhere closes them.
 
 ### 🧹 The small stuff

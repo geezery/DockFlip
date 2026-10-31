@@ -60,6 +60,17 @@ test('the Snapping section names Snap Assist in every language', () => {
   for (const code of Object.keys(T)) expect(T[code]['snap.l4'], `i18n/${code}.js: no snap.l4`);
 });
 
+// The ⌘Tab switcher has two looks; a visitor from Windows 11 should see theirs
+// in the section heading, not only in the last bullet.
+test('the ⌘Tab section names the Windows 11 grid in every language', () => {
+  expect(/data-i18n="flip\.kicker"[^>]*>[^\n]*Windows 11/.test(english), 'index.html: flip.kicker does not name Windows 11');
+  for (const code of Object.keys(T)) {
+    for (const key of ['flip.kicker', 'flip.l4', 'meta.desc']) {
+      expect((T[code][key] || '').includes('11'), `i18n/${code}.js: ${key} does not name Windows 11`);
+    }
+  }
+});
+
 // Search results cut a description at about 155 characters; the privacy
 // point comes first so that it is never the part cut.
 test('every page\'s description fits a search result and starts with the privacy point', () => {
