@@ -289,36 +289,34 @@ struct FanCard: View {
 }
 
 /// A window's picture, with its own close, minimize and zoom buttons covered by
-/// frosted glass and the app's icon, the same way every card shows them.
+/// frosted glass and the app's icon at its left edge (`ThumbnailCover`), the
+/// same way in ⌘Tab and in the Dock list.
 struct ThumbnailView: View {
     let image: NSImage
     let windowSize: CGSize
     let icon: NSImage?
-
-    /// The area the buttons sit in, in window points: wide enough for all three,
-    /// tall enough for a title bar or a tall macOS 26 toolbar.
-    private static let buttonArea = CGSize(width: 86, height: 52)
+    /// Rounds the picture's own corners, not the space around a fitted picture.
+    var cornerRadius: CGFloat = 0
 
     var body: some View {
         GeometryReader { geo in
             let shown = Self.fitted(image.size, in: geo.size)
-            let scale = windowSize.width > 0 ? shown.width / windowSize.width : 0
-            let cover = CGSize(width: Self.buttonArea.width * scale, height: Self.buttonArea.height * scale)
             ZStack(alignment: .topLeading) {
                 Image(nsImage: image)
                     .resizable()
                     .interpolation(.high)
                     .frame(width: shown.width, height: shown.height)
-                if scale > 0 {
-                    ZStack {
+                if let cover = ThumbnailCover.layout(picture: shown.size, window: windowSize) {
+                    ZStack(alignment: .topLeading) {
                         Rectangle().fill(.ultraThinMaterial)
-                        AppIconView(icon: icon, size: cover.height * 0.6)
-                            .opacity(0.9)
+                        AppIconView(icon: icon, size: cover.iconSide)
+                            .offset(x: cover.iconOrigin.x, y: cover.iconOrigin.y)
                     }
-                    .frame(width: cover.width, height: cover.height)
-                    .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: cover.height * 0.3, style: .continuous))
+                    .frame(width: cover.plate.width, height: cover.plate.height, alignment: .topLeading)
+                    .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: cover.plate.height * 0.3, style: .continuous))
                 }
             }
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .offset(x: shown.minX, y: shown.minY)
         }
     }
