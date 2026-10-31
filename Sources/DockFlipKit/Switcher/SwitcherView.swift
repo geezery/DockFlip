@@ -44,6 +44,8 @@ final class SwitcherModel: ObservableObject {
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
     /// Typed filter text; empty when not filtering.
     @Published var query = ""
+    /// Flip 3D or the Windows 11 grid; set as the switcher opens.
+    @Published var style: SwitcherStyle = .flip3D
     var onPick: ((Int) -> Void)?
     var onCancel: (() -> Void)?
 

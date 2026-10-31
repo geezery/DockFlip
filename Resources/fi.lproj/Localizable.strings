@@ -44,6 +44,10 @@
 "Window thumbnails" = "Ikkunoiden pikkukuvat";
 "Keyboard shortcuts" = "Pikanäppäimet";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab ja ⌃⌥-kiinnityspikanäppäimet";
+"⌘Tab switcher" = "⌘Tab-vaihtaja";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Flip 3D kuten Windows 7:ssä tai ruudukko kuten Windows 11:ssä";
+"Flip 3D" = "Flip 3D";
+"Grid" = "Ruudukko";
 "Managed by your organization" = "Organisaatiosi hallinnoima";
 "Screen Recording is not allowed yet" = "Näytön tallennusta ei ole vielä sallittu";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Salli DockFlip Järjestelmäasetuksissa. Jos se on jo sallittu, käynnistä DockFlip uudelleen.";

@@ -19,6 +19,8 @@ final class SwitcherController {
     private let isCommandHeld: @MainActor () -> Bool
     /// The hold before the switcher is drawn; tests pass one that ends at once.
     private let sleep: @MainActor (Duration) async -> Void
+    /// Flip 3D or the Windows 11 grid, read as the switcher opens.
+    private let style: @MainActor () -> SwitcherStyle
     private let presenter: any SwitcherPresenter
     private let model: SwitcherModel
     private var selection: SwitcherSelection?
@@ -57,6 +59,7 @@ final class SwitcherController {
             focusWindow: { registry.focus($0) },
             isCommandHeld: { NSEvent.modifierFlags.contains(.command) },
             sleep: { try? await Task.sleep(for: $0) },
+            style: { Settings.shared.switcherStyle },
             presenter: nil
         )
         // On the next turn, so launch itself is not held up by it.
@@ -65,6 +68,8 @@ final class SwitcherController {
 
     /// Builds the panel ahead of the first ⌘Tab (`SwitcherPresenter.prepare`).
     func prepare() {
+        // Built in the chosen look, so the first ⌘Tab of a grid user is not the one building it.
+        model.style = style()
         presenter.prepare()
     }
 
@@ -74,6 +79,7 @@ final class SwitcherController {
         focusWindow: @escaping @MainActor (CGWindowID) -> Void,
         isCommandHeld: @escaping @MainActor () -> Bool,
         sleep: @escaping @MainActor (Duration) async -> Void,
+        style: @escaping @MainActor () -> SwitcherStyle = { .flip3D },
         presenter: (any SwitcherPresenter)?
     ) {
         let model = SwitcherModel()
@@ -81,6 +87,7 @@ final class SwitcherController {
         self.focusWindow = focusWindow
         self.isCommandHeld = isCommandHeld
         self.sleep = sleep
+        self.style = style
         self.model = model
         self.presenter = presenter ?? SwitcherPanel(model: model)
         model.onPick = { [weak self] index in self?.commit(at: index) }
@@ -158,6 +165,7 @@ final class SwitcherController {
         query = ""
         model.query = ""
         model.thumbnails = [:]
+        model.style = style()
         model.items = windows.map { window in
             let placement = WindowAppearance.placement(of: window.frame)
             return SwitcherItem(
@@ -309,9 +317,7 @@ final class SwitcherController {
     /// captured before the switcher is drawn, so a quick hop takes no pictures.
     private func loadPreviews(lookAhead: Bool) {
         guard isDrawn else { return }
-        let ids = SwitcherPreviews.toCapture(
-            ids: model.items.map(\.windowID), selection: model.selection,
-            visibleDepth: SwitcherStack.visibleDepth, asked: askedPreviews, lookAhead: lookAhead)
+        let ids = previewsToCapture(lookAhead: lookAhead)
         guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
         askedPreviews.formUnion(ids)
         let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
@@ -327,6 +333,22 @@ final class SwitcherController {
                 guard !Task.isCancelled, let self, self.isActive, let image else { return }
                 self.model.thumbnails[window.id] = image
             }
+        }
+    }
+
+    /// The stack shows the cards near the front (`SwitcherStack`); the grid shows
+    /// a few rows of tiles at once, so it asks for the windows around the
+    /// selected one, a bigger batch, on every step.
+    private func previewsToCapture(lookAhead: Bool) -> [CGWindowID] {
+        let ids = model.items.map(\.windowID)
+        switch model.style {
+        case .flip3D:
+            return SwitcherPreviews.toCapture(
+                ids: ids, selection: model.selection,
+                visibleDepth: SwitcherStack.visibleDepth, asked: askedPreviews, lookAhead: lookAhead)
+        case .grid:
+            return SwitcherPreviews.toCaptureAround(
+                ids: ids, selection: model.selection, asked: askedPreviews, limit: SwitcherGrid.previewBatch)
         }
     }
 }

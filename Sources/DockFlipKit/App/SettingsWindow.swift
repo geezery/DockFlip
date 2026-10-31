@@ -93,6 +93,7 @@ struct SettingsView: View {
                         if settings.shortcutsManaged { Text("Managed by your organization") }
                     }
                     .disabled(settings.shortcutsManaged)
+                    SwitcherStylePicker(settings: settings)
                 }
             }
             .formStyle(.grouped)
@@ -110,6 +111,24 @@ struct SettingsView: View {
         }
         .frame(width: 480)
         .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// The ⌘Tab look: Flip 3D or the Windows 11 grid. Greyed out while the keyboard
+/// shortcuts are off (there is no ⌘Tab then) or when a profile manages it.
+struct SwitcherStylePicker: View {
+    @ObservedObject var settings: Settings
+
+    var body: some View {
+        Picker(selection: $settings.switcherStyle) {
+            Text("Flip 3D").tag(SwitcherStyle.flip3D)
+            Text("Grid").tag(SwitcherStyle.grid)
+        } label: {
+            Text("⌘Tab switcher")
+            Text("Flip 3D as in Windows 7, or a grid as in Windows 11")
+            if settings.switcherStyleManaged { Text("Managed by your organization") }
+        }
+        .disabled(settings.switcherStyleManaged || !settings.shortcutsEnabled)
     }
 }
 

@@ -97,6 +97,7 @@ domain. You can set them with a custom settings or managed preferences payload:
 |---|---|---|---|
 | `previewsEnabled` | Boolean | `false` | Real window thumbnails (needs Screen Recording) |
 | `shortcutsEnabled` | Boolean | `true` | ⌘Tab switcher and ⌃⌥ shortcuts |
+| `switcherStyle` | String | `flip3D` | ⌘Tab look: `flip3D` (Windows 7 Flip 3D) or `grid` (Windows 11) |
 
 A key your profile manages is locked: DockFlip's Settings greys out its switch
 and shows "Managed by your organization" under it, and DockFlip keeps following

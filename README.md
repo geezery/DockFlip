@@ -52,7 +52,7 @@ paperclip.
   screen for that; DockFlip only needs Accessibility.
 - **Lean for real.** No polling, no timers, no dependencies, no network. When
   you're not using it, it's doing nothing at all.
-- **Right out of the box.** Three settings, all with sensible defaults. You
+- **Right out of the box.** Four settings, all with sensible defaults. You
   install it, allow one permission, and get on with your day.
 
 ## How it compares
@@ -74,7 +74,7 @@ of date, [tell us](https://github.com/geezery/DockFlip/issues).
 | Runs on | macOS 26 and later | macOS 12 and later | macOS 13 and later | macOS 14.6 and later | – |
 
 **Where DockFlip stands out:** it is the one app here that does all three jobs
-for free without Screen Recording, it lists browser tabs, it has three settings,
+for free without Screen Recording, it lists browser tabs, it has four settings,
 all sensible by default, and IT can roll it out with no prompts at all.
 
 **Where the others do more:** DockDoor Pro replaces the Dock outright, with
@@ -127,6 +127,8 @@ front.
   switches without drawing the stack at all.
 - **Survives password fields.** It keeps working while another app holds
   secure keyboard input, which is exactly when lesser switchers give up.
+- **Or the Windows 11 look.** Prefer a grid of window tiles in one panel?
+  Pick *Grid* under *⌘Tab switcher* in Settings. Same keys, same filter.
 
 ### 📐 Snapping
 
@@ -211,7 +213,7 @@ switching between the two means allowing Accessibility once more.
 
 | Keys | What happens | Windows equivalent |
 |---|---|---|
-| ⌘ Tab | Flip 3D window switcher | Alt+Tab |
+| ⌘ Tab | Flip 3D (or Windows 11 grid) window switcher | Alt+Tab |
 | ⌃⌥ ← / → | Left or right half; press again to move on to the next display | Win+← / → |
 | ⌃⌥ ↑ | Maximize; from a half, the top quarter | Win+↑ |
 | ⌃⌥ ↓ | Restore, then minimize; from a half, the bottom quarter | Win+↓ |

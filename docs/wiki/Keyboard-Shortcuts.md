@@ -6,7 +6,7 @@ own tiling, so ⌃⌥ was the free seat.
 
 | DockFlip | Windows | What happens |
 |---|---|---|
-| ⌘ Tab | Alt+Tab | Flip 3D window switcher |
+| ⌘ Tab | Alt+Tab | Flip 3D (or Windows 11 grid) window switcher |
 | ⌘ ⇧ Tab | Alt+Shift+Tab | Switcher, going backwards |
 | ⌃⌥ ← | Win+← | Left half; press again to move on to the display on the left |
 | ⌃⌥ → | Win+→ | Right half; press again to move on to the display on the right |

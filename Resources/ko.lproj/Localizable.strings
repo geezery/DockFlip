@@ -44,6 +44,10 @@
 "Window thumbnails" = "윈도우 축소판";
 "Keyboard shortcuts" = "키보드 단축키";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab 및 ⌃⌥ 스냅 단축키";
+"⌘Tab switcher" = "⌘Tab 전환기";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Windows 7과 같은 Flip 3D 또는 Windows 11과 같은 격자";
+"Flip 3D" = "Flip 3D";
+"Grid" = "격자";
 "Managed by your organization" = "조직에서 관리함";
 "Screen Recording is not allowed yet" = "화면 녹화가 아직 허용되지 않았습니다";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "시스템 설정에서 DockFlip을 허용하십시오. 이미 허용했다면 DockFlip을 다시 시작하십시오.";
