@@ -124,11 +124,6 @@ public final class WindowRegistry {
         }
     }
 
-    /// Reads the frame straight from Accessibility (AX space).
-    func liveFrame(of id: CGWindowID) -> CGRect? {
-        element(for: id)?.frame
-    }
-
     /// The frame the window last reported (AX space), from memory only: the moved
     /// and resized notifications keep it current, so snapping asks the app nothing.
     /// Nil for a minimized window or one whose frame was never read.
