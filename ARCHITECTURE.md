@@ -51,7 +51,7 @@ Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
-`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
+`HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
 
