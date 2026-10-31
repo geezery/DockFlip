@@ -57,6 +57,7 @@ paperclip.
 
 ## How it compares
 
+<!-- The homepage's comparison (site/index.html cmp.*, site/i18n/) copies these rows: change both. -->
 Checked on 30 October 2026 against each app's own site and Apple's macOS 27
 guide. "–" means we found no such feature there. Apps change; if a row is out
 of date, [tell us](https://github.com/geezery/DockFlip/issues).
