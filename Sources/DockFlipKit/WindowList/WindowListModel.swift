@@ -41,6 +41,8 @@ struct WindowListRow: Identifiable {
     let tabs: [BrowserTab]
     /// The window's size in points; places the app's icon over its buttons in a thumbnail.
     var windowSize: CGSize = .zero
+    /// A window thumbnails never picture (`NeverPictured`); its card says so when previews are on.
+    var neverPictured = false
 }
 
 /// State the views draw. Hover state lives here, not in SwiftUI's @State: @State

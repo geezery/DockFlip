@@ -69,10 +69,18 @@ rules:
 - They're kept in memory only: at most 24, for up to two minutes. They're never
   written to disk and are dropped when the screen locks or the Mac sleeps.
 - They're never taken while a password field is active.
-- Password managers and System Settings are never pictured.
+- Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox,
+  NordPass, KeePassXC and others), Authy, Keychain Access and System Settings
+  are never pictured.
+- Private windows of Firefox, Chrome, Edge, Brave and Vivaldi are never
+  pictured: they're told apart by the word their title ends in. Safari puts no
+  such word in the title, so its private windows can still be pictured; turn
+  thumbnails off if that matters to you.
 
 Every rule is in one file:
-[`Sources/DockFlipKit/Previews/PreviewProvider.swift`](Sources/DockFlipKit/Previews/PreviewProvider.swift).
+[`Sources/DockFlipKit/Previews/PreviewProvider.swift`](Sources/DockFlipKit/Previews/PreviewProvider.swift),
+and the list of skipped apps and windows in
+[`NeverPictured.swift`](Sources/DockFlipKit/Previews/NeverPictured.swift) beside it.
 
 ## Check it yourself
 

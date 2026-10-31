@@ -58,11 +58,18 @@ If you turn thumbnails on:
   and dropped when the screen locks or the Mac sleeps. They're never written
   to disk.
 - They're **never** taken while a password field is active.
-- **Password managers and System Settings are never pictured.** Their windows
-  show a card with a lock instead.
+- **Password managers and System Settings are never pictured.** That covers
+  1Password, Bitwarden, Proton Pass, Enpass, Strongbox, NordPass, KeePassXC,
+  MacPass, Secrets, Dashlane, LastPass, Authy, Apple Passwords and Keychain
+  Access. Their windows show "No picture, for privacy" with a lock instead.
+- **Private windows are never pictured** in Firefox, Chrome, Edge, Brave and
+  Vivaldi, which end a private window's title with "Private Browsing",
+  "Incognito", "InPrivate" or "Private". Safari's private windows carry no
+  such mark, so they can still be pictured.
 
-All of this lives in one file, `Sources/DockFlipKit/Previews/PreviewProvider.swift`,
-so you can read every rule yourself.
+All of this lives in `Sources/DockFlipKit/Previews/PreviewProvider.swift`, with
+the list of skipped apps and windows in `NeverPictured.swift` beside it, so you
+can read every rule yourself.
 
 ## Check it yourself
 

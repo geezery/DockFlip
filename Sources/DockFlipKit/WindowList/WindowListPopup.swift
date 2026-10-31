@@ -156,7 +156,8 @@ final class WindowListPopup {
                 isActive: window.id == activeID,
                 tint: WindowAppearance.tint(of: window),
                 tabs: TabStore.shared.tabs(of: window.id) ?? [],
-                windowSize: window.frame.size
+                windowSize: window.frame.size,
+                neverPictured: PreviewProvider.neverPictured(window)
             )
         }
 

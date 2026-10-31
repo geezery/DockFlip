@@ -14,7 +14,8 @@ import ScreenCaptureKit
 ///   (minimized, on another desktop) still show how they looked. Never written
 ///   to disk; all dropped when the screen locks or the Mac sleeps.
 /// - Never while a password field is focused anywhere (secure keyboard entry),
-///   and never for password managers, Keychain Access or System Settings.
+///   and never for password managers, Keychain Access, System Settings or
+///   browsers' private windows (`NeverPictured`).
 @MainActor
 final class PreviewProvider {
     static let shared = PreviewProvider()
@@ -25,18 +26,6 @@ final class PreviewProvider {
     /// Images are kept this long, and at most `maxCached` of them.
     private static let keptFor: TimeInterval = 120
     private static let maxCached = 24
-
-    private static let neverCapture: Set<String> = [
-        "com.apple.keychainaccess",
-        "com.apple.Passwords",
-        "com.apple.systempreferences",
-        "com.1password.1password",
-        "com.agilebits.onepassword7",
-        "com.bitwarden.desktop",
-        "org.keepassxc.keepassxc",
-        "com.dashlane.dashlanephonefinal",
-        "com.lastpass.LastPass"
-    ]
 
     private var cache: [CGWindowID: (image: NSImage, time: Date)] = [:]
     /// Minimized windows cannot be captured; their last picture is kept until
@@ -89,9 +78,10 @@ final class PreviewProvider {
                         screenRecordingAllowed: CGPreflightScreenCaptureAccess()) == .on
     }
 
-    /// Apps never pictured, whatever the settings: they show passwords and secrets.
-    static func neverPictured(_ bundleID: String?) -> Bool {
-        bundleID.map { neverCapture.contains($0) } ?? false
+    /// Windows never pictured, whatever the settings: apps that show passwords
+    /// and secrets, and browsers' private windows (`NeverPictured`).
+    static func neverPictured(_ window: WindowSnapshot) -> Bool {
+        NeverPictured.contains(bundleID: window.bundleID, title: window.title)
     }
 
     /// Asks macOS for Screen Recording. macOS may require DockFlip to restart before it applies.
@@ -131,7 +121,11 @@ final class PreviewProvider {
     /// (minimized, hidden, on another desktop), the last one in memory.
     func thumbnail(for window: WindowSnapshot) async -> NSImage? {
         guard isAvailable else { return nil }
-        if let bundleID = window.bundleID, Self.neverCapture.contains(bundleID) { return nil }
+        // Drop any picture taken before the window became private (a title change).
+        if Self.neverPictured(window) {
+            cache[window.id] = nil
+            return nil
+        }
         guard !IsSecureEventInputEnabled() else { return nil }
 
         if window.isMinimized, cache[window.id] != nil {
