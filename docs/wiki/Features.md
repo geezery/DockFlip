@@ -79,6 +79,9 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
   and ⌘Tab shows one frosted panel with a tile per window, its icon and title
   above its picture, in rows like Windows 11's Alt+Tab. The selected tile is
   outlined. The keys, the order and type to filter work just the same.
+- **No windows open?** ⌘Tab then shows the running apps instead, one card each
+  marked *No open windows*. Picking one brings the app forward and asks it for
+  a window, as a click on its Dock icon does.
 
 macOS's own ⌘Tab is switched off while DockFlip runs and comes back when you
 quit. If another app (AltTab) already holds ⌘Tab, macOS's stays on and the menu
