@@ -345,7 +345,7 @@ final class SwitcherController {
         guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
         askedPreviews.formUnion(ids)
         let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
-        for window in wanted where model.thumbnails[window.id] == nil {
+        for window in wanted where model.thumbnails[window.id] == nil && !PreviewProvider.neverPictured(window) {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
                 model.thumbnails[window.id] = cached
             }
