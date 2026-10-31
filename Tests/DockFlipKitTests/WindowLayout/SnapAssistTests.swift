@@ -48,3 +48,10 @@ struct SnapAssistTests {
         #expect(ids == [2, 3])
     }
 }
+
+extension SnapAssistTests {
+    @Test func noWindowsOrOnlyTheSnappedOneOffersNothing() {
+        #expect(SnapAssist.candidates(from: [], excluding: 1).isEmpty)
+        #expect(SnapAssist.candidates(from: [window(1)], excluding: 1).isEmpty)
+    }
+}
