@@ -47,6 +47,8 @@ extension WindowRegistry {
         if subscribed, let observer {
             CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
             tracked.observer = observer
+            let subscriber = WindowSubscriber(observer: observer, refcon: Unmanaged.passUnretained(tracked).toOpaque())
+            tracked.subscribeWindow = { subscriber.subscribe($0) }
         } else {
             // Some apps (seen with Microsoft Excel) never accept notifications. Track
             // them anyway: their windows are read when the app is activated, pointed
@@ -86,19 +88,12 @@ extension WindowRegistry {
         notifyChange()
     }
 
+    /// Subscribes a newly seen window on the app's queue: each of its six
+    /// registrations waits on the app (see `WindowSubscriber`).
     private func observeWindow(_ element: AXUIElement, of tracked: TrackedApp) {
-        guard let observer = tracked.observer else { return }
-        let refcon = Unmanaged.passUnretained(tracked).toOpaque()
-        for name in [
-            kAXUIElementDestroyedNotification,
-            kAXWindowMiniaturizedNotification,
-            kAXWindowDeminiaturizedNotification,
-            kAXTitleChangedNotification,
-            kAXMovedNotification,
-            kAXResizedNotification
-        ] {
-            _ = AXObserverAddNotification(observer, element, name as CFString, refcon)
-        }
+        guard let subscribe = tracked.subscribeWindow else { return }
+        let window = SendableElement(element: element)
+        appQueues.run(for: tracked.pid, { subscribe(window) })
     }
 
     /// Re-reads one app's windows from Accessibility and reconciles the model.

@@ -260,6 +260,39 @@ struct WindowRegistryTests {
         #expect(tracked.updating.isEmpty)
     }
 
+    @Test(.timeLimit(.minutes(1)))
+    func aNewWindowIsSubscribedOffTheMainThreadOnce() async {
+        // Each of a new window's six notification registrations waits on the app:
+        // an app that stalls right after listing its windows must not hold up clicks.
+        let (registry, tracked) = makeRegistry()
+        let window = SendableElement(element: AXUIElementCreateApplication(101))
+        tracked.readWindows = { _ in
+            WindowsRead(error: .success, windows: [
+                WindowsRead.Window(id: 7, element: window.element, isStandard: true, attributes: WindowAttributes(title: "Report"))
+            ])
+        }
+        let subscriptions = Reads()
+        let answer = DispatchSemaphore(value: 0)
+        tracked.subscribeWindow = { _ in
+            _ = subscriptions.add()
+            _ = answer.wait(timeout: .now() + 5)
+        }
+        let changes = changeStream(of: registry)
+        registry.refreshWindows(of: tracked)
+        // The window is known while the app still holds up its subscription.
+        for await _ in changes where registry.window(7) != nil { break }
+        #expect(registry.window(7)?.title == "Report")
+        answer.signal()
+        await answered(registry, tracked)
+        // Read again: a window already known is not subscribed twice.
+        answer.signal()
+        registry.refreshWindows(of: tracked)
+        await answered(registry, tracked)
+        await answered(registry, tracked)
+        #expect(subscriptions.total == 1)
+        #expect(!subscriptions.anyOnMain)
+    }
+
     /// Waits until the calls asked of the app so far have answered on the main actor:
     /// its queue runs them in order, and their answers come back in that order.
     private func answered(_ registry: WindowRegistry, _ tracked: TrackedApp) async {
