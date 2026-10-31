@@ -71,6 +71,23 @@ new `.pkg` the way you deployed the first one. Every release is signed with the
 same identity, so the Accessibility profile keeps working across versions and
 you don't need to re-upload it.
 
+## Tested on
+
+DockFlip needs macOS 26 or later. What has been checked on which version (the
+same table as on the wiki's
+[Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting#tested-on) page):
+
+| macOS | Checked how | Turning off macOS's own ⌘Tab | Window tracking | Windows on other Spaces | Dock lists |
+|---|---|---|---|---|---|
+| 26, GitHub's `macos-26` runner | Every change: build, tests, start and quit | Found | Not checked | Not checked | Not checked |
+
+CI can't grant Accessibility, so the last three columns need a real Mac. Before
+a new macOS version reaches everyone, try it on one Mac: DockFlip relies on a
+few macOS calls Apple doesn't document, and if the update broke one, the menu
+bar menu says so on that Mac (*Dock lists: not available on this macOS version*,
+for example), and **Save Debug Log…** names the call in its *Self-check*
+section.
+
 ## Settings you can manage
 
 DockFlip keeps its settings in the `io.github.dockflip.DockFlip` preferences

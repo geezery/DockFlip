@@ -47,6 +47,42 @@ running (macOS doesn't say which app holds a key). Quit that app or change its
 shortcuts, then click the line: DockFlip asks for the shortcuts again. AltTab
 is named the same way under *⌘Tab: used by another app*.
 
+## The menu says *… not available on this macOS version*
+
+DockFlip relies on a few macOS calls Apple doesn't document, and a new macOS
+can change one without a crash or an error. DockFlip notices as it works, and
+the menu bar menu then names the part that stopped:
+
+| Menu line | What you notice |
+|---|---|
+| *Turning off macOS's own ⌘Tab: not available on this macOS version* | ⌘Tab shows macOS's app switcher as well as DockFlip's |
+| *Window tracking: not available on this macOS version* | DockFlip sees no windows: the Dock lists and ⌘Tab are empty |
+| *Windows on other Spaces: not available on this macOS version* | Windows on other Spaces and in full screen are missing from the lists |
+| *Dock lists: not available on this macOS version* | Resting on a Dock icon opens no list, icon clicks do what they do without DockFlip, and ⌃⌥1…9 do nothing |
+
+The rest of DockFlip keeps working, and no setting brings the part back: that
+takes a DockFlip update. If only *Dock lists* shows, quit DockFlip and start it
+again first, because a Dock that was still starting up looks the same. Then
+please [report it](https://github.com/geezery/DockFlip/issues/new/choose) with
+your macOS version (Apple menu → *About This Mac*) and the file from **Save
+Debug Log…**: its *Self-check* section names the macOS call that failed.
+
+## Tested on
+
+DockFlip needs macOS 26 or later. What has been checked on which version:
+
+| macOS | Checked how | Turning off macOS's own ⌘Tab | Window tracking | Windows on other Spaces | Dock lists |
+|---|---|---|---|---|---|
+| 26, GitHub's `macos-26` runner | Every change: build, tests, start and quit | Found | Not checked | Not checked | Not checked |
+
+The *Toolchain* step of each [CI run](https://github.com/geezery/DockFlip/actions/workflows/ci.yml)
+names the runner's exact version. A CI machine has no Accessibility permission
+and no mouse on its Dock, so the last three columns can only be checked on a
+real Mac: there, the *Self-check* section of **Save Debug Log…** says *ok* for
+each one that works. A newer macOS than the table names may well work; if a
+part stops, the menu says so (see above). A row for a real Mac is added once
+someone has checked one with the debug log.
+
 ## An app's windows don't show up
 
 - **Is a window actually open?** The dot under a Dock icon means the app is
