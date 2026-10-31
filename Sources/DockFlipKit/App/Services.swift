@@ -21,6 +21,9 @@ final class Services {
     /// The taps that follow a ⌘Tab session. They need Accessibility, and right
     /// after it is granted macOS sometimes refuses them until DockFlip restarts.
     private(set) var tapsRunning = false
+    /// True once Accessibility was switched off while DockFlip ran: ⌘Tab and the ⌃⌥
+    /// shortcuts are macOS's again until DockFlip restarts (`AccessibilityLoss`).
+    private(set) var suspended = false
 
     init() {
         let registry = WindowRegistry()
@@ -56,7 +59,7 @@ final class Services {
     /// True when DockFlip's ⌘Tab works right now. The ⌃⌥ shortcuts don't count:
     /// with them alone ⌘Tab is macOS's (or another app's).
     var shortcutsActive: Bool {
-        Settings.shared.shortcutsEnabled && hotKeys.ownsCommandTab && tapsRunning
+        Settings.shared.shortcutsEnabled && hotKeys.ownsCommandTab && tapsRunning && !suspended
     }
 
     /// True when DockFlip wants ⌘Tab but another app (AltTab) holds it.
@@ -79,7 +82,7 @@ final class Services {
     func applyShortcutSetting() {
         commandTabRetry?.cancel()
         commandTabRetry = nil
-        guard Settings.shared.shortcutsEnabled else {
+        guard AccessibilityLoss.takesShortcuts(enabled: Settings.shared.shortcutsEnabled, suspended: suspended) else {
             hotKeys.unregisterAll()
             NativeCommandTab.setEnabled(true)
             return
@@ -90,10 +93,21 @@ final class Services {
         // can be after this one starts: ask once more. Not a poll: one try only.
         commandTabRetry = Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(2))
-            guard let self, !Task.isCancelled, Settings.shared.shortcutsEnabled else { return }
+            guard let self, !Task.isCancelled,
+                  AccessibilityLoss.takesShortcuts(enabled: Settings.shared.shortcutsEnabled, suspended: self.suspended) else { return }
             self.commandTabRetry = nil
             self.takeShortcuts()
         }
+    }
+
+    /// Accessibility was switched off: without it the switcher can show windows but not
+    /// focus one, so ⌘Tab goes back to macOS and an open switcher closes. Only a restart
+    /// undoes this; the event taps and AX observers stay dead after a re-grant.
+    func suspendForLostPermission() {
+        guard !suspended else { return }
+        suspended = true
+        if switcher.isActive { _ = switcher.handle(.escape) }
+        applyShortcutSetting()
     }
 
     /// Registers the shortcuts. macOS's own ⌘Tab goes off first, as AltTab does, and
@@ -138,7 +152,7 @@ final class Services {
     func debugLines() -> [String] {
         let failed = hotKeys.registration.failed.map(\.shortcutName).joined(separator: " ")
         return registry.debugSummary() + [
-            "hotKeys=\(hotKeys.registeredCount) commandTab=\(hotKeys.ownsCommandTab) failed=[\(failed)] keyTaps=\(tapsRunning) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())"
+            "hotKeys=\(hotKeys.registeredCount) commandTab=\(hotKeys.ownsCommandTab) failed=[\(failed)] keyTaps=\(tapsRunning) suspended=\(suspended) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())"
         ]
     }
 }

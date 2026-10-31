@@ -13,6 +13,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// A new DockFlip instance is taking over (restart): leave ⌘Tab to it.
     private var isRelaunching = false
     private var subscriptions: [AnyCancellable] = []
+    /// Watches Accessibility while the features run, so switching it off in System
+    /// Settings gives ⌘Tab back to macOS within a second (`AccessibilityLoss`).
+    private lazy var permissionWatch = AccessibilityWatch()
+    private var permissionObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = Perf.shared // starts the clock: the debug log covers everything from launch
@@ -65,11 +69,45 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.services = services
         let taps = services.tapsRunning ? "on" : "OFF"
         Log.app.notice("Services started, key taps \(taps, privacy: .public)")
+        watchPermission()
     }
 
-    private func showOnboarding() {
+    /// Listens for the announcement macOS posts whenever a switch in the Accessibility
+    /// list flips; `AccessibilityWatch` asks again a few times, as it does for setup.
+    /// Kept for the life of the app: one observer, no timer.
+    private func watchPermission() {
+        guard permissionObserver == nil else { return }
+        permissionWatch.check() // the answer may have changed since launch: no action for that
+        permissionWatch.onChange = { [weak self] granted in self?.permissionChanged(granted) }
+        permissionObserver = DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.apple.accessibility.api"),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { _ = self?.permissionWatch.settingsChanged() }
+        }
+    }
+
+    private func permissionChanged(_ granted: Bool) {
+        let action = AccessibilityLoss.action(
+            granted: granted, servicesStarted: services != nil, suspended: services?.suspended ?? false
+        )
+        switch action {
+        case .none:
+            break
+        case .giveBackShortcuts:
+            Log.app.error("Accessibility was switched off: ⌘Tab goes back to macOS, setup opens")
+            services?.suspendForLostPermission()
+            showOnboarding(atPermission: true)
+        case .restart:
+            Log.app.notice("Accessibility is back: restarting DockFlip")
+            relaunch()
+        }
+    }
+
+    private func showOnboarding(atPermission: Bool = false) {
         if let onboarding {
-            onboarding.show()
+            if atPermission { onboarding.showPermissionStep() } else { onboarding.show() }
             return
         }
         let controller = OnboardingController(showSettings: { [weak self] in
@@ -77,16 +115,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }) { [weak self] in
             guard let self else { return }
             self.onboarding = nil
+            // Setup finished after the permission came back: the old taps are dead.
+            if self.services?.suspended == true {
+                self.relaunch()
+                return
+            }
             self.startServices()
             // Right after Accessibility is granted, macOS may refuse the key taps
             // until the app restarts.
             if self.services?.tapsRunning == false { self.relaunch() }
         }
         onboarding = controller
-        controller.show()
+        if atPermission { controller.showPermissionStep() } else { controller.show() }
     }
 
     private func relaunch() {
+        // Setup's Continue and the permission watch can both ask for it: start one copy.
+        guard !isRelaunching else { return }
         isRelaunching = true
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.createsNewApplicationInstance = true
