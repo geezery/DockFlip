@@ -98,7 +98,11 @@ User-facing text is English in the code and is the key: `L("Clean Up…")` in
 AppKit code, `Text("Clean Up")` in SwiftUI. Translations live in
 `Resources/<language>.lproj/Localizable.strings`. When you add or change a
 string, add it to every language file (English as a placeholder is fine; a
-missing entry shows English).
+missing entry shows English). `LocalizableStringsTests` checks both: all 15
+files have the same keys, and every key the code uses (`L("…")`, the first
+literal of `Text`/`Button`/`Toggle`/`Label`/`Section`, and literals given to a
+view's `LocalizedStringKey` property, read from the source by `SourceStringKeys`
+in the test target) is in `en.lproj`.
 
 ## Building without Xcode
 

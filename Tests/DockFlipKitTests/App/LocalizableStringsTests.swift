@@ -30,6 +30,43 @@ struct LocalizableStringsTests {
         #expect(keys.subtracting(english).sorted() == [], "only in \(code)")
     }
 
+    static let sources = resources.deletingLastPathComponent().appendingPathComponent("Sources")
+
+    /// Every key the code uses has an English entry. Without one, `L("…")` and `Text("…")`
+    /// show the English key in every language with no warning, and `hasTheSameKeysAsEnglish`
+    /// cannot see it: all 15 files agree that the key is not there.
+    @Test func everyKeyInSourcesIsInEnglish() throws {
+        let used = try SourceStringKeys.scan(Self.sources)
+        let english = try Set(Self.strings("en").keys)
+        // Far fewer means the scan lost a shape of call or Sources moved, not that the app has fewer texts.
+        #expect(used.count > 100, "found only \(used.count) keys in Sources")
+        let missing = SourceStringKeys.missing(used.keys, from: english)
+        let named = missing.map { "\"\($0)\" (\(used[$0] ?? "?"))" }
+        #expect(named == [], "used in Sources but missing in en.lproj/Localizable.strings")
+    }
+
+    /// Whichever used key leaves en.lproj, the check above names exactly that key.
+    @Test func removingAnyEnglishKeyIsNoticed() throws {
+        let used = try SourceStringKeys.scan(Self.sources)
+        let english = try Set(Self.strings("en").keys)
+        var unnoticed: [String] = []
+        for key in used.keys where english.contains(key) {
+            let missing = SourceStringKeys.missing(used.keys, from: english.subtracting([key]))
+            if missing != [key] { unnoticed.append(key) }
+        }
+        #expect(unnoticed.sorted() == [])
+    }
+
+    /// An exception the code no longer uses, or that English has by now, goes from the list.
+    @Test func exceptionsAreStillNeeded() throws {
+        let used = try SourceStringKeys.scan(Self.sources)
+        let english = try Set(Self.strings("en").keys)
+        for key in SourceStringKeys.sameInEveryLanguage.sorted() {
+            #expect(used[key] != nil, "\"\(key)\" is no longer used in Sources")
+            #expect(!english.contains(key), "\"\(key)\" is in en.lproj now")
+        }
+    }
+
     /// The Accessibility step every new user passes in setup (OnboardingSteps.swift).
     @Test(arguments: AppLanguage.all.map(\.code))
     func accessibilityStepIsTranslated(_ code: String) throws {
