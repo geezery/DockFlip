@@ -6,7 +6,7 @@ import AppKit
 final class SnapController {
     private let registry: WindowRegistry
     /// Frames to return to when a snapped window is restored.
-    private var restoreFrames: [CGWindowID: CGRect] = [:]
+    private var restoreFrames = SnapRestoreFrames()
     private let overlay = SnapOverlay()
     private var monitors: [Any] = []
     private var drag: SnapDrag?
@@ -53,7 +53,7 @@ final class SnapController {
 
         switch SnapEngine.action(for: key, current: current, display: display, displayCount: screens.count) {
         case .snap(let region, let target):
-            if current == nil { restoreFrames[id] = frame }
+            if current == nil { remember(frame, for: id) }
             let targetArea = DisplayLayout.usableArea(of: screens[target])
             registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: targetArea))
             offerAssist(after: region, of: id, in: targetArea)
@@ -93,7 +93,7 @@ final class SnapController {
         let screens = DisplayLayout.screensLeftToRight()
         guard let display = DisplayLayout.screenIndex(for: frame, in: screens) else { return }
         let area = DisplayLayout.usableArea(of: screens[display])
-        if SnapEngine.region(matching: frame, in: area) == nil { restoreFrames[id] = frame }
+        if SnapEngine.region(matching: frame, in: area) == nil { remember(frame, for: id) }
         registry.setFrame(of: id, to: SnapEngine.rect(for: region, in: area))
     }
 
@@ -107,11 +107,16 @@ final class SnapController {
     }
 
     private func restore(_ id: CGWindowID, in area: CGRect) {
-        var target = restoreFrames.removeValue(forKey: id) ?? SnapEngine.defaultFreeFrame(in: area)
+        var target = restoreFrames.take(id) ?? SnapEngine.defaultFreeFrame(in: area)
         if !target.intersects(area) {
             target = SnapEngine.defaultFreeFrame(in: area)
         }
         registry.setFrame(of: id, to: target)
+    }
+
+    /// Keeps `frame` for ⌃⌥↓, dropping closed windows' frames as it goes.
+    private func remember(_ frame: CGRect, for id: CGWindowID) {
+        restoreFrames.remember(frame, for: id, live: registry.trackedWindowIDs)
     }
 
     // MARK: - Snap Assist
@@ -133,7 +138,7 @@ final class SnapController {
         if let frame = registry.knownFrame(of: id),
            let display = DisplayLayout.screenIndex(for: frame, in: NSScreen.screens),
            SnapEngine.region(matching: frame, in: DisplayLayout.usableArea(of: NSScreen.screens[display])) == nil {
-            restoreFrames[id] = frame
+            remember(frame, for: id)
         }
         Log.snap.info("Snap Assist fills the region left")
         registry.focus(id)
@@ -194,9 +199,9 @@ final class SnapController {
             .map { DisplayLayout.usableArea(of: NSScreen.screens[$0]) }
         if let unsnappedTo {
             // Dragged off one snap into another: ⌃⌥↓ still goes back to the free frame.
-            restoreFrames[window.id] = unsnappedTo
+            remember(unsnappedTo, for: window.id)
         } else if let startArea, SnapEngine.region(matching: window.startFrame, in: startArea) == nil {
-            restoreFrames[window.id] = window.startFrame
+            remember(window.startFrame, for: window.id)
         }
         let rect = SnapEngine.rect(for: zone.region, in: DisplayLayout.usableArea(of: zone.screen))
         Log.snap.info("Drag snap to \(String(describing: zone.region), privacy: .public)")
@@ -225,7 +230,7 @@ final class SnapController {
         // Where the window is now: it has followed the mouse since the press.
         let now = SnapDrag.startFrame(window.startFrame, at: self.drag?.startMouse ?? mouse, pressedAt: mouse)
         let axMouse = CGPoint(x: mouse.x, y: DisplayLayout.primaryHeight - mouse.y)
-        restoreFrames.removeValue(forKey: window.id)
+        restoreFrames.take(window.id)
         unsnappedTo = earlier
         Log.snap.info("Drag unsnap to the earlier size")
         registry.setFrame(of: window.id, to: SnapEngine.unsnappedFrame(size: earlier.size, from: now, mouse: axMouse))
@@ -246,30 +251,10 @@ final class SnapController {
         return registry.window(top.id) != nil ? top.id : nil
     }
 
-    /// The snap zone under the mouse (Cocoa coordinates), Windows 11 style:
-    /// side edges give halves, the top edge maximizes, near a corner gives quarters.
-    /// Edges shared with another display do not count.
+    /// The snap zone under the mouse (Cocoa coordinates); the rule is `SnapZone`.
     static func zone(at point: NSPoint) -> (region: SnapRegion, screen: NSScreen)? {
-        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(point, $0.frame, false) }) else { return nil }
-        let frame = screen.frame
-        let edge: CGFloat = 3
-        let corner: CGFloat = 80
-
-        func onScreen(_ p: NSPoint) -> Bool {
-            NSScreen.screens.contains { NSMouseInRect(p, $0.frame, false) }
-        }
-
-        let atLeft = point.x <= frame.minX + edge && !onScreen(NSPoint(x: frame.minX - 2, y: point.y))
-        let atRight = point.x >= frame.maxX - edge - 1 && !onScreen(NSPoint(x: frame.maxX + 2, y: point.y))
-        let atTop = point.y >= frame.maxY - edge - 1 && !onScreen(NSPoint(x: point.x, y: frame.maxY + 2))
-        let nearTop = point.y >= frame.maxY - corner
-        let nearBottom = point.y <= frame.minY + corner
-        let nearLeft = point.x <= frame.minX + corner
-        let nearRight = point.x >= frame.maxX - corner
-
-        if atLeft { return (nearTop ? .topLeft : nearBottom ? .bottomLeft : .leftHalf, screen) }
-        if atRight { return (nearTop ? .topRight : nearBottom ? .bottomRight : .rightHalf, screen) }
-        if atTop { return (nearLeft ? .topLeft : nearRight ? .topRight : .maximized, screen) }
-        return nil
+        let screens = NSScreen.screens
+        guard let zone = SnapZone.zone(at: point, screens: screens.map(\.frame)) else { return nil }
+        return (zone.region, screens[zone.screen])
     }
 }
