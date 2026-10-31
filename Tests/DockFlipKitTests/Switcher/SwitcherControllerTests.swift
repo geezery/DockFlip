@@ -34,6 +34,8 @@ struct SwitcherControllerTests {
         /// One entry per hide: whether it went back to the previous app.
         var hidden: [Bool] = []
 
+        var prepared = 0
+        func prepare() { prepared += 1 }
         func show() { shown += 1 }
         func draw() { drawn += 1 }
         func hide(returningToPreviousApp: Bool) { hidden.append(returningToPreviousApp) }
@@ -298,6 +300,17 @@ struct SwitcherControllerTests {
         #expect(!switcher.isActive)
         #expect(presenter.hidden == [true])
         #expect(mac.focused.isEmpty)
+    }
+
+    @Test func prepareBuildsAheadWithoutOpening() {
+        let mac = FakeMac(windowIDs: [10, 20], commandHeld: true)
+        let (switcher, presenter) = makeSwitcher(mac)
+
+        switcher.prepare()
+
+        #expect(presenter.prepared == 1)
+        #expect(presenter.shown == 0)
+        #expect(!switcher.isActive)
     }
 
     @Test func noWindowsOpensNothing() {
