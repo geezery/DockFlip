@@ -7,6 +7,9 @@ final class SettingsWindowController {
     private var window: NSWindow?
     private lazy var screenRecording = ScreenRecordingStatus()
     private var keyObserver: NSObjectProtocol?
+    /// The running features, to say which shortcuts another app holds.
+    var services: () -> Services? = { nil }
+    private lazy var shortcutConflicts = ShortcutConflictStatus(services: { [weak self] in self?.services() })
     var onShowSetup: (() -> Void)?
     var onRelaunch: (() -> Void)?
 
@@ -15,6 +18,7 @@ final class SettingsWindowController {
             let view = SettingsView(
                 settings: Settings.shared,
                 screenRecording: screenRecording,
+                shortcutConflicts: shortcutConflicts,
                 showSetup: { [weak self] in
                     self?.window?.close()
                     self?.onShowSetup?()
@@ -35,11 +39,13 @@ final class SettingsWindowController {
                 MainActor.assumeIsolated {
                     self?.screenRecording.refresh()
                     Settings.shared.refreshLaunchAtLogin()
+                    self?.shortcutConflicts.refresh()
                 }
             }
         }
         screenRecording.refresh()
         Settings.shared.refreshLaunchAtLogin()
+        shortcutConflicts.refresh()
         if let window { WindowPresenter.bringToFront(window) }
     }
 }
@@ -47,6 +53,7 @@ final class SettingsWindowController {
 struct SettingsView: View {
     @ObservedObject var settings: Settings
     @ObservedObject var screenRecording: ScreenRecordingStatus
+    @ObservedObject var shortcutConflicts: ShortcutConflictStatus
     let showSetup: () -> Void
     let relaunch: () -> Void
 
@@ -93,6 +100,11 @@ struct SettingsView: View {
                         if settings.shortcutsManaged { Text("Managed by your organization") }
                     }
                     .disabled(settings.shortcutsManaged)
+                    if let warning = shortcutConflicts.warning {
+                        ShortcutConflictWarningRow(warning: warning) {
+                            MainActor.assumeIsolated { shortcutConflicts.tryAgain() }
+                        }
+                    }
                     SwitcherStylePicker(settings: settings)
                 }
             }
@@ -133,7 +145,7 @@ struct SwitcherStylePicker: View {
 }
 
 /// A warning under a Settings switch: what is wrong, what to do, and the buttons
-/// that do it. Both warnings share it so they look alike.
+/// that do it. Every warning shares it so they look alike.
 struct SettingsWarningRow<Actions: View>: View {
     let title: Text
     let detail: Text

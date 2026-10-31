@@ -148,3 +148,6 @@
 "Tell a Friend…" = "Tell a Friend…";
 "Buy DockFlip a Coffee…" = "Buy DockFlip a Coffee…";
 "DockFlip brings the best bits of Windows to the Mac: window lists in the Dock, a Flip 3D ⌘Tab that switches windows, and snapping. Free and open source." = "DockFlip brings the best bits of Windows to the Mac: window lists in the Dock, a Flip 3D ⌘Tab that switches windows, and snapping. Free and open source.";
+"Try Again" = "Try Again";
+"Quit the app that uses them, then try again." = "Quit the app that uses them, then try again.";
+"Probably %@. Quit it or change its shortcuts, then try again." = "Probably %@. Quit it or change its shortcuts, then try again.";

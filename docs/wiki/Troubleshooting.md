@@ -39,8 +39,9 @@ DockFlip again (**Grant Accessibility…** in the menu) or quit it.
 
 Another app, usually AltTab, already holds ⌘Tab. DockFlip then leaves ⌘Tab to
 macOS's own switcher instead of switching it off, and its ⌃⌥ shortcuts keep
-working. Quit the other app (and remove it from *Login Items*), then turn
-**Keyboard shortcuts** off and on in DockFlip's Settings, or restart DockFlip.
+working. DockFlip's Settings says the same under **Keyboard shortcuts**. Quit
+the other app (and remove it from *Login Items*), then choose **Try Again** there,
+or restart DockFlip.
 **Save Debug Log…** names each shortcut another app holds.
 
 *⌘Tab: not active* with **Restart DockFlip** below it means macOS refused
@@ -54,7 +55,8 @@ bar menu then shows a line such as *⌃⌥← ⌃⌥→ ⌃⌥D: used by another
 Rectangle, Rectangle Pro, Magnet or Spectacle below it when one of them is
 running (macOS doesn't say which app holds a key). Quit that app or change its
 shortcuts, then click the line: DockFlip asks for the shortcuts again. AltTab
-is named the same way under *⌘Tab: used by another app*.
+is named the same way under *⌘Tab: used by another app*. Settings shows the same warning
+under **Keyboard shortcuts**, with a **Try Again** button.
 
 ## The menu says *… not available on this macOS version*
 
