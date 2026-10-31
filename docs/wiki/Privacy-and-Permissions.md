@@ -29,7 +29,7 @@ opt-in.
   Right clicks and scrolling are never seen.
 - **Pointer movement, only while it's over the Dock or a window list**, so the
   list closes when you move away.
-- **Modifier keys** (⌘, ⌃, ⌥, ⇧), to notice when you let go of ⌘.
+- **Modifier keys** (⌘, ⌃, ⌥, ⇧), to notice when you press or let go of ⌘.
 - **Other keys only while the ⌘Tab switcher is open**, for type-to-filter. The
   rest of the time macOS tells DockFlip only when one of its shortcuts is
   pressed.

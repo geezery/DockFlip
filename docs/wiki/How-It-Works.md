@@ -28,7 +28,7 @@ DockFlip never polls. It listens:
   mouse-move monitor exists only while the pointer is on the Dock or the list,
   to notice it leaving.
 - **Carbon hot keys** for shortcuts. They keep working under secure keyboard
-  input, and an event tap that only listens notices ⌘ being released.
+  input, and an event tap that only listens notices ⌘ being pressed and released.
 
 ## Seeing windows on other desktops
 
