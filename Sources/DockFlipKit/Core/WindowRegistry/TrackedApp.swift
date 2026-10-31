@@ -7,6 +7,9 @@ final class TrackedApp {
     let app: NSRunningApplication
     let element: AXUIElement
     var observer: AXObserver?
+    /// Subscribes a newly seen window to `observer`, on the app's queue: set once
+    /// the app accepted notifications. Tests stand in their own.
+    var subscribeWindow: (@Sendable (SendableElement) -> Void)?
     var windowElements: [CGWindowID: AXUIElement] = [:]
     weak var registry: WindowRegistry?
     /// A re-read is scheduled because the app did not answer in time.
