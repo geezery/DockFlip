@@ -36,6 +36,11 @@ If you'd rather have Windows 11's grid of tiles, choose *Grid* under
 ⌘ shortcuts belong to apps, and Globe shortcuts belong to macOS's own tiling.
 ⌃⌥ is the closest thing a Mac keyboard has to a free Win key.
 
+**Where are Snap layouts?**
+macOS already has them: hover over a window's green button for a menu of
+tile layouts. DockFlip adds what macOS lacks: Windows' own keys (⌃⌥ for the
+Win key) and Snap Assist.
+
 **Can I change the shortcuts?**
 Not yet, on purpose: good defaults beat a settings window. You can switch all
 shortcuts off in Settings.

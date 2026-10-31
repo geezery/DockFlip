@@ -93,6 +93,8 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   move to next display.
 - Drag snapping: drag to left/right edge (half), top edge (maximize),
   corners (quarter).
+- Snap Assist: after a snap to a half or a quarter, the other windows appear as
+  cards in the space beside it; pick one to fill it.
 - If macOS's native edge tiling is on, DockFlip detects it and offers to turn it off
   (the two conflict).
 
@@ -158,6 +160,8 @@ fondly, both are the best bits of Windows, and neither would call the other
 - Per-app CPU/memory, cross-display drag.
 - Mac App Store distribution (the sandbox forbids the Accessibility API).
 - macOS versions older than 26.
+- Snap layouts (hover over the maximize button for a grid of layouts): macOS's
+  own green-button menu has offered tile layouts since Sequoia.
 
 ### Not from Windows, but earned their place
 - **Clean Up**: suggests closing windows unused for three days and quitting apps
@@ -170,8 +174,6 @@ fondly, both are the best bits of Windows, and neither would call the other
 
 ## Deferred (after v1)
 
-- Snap layouts (hover over the green button).
-- Snap assist (offer other windows for the remaining half after a snap).
 - Jump lists (recent files per app, from Spotlight metadata).
 
 ## Platform constraints and how we handle them

@@ -74,4 +74,5 @@ and on two.
 - Build provenance attestations on every release.
 
 ## Later
-- Snap layouts, snap assist, jump lists.
+- Jump lists. (Snap Assist shipped; Snap layouts are left to macOS's own
+  green-button menu, see SCOPE.md.)
