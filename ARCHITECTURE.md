@@ -25,9 +25,10 @@ this says where things are and how they fit.
 ```
 
 Everything runs on the main thread (`@MainActor`), driven by events. Nothing
-polls. The few things done off the main thread — reading browser tabs, finding
-windows on other Spaces, capturing thumbnails — hand their results back to the
-main thread.
+polls. The few things done off the main thread — reading an app's windows
+(`WindowsRead`, on the app's own queue), reading browser tabs, finding windows
+on other Spaces, capturing thumbnails — hand their results back to the main
+thread.
 
 ## Folders (`Sources/DockFlipKit`)
 
@@ -60,6 +61,8 @@ The Dock list's sizing rules (`WindowListLayout`) are tested there too.
 So is the ⌘Tab flow in `SwitcherController` (open, step, release, filter, cancel):
 it gets its windows, focusing and the ⌘ state as closures and draws through a
 `SwitcherPresenter` (`SwitcherPanel` in the app), so tests pass fakes for all of them.
+`SwitcherViewTimingTests` draws the real `SwitcherView` with 60 windows in an
+invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 
 ## Key ideas
 

@@ -28,6 +28,11 @@ final class SwitcherController {
     /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
+    /// ⌘ has stayed down since the switcher opened. Only that first release
+    /// switches: every later modifier change (⇧ for ⇧Tab, ⌃, ⌥) also arrives as
+    /// `.commandReleased`, and once the filter is cleared it must not switch.
+    /// After ⌘ is up, only Return or a click opens a window.
+    private var commandDown = false
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures this session asked for already, so a step asks only for new ones.
     private var askedPreviews = Set<CGWindowID>()
@@ -103,6 +108,8 @@ final class SwitcherController {
             }
             return true
         case .commandReleased:
+            guard commandDown else { return false }
+            commandDown = false
             if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: false) {
                 commit(at: index)
             }
@@ -167,6 +174,7 @@ final class SwitcherController {
             commit(at: index)
             return true
         }
+        commandDown = true
 
         // Take the keyboard now but draw only after a short hold: a quick ⌘Tab-Tab
         // switches without the full-screen stack flashing up (as macOS and AltTab).
@@ -264,6 +272,7 @@ final class SwitcherController {
         askedPreviews = []
         presenter.hide(returningToPreviousApp: returningToPreviousApp)
         selection = nil
+        commandDown = false
         allWindows = []
         allItems = []
         query = ""

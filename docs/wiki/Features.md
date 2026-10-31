@@ -58,6 +58,8 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
 
 - **Type to filter.** While holding ⌘, type part of a window's title, app name
   or document name. The stack narrows as you type, and Return switches.
+  Once you have let go of ⌘, only Return or a click switches, even after
+  Esc clears the filter.
   Matching ignores case, but ä and ö count as letters of their own, so "öö"
   won't find "Outlook".
 - **Every window:** minimized ones, full-screen apps and windows on other
