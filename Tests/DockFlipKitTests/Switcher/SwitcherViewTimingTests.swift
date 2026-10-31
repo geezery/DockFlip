@@ -93,16 +93,17 @@ extension SwitcherViewTimingTests {
         private let panel: NSPanel
         private let hosting: NSView
 
-        init(size: CGSize) {
+        init(size: CGSize, style: SwitcherStyle = .flip3D) {
             // AppKit wants its app object before the first window. An accessory app,
             // as DockFlip is, shows windows without a Dock icon.
             NSApplication.shared.setActivationPolicy(.accessory)
             let model = SwitcherModel()
+            model.style = style
             let panel = Panels.make(
                 level: .popUpMenu,
                 behavior: [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle]
             )
-            let hosting = FirstMouseHostingView(rootView: SwitcherView(model: model))
+            let hosting = FirstMouseHostingView(rootView: SwitcherRootView(model: model))
             hosting.sizingOptions = []
             panel.contentView = hosting
             panel.setFrame(CGRect(origin: .zero, size: size), display: false)
