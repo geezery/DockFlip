@@ -128,8 +128,9 @@ struct SelfCheck: Equatable, Sendable {
 }
 
 extension SelfCheck {
-    /// What this run has seen. Written from the main thread and from the
-    /// background searches for windows on other Spaces, so behind a lock.
+    /// What this run has seen. Written from the main thread, from each app's
+    /// queue (`WindowsRead`) and from the background searches for windows on
+    /// other Spaces, so behind a lock.
     private static let shared = Mutex(SelfCheck())
 
     /// A copy of what this run has seen, for the debug log.
