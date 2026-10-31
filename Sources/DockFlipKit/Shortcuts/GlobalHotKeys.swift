@@ -12,7 +12,10 @@ public enum SwitcherInput: Equatable {
     /// Step on one window (→ or ↓).
     case next
     case enter
+    /// A modifier change with ⌘ up: ⌘ let go, or ⇧, ⌃ or ⌥ pressed or let go without it.
     case commandReleased
+    /// A modifier change with ⌘ down: ⌘ pressed, or another modifier changed while it is held.
+    case commandPressed
     /// Typed text: filters the switcher's windows.
     case text(String)
     case deleteBackward

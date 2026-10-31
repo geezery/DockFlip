@@ -28,10 +28,11 @@ final class SwitcherController {
     /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
-    /// ⌘ has stayed down since the switcher opened. Only that first release
-    /// switches: every later modifier change (⇧ for ⇧Tab, ⌃, ⌥) also arrives as
+    /// ⌘ is down: set when the switcher opens with ⌘ held, and again when ⌘ is
+    /// pressed while it is open. Only the release that follows switches: every
+    /// later modifier change without ⌘ (⇧ for ⇧Tab, ⌃, ⌥) also arrives as
     /// `.commandReleased`, and once the filter is cleared it must not switch.
-    /// After ⌘ is up, only Return or a click opens a window.
+    /// While ⌘ is up, only Return, a click or holding ⌘ again and letting go opens a window.
     private var commandDown = false
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures this session asked for already, so a step asks only for new ones.
@@ -113,6 +114,13 @@ final class SwitcherController {
             if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: false) {
                 commit(at: index)
             }
+            return false
+        case .commandPressed:
+            // ⌘ held again, say after letting go of it to filter: its release
+            // switches once more, unless something is typed by then. The panel's
+            // monitor and the flags tap both send it, so a copy can come in after
+            // ⌘ is already up again: only the live state re-arms.
+            if isActive, isCommandHeld() { commandDown = true }
             return false
         case .text(let text):
             guard isActive else { return false }
