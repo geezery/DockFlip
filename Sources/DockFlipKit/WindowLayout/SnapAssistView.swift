@@ -38,6 +38,8 @@ struct SnapAssistView: View {
             pictureHeight: CGFloat(grid.pictureHeight)
         )
         .onTapGesture { model.onPick?(index) }
+        // VoiceOver's press, which a tap gesture alone does not answer.
+        .accessibilityAction { model.onPick?(index) }
         .onHover { inside in
             // As on Windows, the pointer moves the outline too, so Return picks what it points at.
             if inside { model.selection = index }
