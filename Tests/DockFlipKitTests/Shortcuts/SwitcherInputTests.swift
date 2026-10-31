@@ -17,6 +17,13 @@ struct SwitcherInputTests {
         #expect(input(KeyCode.up, command: false) == .previous)
     }
 
+    @Test func modifierChangeMapsOnCommandAlone() {
+        let down = SwitcherInput.fromFlags(command: true)
+        let up = SwitcherInput.fromFlags(command: false)
+        #expect(down == .commandPressed)
+        #expect(up == .commandReleased)
+    }
+
     @Test func otherKeys() {
         #expect(input(KeyCode.tab) == nil) // ⌘Tab itself comes from the hot key
         #expect(input(KeyCode.tab, command: false, shift: true) == .commandTab(shift: true))
