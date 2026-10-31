@@ -31,4 +31,29 @@ public enum SwitcherPreviews {
         }
         return picked
     }
+
+    /// For the grid (`SwitcherGrid`), which draws far more windows at once than the
+    /// stack: the windows to capture now, nearest the selected one first, the one
+    /// after it before the one before it (wrapping, as ⌘⇧Tab starts on the last), up to `limit`,
+    /// none of them in `asked`.
+    public static func toCaptureAround<ID: Hashable>(
+        ids: [ID], selection: Int, asked: Set<ID>, limit: Int
+    ) -> [ID] {
+        let count = ids.count
+        guard count > 0, limit > 0 else { return [] }
+        let front = ((selection % count) + count) % count
+        var order = [front]
+        var distance = 1
+        while order.count < count {
+            order.append((front + distance) % count)
+            if order.count < count { order.append((front - distance % count + count) % count) }
+            distance += 1
+        }
+        var picked: [ID] = []
+        var seen = asked
+        for index in order where picked.count < limit {
+            if seen.insert(ids[index]).inserted { picked.append(ids[index]) }
+        }
+        return picked
+    }
 }
