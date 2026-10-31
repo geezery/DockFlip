@@ -80,15 +80,15 @@ struct WindowListLayoutTests {
         #expect(WindowListLayout.foldControl(of: twelve, expanded: expanded.contains(1)) == .showAll(12))
         // Seven tabs and "Show all 12 tabs": eight lines.
         let size = WindowListLayout.size(rows: [twelve], expanded: expanded, previews: false)
-        #expect(size.height == 46 + 48 + 8 * 28 + 6)
+        #expect(size.height == CGFloat(46 + 48 + 8 * 28 + 6))
     }
 
     @Test func blockCountsTheFoldLine() {
         // What "N more windows" counts with: the open list's "Show fewer" line too.
         let twelve = row(1, tabs: tabs(12))
-        #expect(WindowListLayout.blockHeight(of: twelve, expanded: true) == 48 + 13 * 28 + 6)
-        #expect(WindowListLayout.blockHeight(of: twelve, expanded: false) == 48 + 8 * 28 + 6)
-        #expect(WindowListLayout.blockHeight(of: row(1, tabs: tabs(8)), expanded: true) == 48 + 8 * 28 + 6)
+        #expect(WindowListLayout.blockHeight(of: twelve, expanded: true) == CGFloat(48 + 13 * 28 + 6))
+        #expect(WindowListLayout.blockHeight(of: twelve, expanded: false) == CGFloat(48 + 8 * 28 + 6))
+        #expect(WindowListLayout.blockHeight(of: row(1, tabs: tabs(8)), expanded: true) == CGFloat(48 + 8 * 28 + 6))
     }
 
     @Test func cardsOnlyWithPreviewsFewWindowsAndNoTabs() {
@@ -116,7 +116,7 @@ struct WindowListLayoutTests {
     @Test func listCountsAtMostTenRows() {
         // Ten rows, and room for "2 more windows" under them instead of the 10-point margin.
         let size = WindowListLayout.size(rows: (1...12).map { row($0) }, expanded: [], previews: false)
-        #expect(size.height == 36 + 10 * 48 + 24)
+        #expect(size.height == CGFloat(36 + 10 * 48 + 24))
     }
 
     @Test func fourteenWindowsSayFourMoreBelow() {
@@ -131,7 +131,7 @@ struct WindowListLayoutTests {
     @Test func tenWindowsFitWithNothingBelow() {
         let rows = (1...10).map { row($0) }
         let top = WindowListLayout.listHeight(rows: rows, expanded: [], previews: false)
-        #expect(top == 10 + 10 * 48)
+        #expect(top == CGFloat(10 + 10 * 48))
         #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top) == 0)
     }
 
@@ -146,7 +146,7 @@ struct WindowListLayoutTests {
         // Three windows of twelve tabs overflow the capped list well before ten rows.
         let rows = (1...3).map { row($0, tabs: tabs(12, window: $0)) }
         let top = WindowListLayout.listHeight(rows: rows, expanded: [], previews: true)
-        #expect(top == 370 - 36)
+        #expect(top == CGFloat(370 - 36))
         // Each window with its folded tabs is 48 + 8 * 28 + 6 = 278 high: the second is cut, the third unseen.
         #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [], visibleBottom: top) == 2)
         #expect(WindowListLayout.windowsBelow(rows: rows, expanded: [1], visibleBottom: top) == 3)
@@ -157,13 +157,13 @@ struct WindowListLayoutTests {
         #expect(three == NSSize(width: 400, height: 46 + 48 + 3 * 28 + 6))
         // Twelve tabs fold to seven lines plus "Show all 12 tabs".
         let folded = WindowListLayout.size(rows: [row(1, tabs: tabs(12))], expanded: [], previews: false)
-        #expect(folded.height == 46 + 48 + 8 * 28 + 6)
+        #expect(folded.height == CGFloat(46 + 48 + 8 * 28 + 6))
         // Open, all twelve plus "Show fewer".
         let expanded = WindowListLayout.size(rows: [row(1, tabs: tabs(12))], expanded: [1], previews: false)
-        #expect(expanded.height == 46 + 48 + 13 * 28 + 6)
+        #expect(expanded.height == CGFloat(46 + 48 + 13 * 28 + 6))
         // Eight tabs fit unfolded and get neither line, open or not.
         let eight = WindowListLayout.size(rows: [row(1, tabs: tabs(8))], expanded: [1], previews: false)
-        #expect(eight.height == 46 + 48 + 8 * 28 + 6)
+        #expect(eight.height == CGFloat(46 + 48 + 8 * 28 + 6))
     }
 
     @Test func tabListWithPeekPicture() {
@@ -174,6 +174,6 @@ struct WindowListLayoutTests {
     @Test func heightIsCapped() {
         let rows = (1...10).map { row($0, tabs: tabs(12, window: $0)) }
         #expect(WindowListLayout.size(rows: rows, expanded: [], previews: false).height == 600)
-        #expect(WindowListLayout.size(rows: rows, expanded: [], previews: true).height == 370 + 230 + 6)
+        #expect(WindowListLayout.size(rows: rows, expanded: [], previews: true).height == CGFloat(370 + 230 + 6))
     }
 }

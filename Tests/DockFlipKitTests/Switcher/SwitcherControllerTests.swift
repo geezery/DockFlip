@@ -381,6 +381,7 @@ struct SwitcherControllerTests {
         switcher.handle(.commandReleased)
 
         #expect(mac.focused == [20])
-        #expect(presenter.hidden.count == 1)
+        // The quick ⌘Tab switched before anything was shown: nothing to hide (5aec16c).
+        #expect(presenter.hidden.isEmpty)
     }
 }
