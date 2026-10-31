@@ -104,6 +104,13 @@ final class OnboardingController: NSObject, NSWindowDelegate {
         if let window { WindowPresenter.bringToFront(window) }
     }
 
+    /// Accessibility was taken away while DockFlip ran: open straight at the switch to
+    /// flip back on, not at the welcome the user has seen already.
+    func showPermissionStep() {
+        model.step = .accessibility
+        show()
+    }
+
     func windowWillClose(_ notification: Notification) {
         stopWatching()
         window = nil
