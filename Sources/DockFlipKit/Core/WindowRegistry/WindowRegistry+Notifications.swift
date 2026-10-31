@@ -32,15 +32,14 @@ extension WindowRegistry {
             notifyChange()
 
         case kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification:
-            if tracked.app.isActive { bringFocusedWindowToFront(of: tracked) }
+            bringFocusedWindowToFrontIfActive(of: tracked)
 
         case kAXWindowMiniaturizedNotification, kAXWindowDeminiaturizedNotification,
              kAXTitleChangedNotification, kAXMovedNotification, kAXResizedNotification:
             // A read on its way may carry the state from before: read once more after it.
             if tracked.isReading { tracked.readAgain = true }
-            guard let id = tracked.id(of: element), let stored = tracked.windowElements[id] else { return }
-            update(id: id, element: stored, tracked: tracked)
-            notifyChange()
+            guard let id = tracked.id(of: element) else { return }
+            windowChanged(id, of: tracked)
 
         default:
             break
@@ -115,7 +114,8 @@ extension WindowRegistry {
     }
 }
 
-/// C callback for every AXObserver. Runs on the main run loop.
+/// C callback for every AXObserver. Runs on the main run loop, so it asks the
+/// app nothing: the reads it starts run on the app's queue (`AppQueues`).
 func axObserverCallback(_ observer: AXObserver, _ element: AXUIElement, _ notification: CFString, _ refcon: UnsafeMutableRawPointer?) {
     guard let refcon else { return }
     let tracked = Unmanaged<TrackedApp>.fromOpaque(refcon).takeUnretainedValue()
