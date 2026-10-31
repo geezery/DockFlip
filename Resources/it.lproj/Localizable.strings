@@ -44,6 +44,10 @@
 "Window thumbnails" = "Miniature delle finestre";
 "Keyboard shortcuts" = "Abbreviazioni da tastiera";
 "⌘Tab and the ⌃⌥ snapping shortcuts" = "⌘Tab e le abbreviazioni di aggancio ⌃⌥";
+"⌘Tab switcher" = "Selettore ⌘Tab";
+"Flip 3D as in Windows 7, or a grid as in Windows 11" = "Flip 3D come in Windows 7, o una griglia come in Windows 11";
+"Flip 3D" = "Flip 3D";
+"Grid" = "Griglia";
 "Managed by your organization" = "Gestito dalla tua organizzazione";
 "Screen Recording is not allowed yet" = "La registrazione dello schermo non è ancora consentita";
 "Allow DockFlip in System Settings. If it is already allowed, restart DockFlip." = "Consenti DockFlip in Impostazioni di Sistema. Se è già consentito, riavvia DockFlip.";

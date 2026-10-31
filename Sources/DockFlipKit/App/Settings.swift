@@ -12,6 +12,7 @@ final class Settings: ObservableObject {
         static let shortcuts = "shortcutsEnabled"
         static let onboarded = "onboardingCompleted"
         static let debug = "debugLogging"
+        static let switcherStyle = "switcherStyle"
     }
 
     private let defaults: UserDefaults
@@ -41,6 +42,17 @@ final class Settings: ObservableObject {
             }
         }
     }
+    /// How ⌘Tab looks: Flip 3D (Windows 7) or the grid (Windows 11).
+    @Published var switcherStyle: SwitcherStyle {
+        didSet {
+            if isForced(Key.switcherStyle) {
+                let forced = SwitcherStyle(stored: defaults.string(forKey: Key.switcherStyle))
+                if switcherStyle != forced { switcherStyle = forced }
+            } else {
+                defaults.set(switcherStyle.rawValue, forKey: Key.switcherStyle)
+            }
+        }
+    }
     @Published var onboardingCompleted: Bool {
         didSet { defaults.set(onboardingCompleted, forKey: Key.onboarded) }
     }
@@ -52,6 +64,7 @@ final class Settings: ObservableObject {
     /// The organization's profile sets this; Settings shows it locked.
     var previewsManaged: Bool { isForced(Key.previews) }
     var shortcutsManaged: Bool { isForced(Key.shortcuts) }
+    var switcherStyleManaged: Bool { isForced(Key.switcherStyle) }
 
     /// Why the last Launch at login change didn't take; Settings shows it under the switch.
     @Published private(set) var launchAtLoginProblem: LoginItemProblem? = nil
@@ -69,10 +82,12 @@ final class Settings: ObservableObject {
             Key.previews: false,
             Key.shortcuts: true,
             Key.onboarded: false,
-            Key.debug: false
+            Key.debug: false,
+            Key.switcherStyle: SwitcherStyle.flip3D.rawValue
         ])
         previewsEnabled = defaults.bool(forKey: Key.previews)
         shortcutsEnabled = defaults.bool(forKey: Key.shortcuts)
+        switcherStyle = SwitcherStyle(stored: defaults.string(forKey: Key.switcherStyle))
         onboardingCompleted = defaults.bool(forKey: Key.onboarded)
         debugLogging = defaults.bool(forKey: Key.debug)
     }
