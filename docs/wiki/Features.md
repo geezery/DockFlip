@@ -94,7 +94,7 @@ says so (see [Troubleshooting](Troubleshooting)). ⌘` stays the macOS way.
   window to the next display.
 - **Mouse:** drag a window to the left or right edge for a half, to the top
   edge to maximize, or near a corner for a quarter. A preview shows where it
-  will land.
+  will land. Drag a snapped window away and it takes back its earlier size.
 
 ## 🧹 The small stuff
 

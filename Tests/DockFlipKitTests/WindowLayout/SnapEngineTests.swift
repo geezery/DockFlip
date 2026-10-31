@@ -52,4 +52,25 @@ struct SnapEngineTests {
         #expect(target.contains(moved))
         #expect(moved.size == CGSize(width: 400, height: 300))
     }
+
+    @Test func draggedOffHalfTakesBackItsSizeUnderTheMouse() {
+        // Snapped left at 720 wide; grabbed a quarter across the title bar, 10 below the top.
+        let snapped = SnapEngine.rect(for: .leftHalf, in: area).offsetBy(dx: 300, dy: 0)
+        let mouse = CGPoint(x: snapped.minX + 180, y: snapped.minY + 10)
+        let earlier = CGSize(width: 800, height: 500)
+        let frame = SnapEngine.unsnappedFrame(size: earlier, from: snapped, mouse: mouse)
+        #expect(frame.size == earlier)
+        #expect(frame.minX == mouse.x - 200)
+        #expect(frame.minY == snapped.minY)
+        #expect(frame.contains(mouse))
+    }
+
+    @Test func unsnappedFrameKeepsTheMouseInsideASmallerWindow() {
+        let snapped = CGRect(x: 0, y: 25, width: 720, height: 827)
+        // Grabbed further down than the earlier window is tall.
+        let mouse = CGPoint(x: 700, y: 625)
+        let frame = SnapEngine.unsnappedFrame(size: CGSize(width: 400, height: 300), from: snapped, mouse: mouse)
+        #expect(frame.maxY == mouse.y)
+        #expect(frame.minX <= mouse.x && mouse.x <= frame.maxX)
+    }
 }
