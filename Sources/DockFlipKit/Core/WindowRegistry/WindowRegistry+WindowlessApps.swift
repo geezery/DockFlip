@@ -1,7 +1,7 @@
 import AppKit
 
 extension WindowRegistry {
-    /// Running Dock apps that DockFlip knows no window of, most recently used first,
+    /// Running Dock apps that DockFlip knows no window of, the frontmost first, then in launch order,
     /// for ⌘Tab's app cards when every window is closed.
     func windowlessApps() -> [SwitcherApp] {
         let withWindows = Set(windows.values.map(\.pid))

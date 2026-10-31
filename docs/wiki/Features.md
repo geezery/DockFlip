@@ -84,8 +84,8 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
   a window, as a click on its Dock icon does.
 
 macOS's own ⌘Tab is switched off while DockFlip runs and comes back when you
-quit. If another app (AltTab) already holds ⌘Tab, macOS's stays on and the menu
-says so (see [Troubleshooting](Troubleshooting)). ⌘` stays the macOS way.
+quit. If another app (AltTab) already holds ⌘Tab, macOS's stays on, and the menu
+and Settings say so (see [Troubleshooting](Troubleshooting)). ⌘` stays the macOS way.
 
 ## 📐 Snapping
 

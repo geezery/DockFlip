@@ -126,6 +126,8 @@ front.
 - **The usual keys.** Tab moves forward, ⇧ moves back, Esc cancels, and
   releasing ⌘ switches. Arrow keys and clicking work too. A quick ⌘Tab
   switches without drawing the stack at all.
+- **No windows open?** ⌘Tab then shows the running apps, one card each, and
+  picking one asks the app for a window, as a click on its Dock icon does.
 - **Survives password fields.** It keeps working while another app holds
   secure keyboard input, which is exactly when lesser switchers give up.
 - **Or the Windows 11 look.** Prefer a grid of window tiles in one panel?
