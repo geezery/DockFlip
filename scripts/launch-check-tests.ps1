@@ -35,7 +35,7 @@ function Get-SwiftNumber([string]$Name) {
     [double]($m.Groups[1].Value -replace '_', '')
 }
 
-# A row of SCOPE.md's performance budget table: '| Memory (resident) | < 50 MB |'.
+# A row of SCOPE.md's performance budget table: '| Memory (footprint) | < 50 MB |'.
 function Get-ScopeBudget([string]$Metric, [string]$Unit) {
     $m = [regex]::Match((Read-Text 'SCOPE.md'), "(?m)^\| $([regex]::Escape($Metric)) \| < ([0-9.]+) $Unit \|")
     if (-not $m.Success) { throw "no '| $Metric | < N $Unit |' row in SCOPE.md" }
@@ -82,7 +82,7 @@ Test 'ci.yml runs these tests' {
 }
 
 Test 'the memory budget is SCOPE.md''s' {
-    $scope = Get-ScopeBudget 'Memory (resident)' 'MB'
+    $scope = Get-ScopeBudget 'Memory (footprint)' 'MB'
     $check = Get-SwiftNumber 'memoryBudgetMB'
     if ($check -ne $scope) { throw "launch-check.swift allows $check MB, SCOPE.md says < $scope MB" }
 }

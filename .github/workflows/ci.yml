@@ -61,7 +61,7 @@ jobs:
           esac
 
       # Starts the app for real and holds it to SCOPE.md's budgets: first window on screen,
-      # resident memory, CPU at idle, and a clean quit on SIGTERM.
+      # memory footprint, CPU at idle, and a clean quit on SIGTERM.
       - name: Launch check
         run: |
           swiftc -O scripts/launch-check.swift -o build/launch-check

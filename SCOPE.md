@@ -38,7 +38,7 @@ settings.
 | Metric | Budget |
 |---|---|
 | CPU at idle | 0 % (no timers running while nothing changes) |
-| Memory (resident) | < 50 MB |
+| Memory (footprint) | < 50 MB |
 | Launch to usable | < 0.5 s |
 | ⌘Tab: key press to switcher visible | < 50 ms |
 
