@@ -134,7 +134,7 @@ final class Services {
         case .dockItem(let index):
             dock.activateItem(at: index)
         case .showDesktop:
-            ShowDesktop.toggle()
+            ShowDesktop.toggle(registry: registry)
         case .newFinderWindow:
             NSWorkspace.shared.open(URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true))
         }
