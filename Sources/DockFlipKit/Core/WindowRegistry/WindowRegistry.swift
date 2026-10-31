@@ -29,6 +29,10 @@ public final class WindowRegistry {
     /// Accessibility calls that wait on an app (actions, the hover probe, window reads) run
     /// here, off the main thread, so a hung app never stalls the event taps.
     let appQueues = AppQueues()
+    /// Apps whose app-level subscriptions are on their queue: tracked once they answer.
+    var subscribing = Set<pid_t>()
+    /// Subscribes an app to its observer on the app's queue; tests stand in their own.
+    var subscribeApp: @Sendable (AppSubscriber, SendableElement) -> [Int32] = { $0.subscribe($1) }
     /// Apps whose first windows read at launch has not answered yet.
     var launchReads = Set<pid_t>()
     /// Apps with a probe on its way, so hovering a hung app's icon asks it once.

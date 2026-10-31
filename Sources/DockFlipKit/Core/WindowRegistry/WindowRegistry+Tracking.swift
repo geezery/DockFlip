@@ -17,22 +17,35 @@ extension WindowRegistry {
 
     private func trackUnmeasured(_ app: NSRunningApplication, attempt: Int) {
         let pid = app.processIdentifier
-        guard apps[pid] == nil, !app.isTerminated else { return }
+        guard apps[pid] == nil, !subscribing.contains(pid), !app.isTerminated else { return }
 
         let tracked = TrackedApp(app: app, registry: self)
-        let isLastAttempt = attempt >= Self.maxTrackAttempts
+        // Creating the observer is local; adding its notifications waits on the app.
         var observer: AXObserver?
         let createStatus = AXObserverCreate(pid, axObserverCallback, &observer)
-        var statuses: [Int32] = [createStatus.rawValue]
-        var subscribed = false
-        if createStatus == .success, let observer {
-            let refcon = Unmanaged.passUnretained(tracked).toOpaque()
-            for name in [kAXWindowCreatedNotification, kAXFocusedWindowChangedNotification, kAXMainWindowChangedNotification] {
-                let status = AXObserverAddNotification(observer, tracked.element, name as CFString, refcon)
-                statuses.append(status.rawValue)
-                if status == .success { subscribed = true }
-            }
+        guard createStatus == .success, let observer else {
+            finishTrack(tracked, observer: nil, statuses: [createStatus.rawValue], attempt: attempt)
+            return
         }
+        let subscriber = AppSubscriber(observer: observer, refcon: Unmanaged.passUnretained(tracked).toOpaque())
+        let element = SendableElement(element: tracked.element)
+        let subscribe = subscribeApp
+        subscribing.insert(pid)
+        appQueues.run(for: pid, { subscribe(subscriber, element) }, then: { [weak self] statuses in
+            // Untracked (quit) meanwhile: `untrack` cleared the mark, and it stays gone.
+            guard let self, self.subscribing.remove(pid) != nil, self.apps[pid] == nil else { return }
+            self.finishTrack(tracked, observer: subscriber.observer, statuses: [createStatus.rawValue] + statuses, attempt: attempt)
+        })
+    }
+
+    /// The app answered its subscriptions (or no observer could be made): tracks
+    /// it, or tries again shortly when it refused them all.
+    private func finishTrack(_ tracked: TrackedApp, observer: AXObserver?, statuses: [Int32], attempt: Int) {
+        let app = tracked.app
+        let pid = tracked.pid
+        guard !app.isTerminated else { return }
+        let isLastAttempt = attempt >= Self.maxTrackAttempts
+        let subscribed = observer != nil && statuses.dropFirst().contains(AXError.success.rawValue)
         // Freshly launched apps often refuse Accessibility for a moment.
         guard subscribed || isLastAttempt else {
             if attempt == 0 {
@@ -75,6 +88,7 @@ extension WindowRegistry {
     func untrack(pid: pid_t) {
         appOrder.removeAll { $0 == pid }
         unresponsive.remove(pid)
+        subscribing.remove(pid)
         searchedElsewhere[pid] = nil
         appQueues.forget(pid)
         guard let tracked = apps.removeValue(forKey: pid) else { return }
