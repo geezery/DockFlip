@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> 절반, <kbd class="sym">⌃⌥↑</kbd> 최대화`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> 데스크탑 보기, <kbd class="sym">⌃⌥E</kbd> 새 Finder 윈도우`,
   'snap.l3': `모든 단축키는 메뉴 막대의 DockFlip 메뉴에 있습니다.`,
+  'snap.l4': `<b>Snap Assist:</b> 스냅하면 옆의 빈 공간에 다른 윈도우가 카드로 나타납니다. 하나를 고르면 그 자리를 채웁니다.`,
   'priv.kicker': `개인정보`, 'priv.h': `엿보지 않고도 세련되게.`,
   'priv.p': `대부분의 윈도우 전환기는 스크린샷에 의존하기 때문에 실행하자마자 화면 기록을 요청합니다. DockFlip은 macOS가 이미 알려 주는 정보로 모든 것을 그리므로 화면을 볼 필요가 없습니다.`,
   'priv.l1': `<b>권한은 하나:</b> 손쉬운 사용.`,

@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> 半屏，<kbd class="sym">⌃⌥↑</kbd> 最大化`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> 显示桌面，<kbd class="sym">⌃⌥E</kbd> 新建访达窗口`,
   'snap.l3': `所有快捷键都列在菜单栏的 DockFlip 菜单中。`,
+  'snap.l4': `<b>Snap Assist：</b>贴靠之后，旁边的空位会以卡片列出你的其他窗口。选一个，它就填满那里。`,
   'priv.kicker': `隐私`, 'priv.h': `精致，但从不偷看。`,
   'priv.p': `大多数窗口切换器一打开就要求录制屏幕，因为它们依赖截图。DockFlip 只用 macOS 已经提供的信息来绘制一切，所以从不需要看你的屏幕。`,
   'priv.l1': `<b>只需一项权限：</b>辅助功能。`,

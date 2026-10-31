@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> helften, <kbd class="sym">⌃⌥↑</kbd> maximaliseren`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> bureaublad tonen, <kbd class="sym">⌃⌥E</kbd> nieuw Finder-venster`,
   'snap.l3': `Alle sneltoetsen staan in het DockFlip-menu in de menubalk.`,
+  'snap.l4': `<b>Snap Assist:</b> na het vastklikken staan je andere vensters als kaarten in de lege ruimte ernaast. Kies er een en het vult die ruimte.`,
   'priv.kicker': `Privacy`, 'priv.h': `Verzorgd, zonder te gluren.`,
   'priv.p': `De meeste vensterwisselaars willen meteen je scherm opnemen, omdat ze op schermafbeeldingen draaien. DockFlip tekent alles uit wat macOS al vertelt, dus hoeft je scherm nooit te zien.`,
   'priv.l1': `<b>Eén toestemming:</b> Toegankelijkheid.`,

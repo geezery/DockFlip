@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> halvdele, <kbd class="sym">⌃⌥↑</kbd> maksimer`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> vis skrivebord, <kbd class="sym">⌃⌥E</kbd> nyt Finder-vindue`,
   'snap.l3': `Alle genveje står i DockFlips menu i menulinjen.`,
+  'snap.l4': `<b>Snap Assist:</b> efter en fastgørelse vises dine andre vinduer som kort på den tomme plads ved siden af. Vælg et, så fylder det pladsen.`,
   'priv.kicker': `Privatliv`, 'priv.h': `Poleret uden at kigge.`,
   'priv.p': `De fleste vinduesskiftere vil optage skærmen med det samme, fordi de bygger på skærmbilleder. DockFlip tegner alt ud fra det, macOS allerede fortæller, så den behøver aldrig se din skærm.`,
   'priv.l1': `<b>Én tilladelse:</b> Tilgængelighed.`,

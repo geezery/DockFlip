@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> puolikkaat, <kbd class="sym">⌃⌥↑</kbd> suurenna`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> näytä työpöytä, <kbd class="sym">⌃⌥E</kbd> uusi Finder-ikkuna`,
   'snap.l3': `Jokainen pikanäppäin löytyy DockFlipin valikosta valikkopalkissa.`,
+  'snap.l4': `<b>Snap Assist:</b> napsautuksen jälkeen muut ikkunasi näkyvät kortteina viereisessä tyhjässä tilassa. Valitse yksi, niin se täyttää tilan.`,
   'priv.kicker': `Yksityisyys`, 'priv.h': `Viimeistelty kurkkimatta.`,
   'priv.p': `Useimmat ikkunanvaihtajat haluavat nauhoittaa näyttöäsi heti, koska ne perustuvat kuvakaappauksiin. DockFlip piirtää kaiken siitä, mitä macOS jo kertoo sille, joten sen ei tarvitse koskaan nähdä näyttöäsi.`,
   'priv.l1': `<b>Yksi lupa:</b> Käyttöapu.`,

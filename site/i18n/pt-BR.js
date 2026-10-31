@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> metades, <kbd class="sym">⌃⌥↑</kbd> maximizar`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> mostrar a mesa, <kbd class="sym">⌃⌥E</kbd> nova janela do Finder`,
   'snap.l3': `Todos os atalhos estão no menu do DockFlip, na barra de menus.`,
+  'snap.l4': `<b>Snap Assist:</b> depois de encaixar, suas outras janelas aparecem como cartões no espaço livre ao lado. Escolha uma e ela o preenche.`,
   'priv.kicker': `Privacidade`, 'priv.h': `Caprichado, sem espiar.`,
   'priv.p': `A maioria dos alternadores de janelas pede para gravar sua tela logo de cara, porque se baseia em capturas. O DockFlip desenha tudo com o que o macOS já informa, então nunca precisa ver sua tela.`,
   'priv.l1': `<b>Uma só permissão:</b> Acessibilidade.`,

@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> mitades, <kbd class="sym">⌃⌥↑</kbd> maximizar`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> mostrar escritorio, <kbd class="sym">⌃⌥E</kbd> nueva ventana del Finder`,
   'snap.l3': `Todos los atajos están en el menú de DockFlip, en la barra de menús.`,
+  'snap.l4': `<b>Snap Assist:</b> tras ajustar una ventana, las demás aparecen como tarjetas en el espacio libre de al lado. Elige una y lo ocupará.`,
   'priv.kicker': `Privacidad`, 'priv.h': `Pulido sin espiar.`,
   'priv.p': `La mayoría de los selectores de ventanas piden grabar tu pantalla nada más abrirlos, porque se basan en capturas. DockFlip lo dibuja todo con lo que macOS ya le cuenta, así que nunca necesita ver tu pantalla.`,
   'priv.l1': `<b>Un solo permiso:</b> Accesibilidad.`,

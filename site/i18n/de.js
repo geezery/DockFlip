@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> Hälften, <kbd class="sym">⌃⌥↑</kbd> maximieren`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> Schreibtisch zeigen, <kbd class="sym">⌃⌥E</kbd> neues Finder-Fenster`,
   'snap.l3': `Alle Kurzbefehle stehen im DockFlip-Menü in der Menüleiste.`,
+  'snap.l4': `<b>Snap Assist:</b> Nach dem Andocken erscheinen deine anderen Fenster als Karten im freien Platz daneben. Wähl eins, und es füllt den Platz.`,
   'priv.kicker': `Datenschutz`, 'priv.h': `Elegant, ohne zu spähen.`,
   'priv.p': `Die meisten Fensterumschalter wollen sofort deinen Bildschirm aufnehmen, weil sie auf Screenshots basieren. DockFlip zeichnet alles aus dem, was macOS ohnehin mitteilt, und muss deinen Bildschirm nie sehen.`,
   'priv.l1': `<b>Eine Berechtigung:</b> Bedienungshilfen.`,

@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> moitiés, <kbd class="sym">⌃⌥↑</kbd> agrandir`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> afficher le bureau, <kbd class="sym">⌃⌥E</kbd> nouvelle fenêtre Finder`,
   'snap.l3': `Tous les raccourcis sont dans le menu de DockFlip, dans la barre des menus.`,
+  'snap.l4': `<b>Snap Assist :</b> après un ancrage, vos autres fenêtres s’affichent en cartes dans l’espace libre à côté. Choisissez-en une, elle le remplit.`,
   'priv.kicker': `Confidentialité`, 'priv.h': `Soigné, sans espionner.`,
   'priv.p': `La plupart des sélecteurs de fenêtres demandent tout de suite à enregistrer votre écran, car ils reposent sur des captures. DockFlip dessine tout à partir de ce que macOS lui dit déjà : il n’a jamais besoin de voir votre écran.`,
   'priv.l1': `<b>Une seule autorisation :</b> Accessibilité.`,

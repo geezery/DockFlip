@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> połówki, <kbd class="sym">⌃⌥↑</kbd> maksymalizuj`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> pokaż biurko, <kbd class="sym">⌃⌥E</kbd> nowe okno Findera`,
   'snap.l3': `Wszystkie skróty są w menu DockFlip na pasku menu.`,
+  'snap.l4': `<b>Snap Assist:</b> po przyciągnięciu okna pozostałe pojawiają się jako karty w wolnym miejscu obok. Wybierz jedno, a je wypełni.`,
   'priv.kicker': `Prywatność`, 'priv.h': `Dopracowany bez podglądania.`,
   'priv.p': `Większość przełączników okien od razu chce nagrywać ekran, bo opiera się na zrzutach. DockFlip rysuje wszystko z tego, co macOS już mu przekazuje, więc nigdy nie musi widzieć Twojego ekranu.`,
   'priv.l1': `<b>Jedno uprawnienie:</b> Dostępność.`,

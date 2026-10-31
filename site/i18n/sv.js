@@ -30,6 +30,7 @@
   'snap.l1': `<kbd class="sym">⌃⌥←</kbd> <kbd class="sym">⌃⌥→</kbd> halvor, <kbd class="sym">⌃⌥↑</kbd> maximera`,
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> visa skrivbordet, <kbd class="sym">⌃⌥E</kbd> nytt Finder-fönster`,
   'snap.l3': `Alla kortkommandon finns i DockFlips meny i menyraden.`,
+  'snap.l4': `<b>Snap Assist:</b> efter en fästning visas dina andra fönster som kort i det tomma utrymmet bredvid. Välj ett så fyller det platsen.`,
   'priv.kicker': `Integritet`, 'priv.h': `Elegant utan att kika.`,
   'priv.p': `De flesta fönsterväxlare vill spela in skärmen direkt, eftersom de bygger på skärmbilder. DockFlip ritar allt utifrån det macOS redan berättar, så den behöver aldrig se din skärm.`,
   'priv.l1': `<b>En behörighet:</b> Hjälpmedel.`,
