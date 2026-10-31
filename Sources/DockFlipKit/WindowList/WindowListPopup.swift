@@ -155,7 +155,8 @@ final class WindowListPopup {
                 isOnOtherSpace: window.isOnOtherSpace,
                 isActive: window.id == activeID,
                 tint: WindowAppearance.tint(of: window),
-                tabs: TabStore.shared.tabs(of: window.id) ?? []
+                tabs: TabStore.shared.tabs(of: window.id) ?? [],
+                windowSize: window.frame.size
             )
         }
 

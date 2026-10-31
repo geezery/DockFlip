@@ -44,7 +44,7 @@ thread.
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
-| `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
+| `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`, `ThumbnailCover` (where the app's icon covers a window's buttons in its picture). |
 | `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
@@ -53,7 +53,7 @@ in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `BootTime`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
-`LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
+`LoginItemProblem`, `ThumbnailAccess`, `ThumbnailCover`, `DebugLogFile` and `UnavailableFeature`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).

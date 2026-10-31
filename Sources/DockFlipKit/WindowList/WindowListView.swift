@@ -228,7 +228,7 @@ struct WindowCardView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color.primary.opacity(0.06))
                 if let thumbnail {
-                    Image(nsImage: thumbnail).resizable().interpolation(.high).aspectRatio(contentMode: .fit)
+                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon)
                 } else {
                     Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                 }
@@ -269,11 +269,7 @@ struct PeekPane: View {
                 .fill(Color.primary.opacity(0.06))
             if let row {
                 if let image = model.thumbnails[row.id] {
-                    Image(nsImage: image)
-                        .resizable()
-                        .interpolation(.high)
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    ThumbnailView(image: image, windowSize: row.windowSize, icon: row.icon, cornerRadius: 6)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                         .padding(8)
                         .id(row.id)

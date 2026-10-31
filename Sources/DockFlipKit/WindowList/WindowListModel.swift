@@ -39,6 +39,8 @@ struct WindowListRow: Identifiable {
     let tint: Color
     /// Browser tabs of this window, once read (empty for other apps).
     let tabs: [BrowserTab]
+    /// The window's size in points; places the app's icon over its buttons in a thumbnail.
+    var windowSize: CGSize = .zero
 }
 
 /// State the views draw. Hover state lives here, not in SwiftUI's @State: @State
