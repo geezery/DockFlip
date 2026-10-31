@@ -42,6 +42,9 @@ final class SwitcherController {
     private(set) var revealTask: Task<Void, Never>?
     /// The switcher can be seen. Until then its panel is key but invisible.
     private var isDrawn = false
+    /// Whether `presenter.show()` ran this session: a quick ⌘Tab with ⌘ already up
+    /// switches without it, so there is no panel to hide and no active change to undo.
+    private var isShown = false
 
     /// Called with true when the switcher opens and false when it closes.
     var onActiveChanged: ((Bool) -> Void)?
@@ -187,6 +190,7 @@ final class SwitcherController {
         // Take the keyboard now but draw only after a short hold: a quick ⌘Tab-Tab
         // switches without the full-screen stack flashing up (as macOS and AltTab).
         presenter.show()
+        isShown = true
         onActiveChanged?(true)
         scheduleReveal()
         return true
@@ -278,7 +282,9 @@ final class SwitcherController {
         previewTasks.forEach { $0.cancel() }
         previewTasks = []
         askedPreviews = []
-        presenter.hide(returningToPreviousApp: returningToPreviousApp)
+        let wasShown = isShown
+        isShown = false
+        if wasShown { presenter.hide(returningToPreviousApp: returningToPreviousApp) }
         selection = nil
         commandDown = false
         allWindows = []
@@ -286,7 +292,7 @@ final class SwitcherController {
         query = ""
         model.query = ""
         model.thumbnails = [:]
-        onActiveChanged?(false)
+        if wasShown { onActiveChanged?(false) }
     }
 
     /// Pictures memory already has appear with the stack; fresh ones are
