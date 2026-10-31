@@ -68,6 +68,8 @@ final class SwitcherController {
 
     /// Builds the panel ahead of the first ⌘Tab (`SwitcherPresenter.prepare`).
     func prepare() {
+        // Built in the chosen look, so the first ⌘Tab of a grid user is not the one building it.
+        model.style = style()
         presenter.prepare()
     }
 

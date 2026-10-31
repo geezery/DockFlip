@@ -46,4 +46,22 @@ struct SettingsSwitcherStyleTests {
         #expect(settings.switcherStyle == .grid)
         #expect(defaults.string(forKey: "switcherStyle") == "grid")
     }
+
+    /// Stands in for a profile installed while the app runs (as in `SettingsManagedTests`).
+    private final class Profile: @unchecked Sendable { var forced: Set<String> = [] }
+
+    @Test func aProfileInstalledWhileRunningTakesEffectAtOnce() {
+        let (defaults, suite) = makeDefaults([:])
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let profile = Profile()
+        let settings = Settings(defaults: defaults, isForced: { profile.forced.contains($0) })
+        #expect(settings.switcherStyle == .flip3D)
+
+        profile.forced = ["switcherStyle"]
+        defaults.set("grid", forKey: "switcherStyle")
+        settings.reloadManaged()
+
+        #expect(settings.switcherStyle == .grid)
+        #expect(settings.switcherStyleManaged)
+    }
 }

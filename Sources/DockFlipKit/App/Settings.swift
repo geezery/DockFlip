@@ -119,6 +119,8 @@ final class Settings: ObservableObject {
         if previewsEnabled != previews { previewsEnabled = previews }
         let shortcuts = defaults.bool(forKey: Key.shortcuts)
         if shortcutsEnabled != shortcuts { shortcutsEnabled = shortcuts }
+        let style = SwitcherStyle(stored: defaults.string(forKey: Key.switcherStyle))
+        if switcherStyle != style { switcherStyle = style }
     }
 
     /// The value a profile forces for `key`, or nil when the user may change it.
