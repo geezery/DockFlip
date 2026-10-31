@@ -36,13 +36,18 @@ features and prices, and those change. Before you tag:
    `site/i18n/*.js`. `node scripts/build-site-tests.mjs` fails while the dates
    disagree.
 
-## After a release: tell AI readers
+## AI readers: llms.txt and llms-full.txt
 
 `site/llms.txt` and `site/llms-full.txt` start with a *Version* section, so a
-language model does not mix one release's docs with another's. Once the release
-is out, set the new version, its tag link, the release date and *Last updated*
-in both, and fix anything the release changed in `site/llms-full.txt`.
-`node scripts/build-site-tests.mjs` fails while the two disagree.
+language model does not mix one release's docs with another's. You don't set it
+by hand: once a release is published, `release.yml` starts the Homepage
+workflow, and `scripts/llms-version.mjs` writes the latest release, its date and
+*Last updated* into the deployed copies. The copies in the repository keep
+whatever was written there last.
+
+What the release does still needs a person: if it adds, changes or removes a
+feature, a setting, a permission or a limitation, fix `site/llms-full.txt` (and
+`site/llms.txt` if the summary changes) before you tag.
 
 ## Numbering
 

@@ -2,10 +2,12 @@ name: Homepage
 
 # Publishes site/ (plus the illustrations in docs/assets) to GitHub Pages:
 # https://geezery.github.io/DockFlip/
+# release.yml also starts it once a release is published, so the deployed
+# llms.txt and llms-full.txt name that release.
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'docs/assets/**', 'scripts/build-site.mjs', 'scripts/build-site-tests.mjs', '.github/workflows/pages.yml']
+    paths: ['site/**', 'docs/assets/**', 'scripts/build-site.mjs', 'scripts/build-site-tests.mjs', 'scripts/llms-version.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -25,6 +27,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          # The whole history, for the date llms.txt and llms-full.txt last changed.
+          fetch-depth: 0
       - name: Check the homepage
         # What every per-language page must have: scripts/build-site-tests.mjs.
         run: node scripts/build-site-tests.mjs
@@ -35,6 +40,18 @@ jobs:
           cp docs/assets/*.gif docs/assets/social-preview.png _site/assets/
           # One page per language (/fi/, /de/ ...) with hreflang links, and sitemap.xml.
           node scripts/build-site.mjs _site
+      - name: Name the latest release in llms.txt and llms-full.txt
+        # So AI readers are not told an older release is the current one.
+        # Without a release to name, the files keep the version written by hand.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if release=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName,publishedAt -q '.tagName + " " + .publishedAt[0:10]'); then
+            updated=$(git log -1 --format=%cs -- site/llms.txt site/llms-full.txt)
+            node scripts/llms-version.mjs _site $release "$updated"
+          else
+            echo "::warning::No release found; llms.txt and llms-full.txt keep the version in the repository."
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

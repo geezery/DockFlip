@@ -199,7 +199,7 @@ test('llms.txt and llms-full.txt name the same release and date', () => {
   const fields = f => {
     const text = fs.readFileSync(path.join(root, f), 'utf8');
     const release = text.match(/^- Current release: DockFlip (\d+\.\d+\.\d+) \(.*releases\/tag\/v(\d+\.\d+\.\d+)\).*released (\d{4}-\d{2}-\d{2})/m);
-    const updated = text.match(/^- Last updated: (\d{4}-\d{2}-\d{2})$/m);
+    const updated = text.match(/^- Last updated: (\d{4}-\d{2}-\d{2})\r?$/m);
     const docs = text.match(/^- Documentation version: this file describes DockFlip (\d+\.\d+\.\d+)\./m);
     expect(release && updated && docs, `${f}: needs "Current release", "Last updated" and "Documentation version" lines`);
     expect(release[1] === release[2] && release[1] === docs[1], `${f}: the version, its tag link and the documentation version differ`);
@@ -207,6 +207,30 @@ test('llms.txt and llms-full.txt name the same release and date', () => {
   };
   const short = fields('site/llms.txt'), full = fields('site/llms-full.txt');
   expect(short === full, `site/llms.txt says ${short}, site/llms-full.txt says ${full}`);
+});
+
+// pages.yml runs scripts/llms-version.mjs on its copy of site/ so the deployed
+// files name the latest release; run it the same way on this test's copy.
+const { stamp } = await import('./llms-version.mjs');
+test('the deploy names the latest release in llms.txt and llms-full.txt, and changes nothing else', () => {
+  execFileSync(process.execPath, [path.join(root, 'scripts/llms-version.mjs'), out, 'v9.8.7', '2027-01-02', '2026-12-01'], { stdio: 'pipe' });
+  for (const f of ['llms.txt', 'llms-full.txt']) {
+    const before = fs.readFileSync(path.join(site, f), 'utf8').split('\n');
+    const after = fs.readFileSync(path.join(out, f), 'utf8').split('\n');
+    const changed = after.filter((line, i) => line !== before[i]);
+    expect(after.length === before.length && changed.length === 3, `${f}: ${changed.length} lines changed, want 3`);
+    const text = after.join('\n');
+    expect(text.includes('- Current release: DockFlip 9.8.7 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v9.8.7), released 2027-01-02)'), `${f}: Current release not stamped`);
+    // Last edited before the release: the release date is the newer fact.
+    expect(/^- Last updated: 2027-01-02\r?$/m.test(text), `${f}: Last updated is not the release date`);
+    expect(text.includes('this file describes DockFlip 9.8.7.'), `${f}: Documentation version not stamped`);
+  }
+  const crlf = fs.readFileSync(path.join(site, 'llms.txt'), 'utf8').replace(/\r?\n/g, '\r\n');
+  expect(stamp(crlf, { version: '9.8.7', released: '2027-01-02', updated: '2027-01-03' }).includes('- Last updated: 2027-01-03\r\n'),
+    'CRLF line ends (a Windows checkout): not stamped');
+  let threw = false;
+  try { stamp('# no version section', { version: '1.0.0', released: '2027-01-01', updated: '2027-01-01' }); } catch { threw = true; }
+  expect(threw, 'a file without the Version lines must fail the deploy, not ship unstamped');
 });
 
 fs.rmSync(out, { recursive: true, force: true });

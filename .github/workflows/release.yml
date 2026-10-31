@@ -16,6 +16,7 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+  actions: write # to start the Homepage workflow after publishing
 
 jobs:
   release:
@@ -114,6 +115,14 @@ jobs:
           else
             gh release create "$TAG" $FILES --title "DockFlip $VERSION" --notes-file notes.md --generate-notes --verify-tag
           fi
+
+      # Redeploy the homepage, which names the latest release in llms.txt and
+      # llms-full.txt (pages.yml). A release made with this workflow's token
+      # starts no other workflow by itself; a dispatch does.
+      - name: Update the homepage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main || echo "::warning::Could not start the Homepage workflow; run it by hand so llms.txt names $TAG."
 
       - name: Remove keychain
         if: always()
