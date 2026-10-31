@@ -75,10 +75,9 @@ final class SwitcherKeyTaps {
             Log.keys.error("Modifier tap was disabled by macOS; re-enabling")
             if let flagsTap { CGEvent.tapEnable(tap: flagsTap, enable: true) }
         case .flagsChanged:
-            if event.flags.contains(.maskCommand) {
-                onCommandPressed?()
-            } else {
-                onCommandReleased?()
+            switch SwitcherInput.fromFlags(command: event.flags.contains(.maskCommand)) {
+            case .commandPressed: onCommandPressed?()
+            default: onCommandReleased?()
             }
         default:
             break
@@ -118,6 +117,12 @@ final class SwitcherKeyTaps {
 }
 
 extension SwitcherInput {
+    /// What a modifier change means to the switcher: only whether ⌘ is down after it.
+    /// The modifier tap and the panel's local monitor both map through here.
+    static func fromFlags(command: Bool) -> SwitcherInput {
+        command ? .commandPressed : .commandReleased
+    }
+
     /// What a key press the switcher panel receives means to the open switcher,
     /// or nil for keys that mean nothing.
     static func from(keyCode: UInt32, command: Bool, shift: Bool, text: @autoclosure () -> String?) -> SwitcherInput? {
