@@ -72,7 +72,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             onboarding.show()
             return
         }
-        let controller = OnboardingController { [weak self] in
+        let controller = OnboardingController(showSettings: { [weak self] in
+            self?.settingsWindow.show()
+        }) { [weak self] in
             guard let self else { return }
             self.onboarding = nil
             self.startServices()
