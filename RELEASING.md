@@ -21,6 +21,20 @@ Then watch **Actions → Release**. It takes about five minutes, and the release
 appears under **Releases** when it's done. The README's Download button always
 points at the newest one.
 
+## Before a release: re-check the comparison
+
+README's [How it compares](README.md#how-it-compares) names other apps'
+features and prices, and those change. Before you tag:
+
+1. Open each link in the "Sources:" line under that table and check every row.
+2. Fix any row that changed, in every file that repeats it: `README.md`,
+   `site/llms.txt`, `docs/wiki/Features.md`, `docs/wiki/FAQ.md`, and the
+   homepage's `cmp.*` strings in `site/index.html` and all of `site/i18n/*.js`.
+3. Set the new date in all of them, also when nothing changed: README's
+   "Checked on", `site/llms.txt`, `docs/wiki/Features.md`, the comment and
+   `cmp.src` in `site/index.html`, and `cmp.src` in each `site/i18n/*.js`.
+   `node scripts/build-site-tests.mjs` fails while the dates disagree.
+
 ## Numbering
 
 - `v0.3.1`: fixes only

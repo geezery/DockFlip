@@ -146,6 +146,41 @@ test('text colours meet WCAG AA contrast against the backgrounds they sit on', (
   }
 });
 
+// The comparison with other apps is dated, and RELEASING.md asks for a fresh
+// check before each release: every file that repeats it carries one date.
+test('every copy of the comparison carries the same "checked" date', () => {
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'];
+  const read = f => fs.readFileSync(path.join(root, f), 'utf8');
+  const long = (f, text) => {
+    const m = text.match(/Checked on (\d{1,2}) ([A-Z][a-z]+) (\d{4})/);
+    expect(m, `${f}: no "Checked on <day> <Month> <year>"`);
+    return `${m[3]}-${String(MONTHS.indexOf(m[2]) + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  };
+  const iso = (f, text) => {
+    const m = text.match(/\(checked (\d{4}-\d{2}-\d{2})\)/);
+    expect(m, `${f}: no "(checked YYYY-MM-DD)"`);
+    return m[1];
+  };
+  const index = read('site/index.html');
+  const dates = {
+    'README.md': long('README.md', read('README.md')),
+    'docs/wiki/Features.md': long('docs/wiki/Features.md', read('docs/wiki/Features.md')),
+    'site/llms.txt': iso('site/llms.txt', read('site/llms.txt')),
+    'site/index.html comment': iso('site/index.html', index),
+    'site/index.html cmp.src': long('site/index.html', index.match(/data-i18n="cmp\.src">[^<]*/)[0]),
+  };
+  const want = dates['README.md'];
+  for (const [f, d] of Object.entries(dates)) expect(d === want, `${f} says ${d}, README.md says ${want}`);
+  // Each language writes the date its own way; it must at least hold the year and the day.
+  const [year, , day] = want.split('-');
+  for (const [code, dict] of Object.entries(T)) {
+    const src = dict['cmp.src'] || '';
+    expect(src.includes(year) && new RegExp(`(^|\\D)${Number(day)}(\\D|$)`).test(src),
+      `i18n/${code}.js: cmp.src does not show ${want}`);
+  }
+});
+
 fs.rmSync(out, { recursive: true, force: true });
 if (failed) { console.log(`${failed} failed`); process.exit(1); }
 console.log('all passed');
