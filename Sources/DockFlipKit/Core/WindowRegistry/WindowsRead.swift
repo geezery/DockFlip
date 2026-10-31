@@ -62,7 +62,9 @@ extension WindowsRead.Window {
     ]
 
     /// Reads one window's kind and state, in one round trip to the app.
-    /// Blocks as long as the app takes to answer: never call it on the main thread.
+    /// Blocks as long as the app takes to answer: off the main thread, except for
+    /// an app that just sent a notification about the window, so it answers
+    /// (`WindowRegistry.update(id:element:tracked:)`).
     static func read(id: CGWindowID, element: AXUIElement) -> (window: Self, timedOut: Bool) {
         var values: CFArray?
         let error = AXUIElementCopyMultipleAttributeValues(element, names as CFArray, [], &values)
