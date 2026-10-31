@@ -21,6 +21,14 @@ final class TrackedApp {
     var bringFocusedForward = false
     /// Reads the app's windows on its queue; tests stand in an app of their own.
     var readWindows: @Sendable (AXUIElement) -> WindowsRead = { WindowsRead.read(app: $0) }
+    /// Asks the app for its focused window on its queue; tests stand in their own.
+    var readFocusedWindow: @Sendable (AXUIElement) -> SendableElement? = {
+        $0.element(kAXFocusedWindowAttribute).map { SendableElement(element: $0) }
+    }
+    /// Reads the state of the windows already known on its queue; tests stand in their own.
+    var readKnownWindows: @Sendable ([CGWindowID: SendableElement]) -> [WindowsRead.Window] = {
+        WindowsRead.read(known: $0)
+    }
 
     var pid: pid_t { app.processIdentifier }
 

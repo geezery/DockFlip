@@ -35,6 +35,9 @@ public final class WindowRegistry {
     private var probing = Set<pid_t>()
     /// Counts focus requests: an app that answers late is not brought forward over a newer one.
     private var focusRequest = 0
+    /// The app macOS activated last: a focused window that arrives late is put
+    /// first only while its app is still the active one.
+    var activePID: pid_t?
 
     private var observers: [@MainActor () -> Void] = []
     private var changePending = false
