@@ -26,6 +26,17 @@ Snap to a half first, then go up or down:
 
 Or drag the window near a corner.
 
+## Snap Assist
+
+After a snap to a half or a quarter, your other windows appear as cards in
+the space left beside it, as on Windows:
+
+| Key | Action |
+|---|---|
+| ← → ↑ ↓ | Move between the cards |
+| Return | Put the chosen window in that space |
+| Esc | Close the cards (so does a click elsewhere, or the next snap) |
+
 ## Inside the switcher
 
 | Key | Action |

@@ -95,6 +95,10 @@ says so (see [Troubleshooting](Troubleshooting)). ⌘` stays the macOS way.
 - **Mouse:** drag a window to the left or right edge for a half, to the top
   edge to maximize, or near a corner for a quarter. A preview shows where it
   will land. Drag a snapped window away and it takes back its earlier size.
+- **Snap Assist:** after a half or a quarter, the space left beside the window
+  shows your other windows as cards. Click one, or pick it with the arrows and
+  Return, and it fills that space. Esc, a click elsewhere or the next snap
+  closes the cards.
 
 ## 🧹 The small stuff
 

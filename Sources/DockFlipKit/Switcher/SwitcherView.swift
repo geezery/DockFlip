@@ -28,6 +28,28 @@ struct SwitcherItem: Identifiable {
 }
 
 extension SwitcherItem {
+    /// The card of `window`, as ⌘Tab and Snap Assist draw it. `previews`: whether
+    /// thumbnails are on, so a never-pictured app says why it has no picture.
+    @MainActor
+    init(window: WindowSnapshot, previews: Bool) {
+        let placement = WindowAppearance.placement(of: window.frame)
+        self.init(
+            windowID: window.id,
+            title: window.title.isEmpty ? window.appName : window.title,
+            appName: window.appName,
+            icon: window.icon,
+            minimap: placement?.minimap,
+            isMinimized: window.isMinimized,
+            isOnOtherSpace: window.isOnOtherSpace,
+            document: window.document,
+            screenName: placement?.screen.localizedName,
+            sizeText: "\(Int(window.frame.width)) × \(Int(window.frame.height))",
+            windowSize: window.frame.size,
+            tint: WindowAppearance.tint(of: window),
+            neverPictured: previews && PreviewProvider.neverPictured(window.bundleID)
+        )
+    }
+
     /// "Safari", "Safari · Minimized", "Safari · On another desktop".
     var subtitle: String {
         if isMinimized { return "\(appName) · \(L("Minimized"))" }
