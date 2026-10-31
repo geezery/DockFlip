@@ -108,6 +108,17 @@ public enum SnapEngine {
         return CGRect(x: x, y: y, width: width, height: height)
     }
 
+    /// Where a snapped window goes when it is dragged off, Windows style: it takes
+    /// back its earlier `size`, and the mouse (AX space) keeps its place in the title
+    /// bar: the same share of the width across, the same distance below the top.
+    public static func unsnappedFrame(size: CGSize, from snapped: CGRect, mouse: CGPoint) -> CGRect {
+        let share = snapped.width > 0 ? min(max((mouse.x - snapped.minX) / snapped.width, 0), 1) : 0.5
+        let below = min(max(mouse.y - snapped.minY, 0), size.height)
+        return CGRect(x: (mouse.x - share * size.width).rounded(),
+                      y: (mouse.y - below).rounded(),
+                      width: size.width, height: size.height)
+    }
+
     /// A sensible free frame when there is nothing to restore: two thirds, centered.
     public static func defaultFreeFrame(in area: CGRect) -> CGRect {
         let width = (area.width * 2 / 3).rounded()

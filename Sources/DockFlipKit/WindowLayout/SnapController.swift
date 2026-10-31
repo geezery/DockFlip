@@ -12,6 +12,8 @@ final class SnapController {
     private var drag: SnapDrag?
     private var dragZone: (region: SnapRegion, screen: NSScreen)?
     private var tilingHint = EdgeTilingHint()
+    /// The earlier frame a snapped window took back when this drag pulled it off.
+    private var unsnappedTo: CGRect?
 
     init(registry: WindowRegistry) {
         self.registry = registry
@@ -110,6 +112,7 @@ final class SnapController {
     private func mouseDown() {
         drag = SnapDrag(startMouse: NSEvent.mouseLocation)
         dragZone = nil
+        unsnappedTo = nil
         tilingHint.newDrag()
     }
 
@@ -122,8 +125,10 @@ final class SnapController {
         }, frame: { id in
             Perf.shared.measure("snap.dragCheck", quiet: true) { registry.knownFrame(of: id) }
         })
+        let wasWindowDrag = drag?.window != nil
         drag = state
-        guard state.window != nil else { return }
+        guard let window = state.window else { return }
+        if !wasWindowDrag { unsnapIfSnapped(window, mouse: mouse) }
 
         let zone = Self.zone(at: mouse)
         dragZone = zone
@@ -143,12 +148,16 @@ final class SnapController {
         defer {
             drag = nil
             dragZone = nil
+            unsnappedTo = nil
             overlay.hide()
         }
         guard let window = drag?.window, let zone = dragZone else { return }
         let startArea = DisplayLayout.screenIndex(for: window.startFrame, in: NSScreen.screens)
             .map { DisplayLayout.usableArea(of: NSScreen.screens[$0]) }
-        if let startArea, SnapEngine.region(matching: window.startFrame, in: startArea) == nil {
+        if let unsnappedTo {
+            // Dragged off one snap into another: ⌃⌥↓ still goes back to the free frame.
+            restoreFrames[window.id] = unsnappedTo
+        } else if let startArea, SnapEngine.region(matching: window.startFrame, in: startArea) == nil {
             restoreFrames[window.id] = window.startFrame
         }
         let rect = SnapEngine.rect(for: zone.region, in: DisplayLayout.usableArea(of: zone.screen))
@@ -159,6 +168,23 @@ final class SnapController {
             try? await Task.sleep(for: .milliseconds(40))
             self?.registry.setFrame(of: id, to: rect)
         }
+    }
+
+    /// Windows gives a half- or quarter-snapped window its earlier size back as soon
+    /// as it is dragged off, under the mouse. Called once, when the press becomes a
+    /// window drag; only windows DockFlip snapped have a frame to go back to.
+    private func unsnapIfSnapped(_ window: (id: CGWindowID, startFrame: CGRect), mouse: NSPoint) {
+        guard let earlier = restoreFrames[window.id],
+              let display = DisplayLayout.screenIndex(for: window.startFrame, in: NSScreen.screens),
+              SnapEngine.region(matching: window.startFrame, in: DisplayLayout.usableArea(of: NSScreen.screens[display])) != nil
+        else { return }
+        // Where the window is now: it has followed the mouse since the press.
+        let now = SnapDrag.startFrame(window.startFrame, at: self.drag?.startMouse ?? mouse, pressedAt: mouse)
+        let axMouse = CGPoint(x: mouse.x, y: DisplayLayout.primaryHeight - mouse.y)
+        restoreFrames.removeValue(forKey: window.id)
+        unsnappedTo = earlier
+        Log.snap.info("Drag unsnap to the earlier size")
+        registry.setFrame(of: window.id, to: SnapEngine.unsnappedFrame(size: earlier.size, from: now, mouse: axMouse))
     }
 
     /// The tracked window under the mouse and its frame: one window-list read,
