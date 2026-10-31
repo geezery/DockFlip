@@ -50,8 +50,11 @@ final class OnboardingController: NSObject, NSWindowDelegate {
     private var axObserver: NSObjectProtocol?
     private var activeObserver: NSObjectProtocol?
     private let onDone: () -> Void
+    /// Opens Settings, where a refused Launch at login change shows its warning.
+    private let showSettings: () -> Void
 
-    init(onDone: @escaping () -> Void) {
+    init(showSettings: @escaping () -> Void, onDone: @escaping () -> Void) {
+        self.showSettings = showSettings
         self.onDone = onDone
         super.init()
         model.onFinish = { [weak self] in self?.finish() }
@@ -142,6 +145,10 @@ final class OnboardingController: NSObject, NSWindowDelegate {
             to: settings
         )
         if saved, model.previews == true, settings.previewsEnabled { PreviewProvider.requestPermission() }
+        if SetupEnd.problemToShow(started: saved, settings: settings) != nil {
+            Log.app.error("Setup: Launch at login didn't take; opening Settings to show why")
+            showSettings()
+        }
         return saved
     }
 

@@ -7,6 +7,8 @@ protocol SetupSettings: AnyObject {
     var previewsEnabled: Bool { get set }
     var launchAtLogin: Bool { get set }
     var onboardingCompleted: Bool { get set }
+    /// Why the last Launch at login write didn't take, if it didn't.
+    var launchAtLoginProblem: LoginItemProblem? { get }
 }
 
 extension Settings: SetupSettings {}
@@ -26,6 +28,13 @@ enum SetupEnd {
         if launchAtLogin != settings.launchAtLogin { settings.launchAtLogin = launchAtLogin }
         settings.onboardingCompleted = true
         return true
+    }
+
+    /// What the user must be told after setup ends: a Launch at login write macOS refused.
+    /// Setup closes as it saves, so the warning has to go where it can be seen (Settings);
+    /// otherwise DockFlip quietly wouldn't start at the next login.
+    static func problemToShow(started: Bool, settings: SetupSettings) -> LoginItemProblem? {
+        started ? settings.launchAtLoginProblem : nil
     }
 
     /// The switch setup starts with: on for a first setup, and the user's own choice when
