@@ -30,12 +30,10 @@ final class SwitcherController {
     /// Typed filter. Not empty means "search mode": releasing ⌘ no longer
     /// switches, Return does. Cleared whenever the switcher closes.
     private var query = ""
-    /// ⌘ is down: set when the switcher opens with ⌘ held, and again when ⌘ is
-    /// pressed while it is open. Only the release that follows switches: every
-    /// later modifier change without ⌘ (⇧ for ⇧Tab, ⌃, ⌥) also arrives as
-    /// `.commandReleased`, and once the filter is cleared it must not switch.
+    /// Whether the next ⌘ release switches (`SwitcherCommandArm`): only the first
+    /// release after opening with ⌘ held, or after ⌘ is pressed again, does.
     /// While ⌘ is up, only Return, a click or holding ⌘ again and letting go opens a window.
-    private var commandDown = false
+    private var commandArm = SwitcherCommandArm()
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures this session asked for already, so a step asks only for new ones.
     private var askedPreviews = Set<CGWindowID>()
@@ -126,8 +124,7 @@ final class SwitcherController {
             }
             return true
         case .commandReleased:
-            guard commandDown else { return false }
-            commandDown = false
+            guard commandArm.released() else { return false }
             if let index = SwitcherRelease.windowToOpen(selection: selection, query: query, commandHeld: false) {
                 commit(at: index)
             }
@@ -137,7 +134,7 @@ final class SwitcherController {
             // switches once more, unless something is typed by then. The panel's
             // monitor and the flags tap both send it, so a copy can come in after
             // ⌘ is already up again: only the live state re-arms.
-            if isActive, isCommandHeld() { commandDown = true }
+            if isActive { commandArm.pressed(commandHeld: isCommandHeld()) }
             return false
         case .text(let text):
             guard isActive else { return false }
@@ -200,7 +197,7 @@ final class SwitcherController {
             commit(at: index)
             return true
         }
-        commandDown = true
+        commandArm.open(commandHeld: commandHeld)
 
         // Take the keyboard now but draw only after a short hold: a quick ⌘Tab-Tab
         // switches without the full-screen stack flashing up (as macOS and AltTab).
@@ -301,7 +298,7 @@ final class SwitcherController {
         isShown = false
         if wasShown { presenter.hide(returningToPreviousApp: returningToPreviousApp) }
         selection = nil
-        commandDown = false
+        commandArm.reset()
         allWindows = []
         allItems = []
         query = ""
