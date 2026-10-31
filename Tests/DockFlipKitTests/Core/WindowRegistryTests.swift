@@ -197,6 +197,32 @@ struct WindowRegistryTests {
     }
 
     @Test(.timeLimit(.minutes(1)))
+    func aFrameSetDuringTheHideReadKeepsTheNewerFrame() async {
+        // A snap pressed while the app is read for ⌘H: the read's older frame must
+        // not undo the rect, and a hung app's set answers with no frame to fix it.
+        let (registry, tracked) = makeRegistry()
+        addWindow(7, element: AXUIElementCreateApplication(101), to: registry, tracked, title: "Old")
+        let old = CGRect(x: 0, y: 0, width: 400, height: 300)
+        let snapped = CGRect(x: 500, y: 0, width: 700, height: 900)
+        registry.windows[7]?.frame = old
+        let answer = DispatchSemaphore(value: 0)
+        tracked.readKnownWindows = { known in
+            _ = answer.wait(timeout: .now() + 5)
+            return known.map { WindowsRead.Window(id: $0.key, element: $0.value.element, isStandard: true, attributes: WindowAttributes(title: "New", frame: old)) }
+        }
+        tracked.setWindowFrame = { _, _ in FrameSetter.Answer(error: .cannotComplete, frame: nil) }
+        registry.appHiddenOrShown(tracked)
+        registry.setFrame(of: 7, to: snapped)
+        answer.signal()
+        await answered(registry, tracked)
+        #expect(registry.window(7)?.frame == snapped)
+        // The rest of the answer still lands.
+        #expect(registry.window(7)?.title == "New")
+        #expect(tracked.knownReadsOut == 0)
+        #expect(tracked.framesNewerThanKnownRead.isEmpty)
+    }
+
+    @Test(.timeLimit(.minutes(1)))
     func aMovedWindowIsReadOffTheMainThread() async {
         // An app that hangs while its window is dragged must not hold up clicks.
         let (registry, tracked) = makeRegistry()

@@ -26,6 +26,11 @@ final class TrackedApp {
     var updating = Set<CGWindowID>()
     /// Windows that changed again during that read: read once more after it.
     var updateAgain = Set<CGWindowID>()
+    /// Reads of its known windows (hide/unhide) on the app's queue.
+    var knownReadsOut = 0
+    /// Windows given a newer frame while such a read was out (a snap's rect,
+    /// set at once): its older answer leaves their frame alone.
+    var framesNewerThanKnownRead = Set<CGWindowID>()
     /// Reads one window's state on its queue; tests stand in their own.
     var readWindow: @Sendable (CGWindowID, SendableElement) -> WindowsRead.Window = {
         WindowsRead.Window.read(id: $0, element: $1.element).window

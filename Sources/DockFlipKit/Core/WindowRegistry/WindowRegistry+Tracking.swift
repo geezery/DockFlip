@@ -337,11 +337,18 @@ extension WindowRegistry {
         guard !tracked.windowElements.isEmpty else { return }
         let known = tracked.windowElements.mapValues { SendableElement(element: $0) }
         let read = tracked.readKnownWindows
+        tracked.knownReadsOut += 1
         appQueues.run(for: tracked.pid, { read(known) }, then: { [weak self] answer in
+            tracked.knownReadsOut -= 1
+            let newer = tracked.framesNewerThanKnownRead
+            if tracked.knownReadsOut == 0 { tracked.framesNewerThanKnownRead.removeAll() }
             guard let self, self.apps[tracked.pid] === tracked else { return }
             // A window closed meanwhile stays gone.
             for window in answer where tracked.windowElements[window.id] != nil {
-                self.update(id: window.id, with: window.attributes, tracked: tracked)
+                var attributes = window.attributes
+                // A frame set while the app was read is newer than what it said.
+                if newer.contains(window.id) { attributes.frame = nil }
+                self.update(id: window.id, with: attributes, tracked: tracked)
             }
             self.notifyChange()
         })
