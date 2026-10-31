@@ -101,8 +101,10 @@ if target.pathExtension == "app" {
 let path = executable.path
 let argv: [UnsafeMutablePointer<CChar>?] = [strdup(path), nil]
 let launchStart = now()
-// The app gets this check's environment (HOME, PATH) unchanged.
-let spawned = posix_spawn(&child, path, nil, nil, argv, _NSGetEnviron().pointee)
+// The app gets this check's environment (HOME, PATH) unchanged. Built from ProcessInfo:
+// `_NSGetEnviron` lives in <crt_externs.h>, which Swift's Darwin module does not bring in.
+let envp: [UnsafeMutablePointer<CChar>?] = ProcessInfo.processInfo.environment.map { strdup("\($0.key)=\($0.value)") } + [nil]
+let spawned = posix_spawn(&child, path, nil, nil, argv, envp)
 guard spawned == 0 else {
     child = 0
     fail("could not start \(path): \(String(cString: strerror(spawned)))")
