@@ -55,3 +55,23 @@ extension SnapAssistTests {
         #expect(SnapAssist.candidates(from: [window(1)], excluding: 1).isEmpty)
     }
 }
+
+extension SnapAssistTests {
+    @Test func offerGivesTheRegionLeftAndTheOtherWindows() {
+        let offer = SnapAssist.offer(after: .leftHalf, snappedID: 1, windows: [window(1), window(2), window(3)], limit: 8)
+        #expect(offer?.region == .rightHalf)
+        #expect(offer?.windows.map(\.id) == [2, 3])
+    }
+
+    @Test func offerKeepsTheMostRecentlyUsedWithinTheLimit() {
+        let offer = SnapAssist.offer(after: .topLeft, snappedID: 1, windows: [window(1), window(2), window(3), window(4)], limit: 2)
+        #expect(offer?.region == .bottomLeft)
+        #expect(offer?.windows.map(\.id) == [2, 3])
+    }
+
+    @Test func nothingIsOfferedAfterMaximizingOrWithNoOtherWindow() {
+        #expect(SnapAssist.offer(after: .maximized, snappedID: 1, windows: [window(1), window(2)], limit: 8) == nil)
+        #expect(SnapAssist.offer(after: .rightHalf, snappedID: 1, windows: [window(1), window(4, otherSpace: true)], limit: 8) == nil)
+        #expect(SnapAssist.offer(after: .rightHalf, snappedID: 1, windows: [window(1), window(2)], limit: 0) == nil)
+    }
+}
