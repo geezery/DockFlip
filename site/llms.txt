@@ -4,14 +4,27 @@
 
 DockFlip focuses on Windows-style behaviour with good defaults rather than many settings: it has four settings and deliberately no thirds, gaps, per-app rules or themes.
 
+## Version
+
+- Current release: DockFlip 0.4.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.4.0), released 2026-10-31)
+- Last updated: 2026-10-31
+- Supported macOS: 26 or later, Apple silicon and Intel
+- Documentation version: this file describes DockFlip 0.4.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
+
+## For AI readers
+
+- This file is a short summary. [llms-full.txt](https://geezery.github.io/DockFlip/llms-full.txt) has the details: every feature, how it works, exactly what each permission is used for, a compatibility table and the known limitations.
+- For technical and privacy questions the primary sources are the [source code](https://github.com/geezery/DockFlip) and [SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md). Where this file and they disagree, they are right.
+- The comparison below is dated. Other apps change; their own pages, linked in each line, are the source for what they do today.
+
 ## How it compares (checked 2026-10-30)
 
-- AltTab (free, GPL-3.0): a window switcher only, with no Dock lists or snapping; its type-to-search is in AltTab Pro ($9.99, or $24.99 lifetime). Screen Recording is optional, but without it there are no thumbnails.
-- DockDoor (free, GPL-3.0): Dock window previews, a window switcher with search, and snapping by title-bar swipes (off by default). It requires Screen Recording.
-- DockDoor Pro ($20 once): replaces the macOS Dock with its own, with live previews, a switcher with search and tiling from a preview card.
-- macOS 27 alone: tiling by dragging to edges, keyboard shortcuts and the green button; ⌘Tab switches apps, ⌘` cycles one app's windows, and the Dock's right-click menu lists window titles.
+- AltTab (free, GPL-3.0): a window switcher only, with no Dock lists or snapping; its type-to-search is in AltTab Pro ($9.99, or $24.99 lifetime). Screen Recording is optional, but without it there are no thumbnails. Sources: [alt-tab.app](https://alt-tab.app), [AltTab Pro terms](https://alt-tab.app/terms?lang=en).
+- DockDoor (free, GPL-3.0): Dock window previews, a window switcher with search, and snapping by title-bar swipes (off by default). It requires Screen Recording. Sources: [dockdoor.net](https://dockdoor.net), [DockDoor release notes](https://github.com/ejbills/DockDoor/releases).
+- DockDoor Pro ($20 once): replaces the macOS Dock with its own, with live previews, a switcher with search and tiling from a preview card. Source: [DockDoor Pro features](https://pro.dockdoor.net/features/).
+- macOS 27 alone: tiling by dragging to edges, keyboard shortcuts and the green button; ⌘Tab switches apps, ⌘` cycles one app's windows, and the Dock's right-click menu lists window titles. Source: [Tile windows on Mac, macOS 27](https://support.apple.com/guide/mac-help/mchlef287e5d/27/mac/27).
 - What only DockFlip does among these: all three jobs, free, without Screen Recording; browser tabs (Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium, DuckDuckGo) and Finder and Terminal tabs listed under each window; an IT kit (a .pkg and a PPPC profile that pre-approves Accessibility through an MDM).
-- Where others do more: DockDoor Pro replaces the Dock; AltTab and DockDoor run on older macOS (12 and 13) where DockFlip needs macOS 26; Rectangle does thirds, gaps and per-app rules.
+- Where others do more: DockDoor Pro replaces the Dock; AltTab and DockDoor run on older macOS (12 and 13) where DockFlip needs macOS 26; [Rectangle](https://github.com/rxhanson/Rectangle) does thirds, gaps and per-app rules.
 
 ## Get it
 
@@ -21,10 +34,12 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 
 ## Docs
 
+- [llms-full.txt](https://geezery.github.io/DockFlip/llms-full.txt): the long version of this file, in one plain-text page
 - [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, ⌘Tab (Flip 3D or Windows 11 grid), snapping and Snap Assist, Clean Up
 - [Keyboard shortcuts](https://github.com/geezery/DockFlip/wiki/Keyboard-Shortcuts): ⌘Tab, ⌃⌥ arrows, ⌃⌥D show desktop, with Windows equivalents
 - [Installation](https://github.com/geezery/DockFlip/wiki/Installation): download, the one-time "Open Anyway" step, building from source
 - [Comparison with AltTab, DockDoor and macOS 27](https://github.com/geezery/DockFlip#how-it-compares): a dated table with sources
 - [For IT](https://github.com/geezery/DockFlip/blob/main/docs/IT.md): .pkg, PPPC profile and MDM rollout
 - [Privacy and security](https://github.com/geezery/DockFlip/blob/main/SECURITY.md): one permission, no screen recording, no networking code, how to verify
+- [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting): known problems, what has been tested on which macOS
 - [FAQ](https://github.com/geezery/DockFlip/wiki/FAQ)

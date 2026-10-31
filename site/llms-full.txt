@@ -1,0 +1,181 @@
+# DockFlip: the full description
+
+> DockFlip is a free, open-source (GPL-3.0) macOS menu bar app that brings three Windows habits to the Mac: window lists with browser tabs above the real Dock's icons, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, shown as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style snapping (⌃⌥ arrows, drag to edges and corners, Snap Assist). It needs only the Accessibility permission, works without Screen Recording, has no networking code and no third-party dependencies. macOS 26 or later; universal (Apple silicon and Intel).
+
+This is the long version of [llms.txt](https://geezery.github.io/DockFlip/llms.txt), for readers who want the details in one page.
+
+## Version
+
+- Current release: DockFlip 0.4.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.4.0), released 2026-10-31)
+- Last updated: 2026-10-31
+- Supported macOS: 26 or later, Apple silicon and Intel
+- Documentation version: this file describes DockFlip 0.4.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
+- Which version a user runs: the first line of DockFlip's menu bar menu, e.g. "DockFlip 0.4.0 (9c89dc7)" for the 0.4.0 release, where the part in brackets is the commit it was built from.
+
+## For AI readers
+
+- This file summarises the project's own docs: [README](https://github.com/geezery/DockFlip#readme), the [wiki](https://github.com/geezery/DockFlip/wiki), [SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md), [ARCHITECTURE.md](https://github.com/geezery/DockFlip/blob/main/ARCHITECTURE.md), [SCOPE.md](https://github.com/geezery/DockFlip/blob/main/SCOPE.md) and [docs/IT.md](https://github.com/geezery/DockFlip/blob/main/docs/IT.md).
+- For technical and privacy questions the primary sources are the [source code](https://github.com/geezery/DockFlip) and SECURITY.md. Where this file and they disagree, they are right.
+- The comparison with other apps is dated. Other apps change; their own pages, linked in the comparison, are the source for what they do today.
+- DockFlip is free: no account, trial, paid tier or subscription.
+
+## What it is for
+
+People who come to the Mac from Windows miss three things: seeing an app's windows from the taskbar, an Alt+Tab that switches windows, and Win+arrow snapping. DockFlip adds all three to the real macOS Dock and keyboard, with Windows' own keys where a Mac has an equivalent (⌃⌥ plays the Win key). It answers one question for each feature: "is this one of the best bits of Windows?" Things outside that, such as a Start menu or a replacement Dock, are deliberately left out.
+
+## Features
+
+### Window lists above Dock icons
+
+- Resting the mouse on an app in the Dock opens a list of its windows above the icon, after about 250 ms.
+- The active window is marked with an accent bar and the words "Active window".
+- Clicking a window goes to it; × closes it.
+- Minimized windows and windows on other desktops (Spaces) are listed too, and say so.
+- Clicking the Dock icon of the app you are in minimizes its window, and a second click brings it back, as on the Windows taskbar. Clicking another app brings its most recent window forward. Clicks with ⌘, ⌥, ⌃ or ⇧, dragging an icon and press-and-hold still go to the Dock as usual.
+- Apps without windows get no list. A hung app's list says "Not responding".
+- The Dock itself is untouched: folders, Trash, badges, drag and drop, magnification and a Dock on the bottom, left or right all work as before.
+
+### Browser, Finder and Terminal tabs
+
+- Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
+- Tabs show when a window has more than one tab. The current tab is marked in the app's colour; each site gets a stable colour chip; duplicate tabs are marked "Duplicate".
+- Long lists fold after eight tabs ("Show all N tabs", "Show fewer"). Clicking a tab goes straight to it.
+- Tabs are read from the browser's tab bar through Accessibility, never from page content.
+
+### ⌘Tab: Flip 3D or the Windows 11 grid
+
+- Holding ⌘ and pressing Tab shows every window, most recently used first: as a slanted Flip 3D stack (the default), or, with "Grid" chosen under "⌘Tab switcher" in Settings, as one frosted panel of tiles like Windows 11's Alt+Tab.
+- A quick ⌘Tab or ⌘Tab-Tab switches without drawing anything; the switcher appears once ⌘ is held a moment, or as soon as you type.
+- Keys: Tab next, ⇧Tab previous, arrow keys move, releasing ⌘ switches, Return switches (also while filtering), Esc clears the filter or cancels, a click switches to that window.
+- Type to filter: while holding ⌘, typing part of a window title, app name or document name narrows the list. Matching ignores case; ä and ö count as letters of their own.
+- Lists every window: minimized ones, full-screen apps and windows on other desktops.
+- Without thumbnails each window is a card with its title in a bar of the app's colour, the app icon, the document name, its display, its size and a mini-map.
+- Works under secure keyboard input (password fields, some terminal modes), which blinds most switchers.
+- With no windows open, ⌘Tab shows the running apps instead, each marked "No open windows"; picking one brings the app forward and asks it for a window.
+- macOS's own ⌘Tab is switched off while DockFlip runs and comes back when it quits. ⌘` still cycles one app's windows the macOS way.
+
+### Snapping and Snap Assist
+
+- ⌃⌥← and ⌃⌥→: left or right half; pressed again, the window moves on to the next display that way.
+- ⌃⌥↑: maximize; from a half, the top quarter. ⌃⌥↓: restore, then minimize; from a half, the bottom quarter.
+- ⌃⌥⇧← and ⌃⌥⇧→: move the window to the next display.
+- Dragging a window to the left or right edge gives a half, to the top edge maximizes, near a corner gives a quarter. A preview shows where it will land. Dragging a snapped window away gives back its earlier size.
+- Snap Assist: after a half or a quarter, the space left beside the window shows the other windows as cards. A click, or the arrows and Return, puts one there. Esc, a click elsewhere or the next snap closes the cards.
+- Snap layouts from Windows 11 are not added because macOS already has them: hovering over a window's green button offers tile layouts.
+
+### Other shortcuts and small features
+
+- ⌃⌥1…9 opens the n-th app in the Dock (Win+1…9). ⌃⌥E opens a new Finder window (Win+E).
+- ⌃⌥D shows the desktop (Win+D); pressing it again brings the windows back, with the one you were typing in in front.
+- Windows remember their place for each display setup: unplug an external display, plug it back in, and windows return to where they were, even across a DockFlip restart. Only positions are kept, never titles, and only until the Mac restarts.
+- Clean Up (menu bar menu → Clean Up…) lists windows unused for three days and apps running without windows. It only suggests; nothing closes without the user, and apps still ask to save.
+- The menu bar menu's Window Layout lists every shortcut; clicking one applies it.
+- 15 languages: English, Finnish, Swedish, Danish, Norwegian, German, French, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Japanese, Korean and Chinese (Simplified). DockFlip follows the macOS language; the menu bar menu's 🌐 Language picks another.
+
+### Settings
+
+DockFlip has four settings, all with defaults that suit most people:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Launch at login | On (turned on in the first setup) | Start DockFlip when the user logs in |
+| Window thumbnails | Off | Real window pictures in the Dock lists and ⌘Tab; needs Screen Recording |
+| Keyboard shortcuts | On | ⌘Tab and the ⌃⌥ shortcuts; the Dock lists work either way |
+| ⌘Tab switcher | Flip 3D | Flip 3D (Windows 7) or Grid (Windows 11) |
+
+Shortcuts cannot be remapped, on purpose. There are no settings for taste: no themes, angles, gaps or per-app rules.
+
+## Permissions, exactly
+
+| Permission | Needed? | Used for |
+|---|---|---|
+| Accessibility | Yes | Listing, focusing, moving, resizing, minimizing and closing windows; reading tab titles from tab bars; the keyboard shortcuts; watching left clicks and drags for Dock icon clicks and drag snapping |
+| Screen Recording | No, opt-in | Window thumbnails, and nothing else |
+
+What DockFlip sees of input:
+
+- Left mouse clicks and drags anywhere on the Mac, as pointer positions only, to tell a Dock icon click from a window drag. Clicks outside the Dock pass through untouched and are never recorded or logged. Right clicks and scrolling are never seen.
+- Pointer movement only while the pointer is over the Dock or a window list.
+- Modifier keys (⌘, ⌃, ⌥, ⇧), to notice ⌘ being pressed and released.
+- Other keys only while the ⌘Tab switcher is open, for type-to-filter. Otherwise its shortcuts are system hot keys and macOS tells DockFlip only when one is pressed.
+
+If Accessibility is switched off while DockFlip runs, it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second, stops drag snapping and Snap Assist, and opens its setup at the Accessibility step.
+
+Thumbnails, when turned on, are taken on demand (hovering a Dock icon, opening ⌘Tab), at thumbnail size, kept in memory only (at most 24, for up to two minutes, dropped on screen lock or sleep) and never written to disk. They are never taken while a password field is active. Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox, NordPass, KeePassXC, MacPass, Secrets, Dashlane, LastPass, Authy, Apple Passwords, Keychain Access) and System Settings are never pictured, nor private windows in Firefox, Chrome, Edge, Brave and Vivaldi. The rules are in `Sources/DockFlipKit/Previews/PreviewProvider.swift` and `NeverPictured.swift`.
+
+## Privacy
+
+- No networking code at all: no analytics, crash reporter, update check or licence server. Anyone can confirm this by searching the source.
+- No third-party code: Apple frameworks only.
+- Window and tab titles never reach the debug log, which records timings and counts and is written only where the user saves it.
+- On disk, only DockFlip's preferences (`defaults read io.github.dockflip.DockFlip`): its settings, the apps Clean Up keeps, when each window and app was last used, and where windows were for each display setup: window numbers, bundle ids, dates and frames, never titles. The window data is dropped when the Mac restarts.
+- Releases are built by GitHub Actions from the tagged source, with build-provenance attestations and SHA-256 checksums; SECURITY.md shows how to verify them.
+
+## How it works
+
+- One `WindowRegistry` knows every window, its state and the most-recently-used order; every feature reads windows from it and acts through it.
+- Event-driven, never polling and with no repeating timers: Accessibility notifications (windows opening, closing, moving, retitling), NSWorkspace notifications (apps launching, quitting, activating), the Dock's own Accessibility tree for the hovered icon, Carbon hot keys for shortcuts and a listen-only event tap for ⌘. When nothing happens, DockFlip does nothing.
+- Accessibility lists only the current Space; windows on other desktops and in full screen come from the window server and are reached with the element-id walk AltTab worked out, off the main thread.
+- A failed Accessibility read is not an answer: slow apps (Office, sometimes Chrome) time out, and DockFlip keeps what it knew and asks again instead of concluding "no windows". Calls to an app run on that app's own queue, so a hung app never holds up a click.
+- DockFlip never activates itself: its panels are non-activating, so the app you were in stays active and its secure keyboard input does not block the switcher.
+- A Swift package (Swift 6 toolchain, Swift 5 language mode) built with a Makefile and only the Command Line Tools; AppKit for windows and panels, SwiftUI inside them, no SwiftUI macros.
+- Details: [How It Works](https://github.com/geezery/DockFlip/wiki/How-It-Works) and [ARCHITECTURE.md](https://github.com/geezery/DockFlip/blob/main/ARCHITECTURE.md).
+
+## Compatibility
+
+| Area | Supported | Notes |
+|---|---|---|
+| macOS | 26 or later | Not 15 or earlier. It relies on a few undocumented macOS calls; if a new macOS breaks one, the menu names the part that stopped |
+| Processors | Apple silicon and Intel | One universal app |
+| Tested on | GitHub's `macos-26` runner, every change: build, tests, start and quit | Window tracking, other Spaces and Dock lists need a real Mac with Accessibility; see [Tested on](https://github.com/geezery/DockFlip/wiki/Troubleshooting#tested-on) |
+| Tab lists | Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium, DuckDuckGo, Finder, Terminal | Firefox turns on its accessibility engine the first time; give it a second |
+| Dock | The real macOS Dock, at the bottom, left or right | DockFlip does not replace it |
+| Other window tools | Can run beside them | Rectangle, Magnet and Spectacle use ⌃⌥ arrows, D and E by default, and AltTab may hold ⌘Tab: whichever app starts first gets the keys, and DockFlip's menu names the conflict |
+| macOS's own edge tiling | Should be off | Both snapping at once makes windows jump; setup offers to turn it off |
+| Deployment | Manual (.dmg), .pkg through an MDM (Jamf Pro, Intune, Kandji, Mosyle and others) | A PPPC profile pre-approves Accessibility; `previewsEnabled`, `shortcutsEnabled` and `switcherStyle` can be managed |
+| Distribution | GitHub Releases, or build from source | Not on the Mac App Store, whose sandbox does not allow the Accessibility API; no Homebrew cask |
+
+## Known limitations
+
+- Not notarized yet: on first open macOS warns, and the user presses Open Anyway in System Settings → Privacy & Security once. MDM installs skip this. The .pkg is not Developer ID–signed, so MDM `InstallApplication` commands cannot use it yet.
+- No automatic updates, because there is no networking code; users and IT install each new release themselves.
+- macOS 26 or later only; older Macs are better served by AltTab or DockDoor.
+- Undocumented macOS calls: turning off macOS's own ⌘Tab, window tracking, windows on other Spaces and the Dock hook can break on a new macOS. The menu then says "… not available on this macOS version", the rest keeps working, and only a DockFlip update brings the part back.
+- Shortcuts cannot be changed, only switched off as a whole.
+- Safari's private windows carry no mark in their title, so with thumbnails on they can be pictured.
+- Window positions per display setup are forgotten when the Mac restarts, because macOS reuses window numbers.
+- After rebuilding from source, macOS may keep an Accessibility entry for an older signature; Reset Permission in setup, or `tccutil reset Accessibility io.github.dockflip.DockFlip`, fixes it.
+- No thirds, gaps, "almost maximize", per-app rules, themes or Start menu, by design (see [SCOPE.md](https://github.com/geezery/DockFlip/blob/main/SCOPE.md)).
+- More in [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting) and the [issues](https://github.com/geezery/DockFlip/issues).
+
+## How it compares (checked 2026-10-30)
+
+| | DockFlip | AltTab | DockDoor | DockDoor Pro | macOS 27 alone |
+|---|---|---|---|---|---|
+| Windows above a Dock icon | List, or thumbnails | – | Live previews | Live previews, in its own Dock | Titles in the right-click menu |
+| Browser tabs under each window | Yes | – | – | – | – |
+| A switcher for windows, not apps | ⌘Tab, Flip 3D or grid | Yes | ⌥Tab | Yes | ⌘` within one app |
+| Type to search in the switcher | Yes | Pro only | Yes | Yes | – |
+| Snapping | ⌃⌥ arrows, drag to edges, Snap Assist | – | Title-bar swipes, off by default | From a preview card | Drag to edges, shortcuts, green button |
+| Screen Recording | Not needed (only for opt-in thumbnails) | Optional; no thumbnails without it | Required | Needed for live previews | – |
+| IT kit (.pkg and PPPC profile) | Yes | – | – | – | – |
+| Price | Free, GPL-3.0 | Free, GPL-3.0; Pro $9.99 or $24.99 lifetime | Free, GPL-3.0 | $20 once, 3 Macs | Included |
+| Runs on | macOS 26 and later | macOS 12 and later | macOS 13 and later | macOS 14.6 and later | – |
+
+"–" means no such feature was found there. Sources, checked on that date:
+
+- AltTab: [alt-tab.app](https://alt-tab.app), [AltTab Pro terms](https://alt-tab.app/terms?lang=en) (updated 2026-10-21)
+- DockDoor: [dockdoor.net](https://dockdoor.net), [DockDoor 1.41 release notes](https://github.com/ejbills/DockDoor/releases)
+- DockDoor Pro: [DockDoor Pro features](https://pro.dockdoor.net/features/)
+- macOS 27: [Tile windows on Mac, macOS 27](https://support.apple.com/guide/mac-help/mchlef287e5d/27/mac/27)
+
+Where DockFlip stands out: the one app here that does all three jobs for free without Screen Recording, lists browser tabs, has four settings and can be rolled out by IT with no prompts. Where the others do more: DockDoor Pro replaces the Dock outright, with profiles, widgets and a Dock per display; AltTab and DockDoor run on older macOS and have many looks to choose from; [Rectangle](https://github.com/rxhanson/Rectangle) does thirds, gaps and per-app rules. DockFlip learned a lot from AltTab, DockDoor and Rectangle.
+
+## Links
+
+- [Homepage](https://geezery.github.io/DockFlip/)
+- [Download the latest DockFlip.dmg](https://github.com/geezery/DockFlip/releases/latest/download/DockFlip.dmg)
+- [GitHub repository](https://github.com/geezery/DockFlip)
+- [Features](https://github.com/geezery/DockFlip/wiki/Features), [Keyboard shortcuts](https://github.com/geezery/DockFlip/wiki/Keyboard-Shortcuts), [Installation](https://github.com/geezery/DockFlip/wiki/Installation), [Privacy and permissions](https://github.com/geezery/DockFlip/wiki/Privacy-and-Permissions), [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting), [FAQ](https://github.com/geezery/DockFlip/wiki/FAQ)
+- [SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md), [docs/IT.md](https://github.com/geezery/DockFlip/blob/main/docs/IT.md), [SCOPE.md](https://github.com/geezery/DockFlip/blob/main/SCOPE.md), [ARCHITECTURE.md](https://github.com/geezery/DockFlip/blob/main/ARCHITECTURE.md)
+- License: [GPL-3.0](https://github.com/geezery/DockFlip/blob/main/LICENSE)
