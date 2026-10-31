@@ -232,6 +232,18 @@ struct WindowCardView: View {
                 } else {
                     Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                 }
+                if row.neverPictured && model.showsPreviews {
+                    VStack {
+                        Spacer(minLength: 0)
+                        Label("No picture, for privacy", systemImage: "lock")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(.regularMaterial, in: Capsule())
+                            .padding(.bottom, 6)
+                    }
+                }
             }
             .frame(width: 188, height: 112)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))

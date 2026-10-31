@@ -156,7 +156,8 @@ final class WindowListPopup {
                 isActive: window.id == activeID,
                 tint: WindowAppearance.tint(of: window),
                 tabs: TabStore.shared.tabs(of: window.id) ?? [],
-                windowSize: window.frame.size
+                windowSize: window.frame.size,
+                neverPictured: PreviewProvider.neverPictured(window)
             )
         }
 
@@ -221,7 +222,9 @@ final class WindowListPopup {
         guard ids != previewIDs else { return }
         previewTasks.forEach { $0.cancel() }
         previewIDs = ids
-        for id in ids where model.thumbnails[id] == nil {
+        // A window that turned private keeps no earlier picture; thumbnail(for:) drops it from memory.
+        let skipped = Set(windows.filter(PreviewProvider.neverPictured).map(\.id))
+        for id in ids where model.thumbnails[id] == nil && !skipped.contains(id) {
             if let cached = PreviewProvider.shared.cachedThumbnail(for: id) { model.thumbnails[id] = cached }
         }
         previewTasks = windows.map { window in
