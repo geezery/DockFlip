@@ -117,6 +117,35 @@ test('the language menu on the deployed root page goes to that language\'s page'
   expect(chooseLanguage(raw, 'fi') === null, 'site/index.html: should swap text in place, not navigate');
 });
 
+// WCAG AA: 4.5:1 for body text. The colours are the :root tokens in
+// index.html; the nav is translucent, so its worst case is over a white
+// picture scrolling beneath it.
+test('text colours meet WCAG AA contrast against the backgrounds they sit on', () => {
+  const css = english.match(/:root\{([^}]*)\}/)[1];
+  const token = name => css.match(new RegExp(`--${name}:(#[0-9a-f]{6})`, 'i'))[1];
+  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const lum = c => {
+    const [r, g, b] = c.map(v => v / 255).map(v => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const nav = english.match(/nav\{[^}]*background:rgba\((\d+),(\d+),(\d+),([.\d]+)\)/);
+  const alpha = Number(nav[4]);
+  const navOverWhite = [1, 2, 3].map(i => Number(nav[i]) * alpha + 255 * (1 - alpha));
+  const bg = rgb(token('bg')), card = rgb(token('card'));
+  const pairs = [
+    ['text on bg', token('text'), bg], ['text on card', token('text'), card],
+    ['muted on bg', token('muted'), bg], ['muted on card', token('muted'), card],
+    ['accent on bg', token('em'), bg], ['accent on card', token('em'), card],
+    ['ink on card', token('ink'), card], ['button text on accent', '#06120d', rgb(token('em'))],
+    ['nav links over a white picture', token('muted'), navOverWhite],
+  ];
+  for (const [name, fg, back] of pairs) {
+    const r = ratio(rgb(fg), back);
+    expect(r >= 4.5, `${name}: ${r.toFixed(2)}:1, AA needs 4.5:1`);
+  }
+});
+
 fs.rmSync(out, { recursive: true, force: true });
 if (failed) { console.log(`${failed} failed`); process.exit(1); }
 console.log('all passed');
