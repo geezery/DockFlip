@@ -52,7 +52,7 @@ Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
-`QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
+`QuitFollowUp`, `UsageDates`, `BootTime`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
 
 The tests mirror the source folders: each type's suite is in
