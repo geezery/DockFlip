@@ -263,10 +263,66 @@ extension WindowRegistry {
         )
     }
 
+    /// Asks for the focused window on the main thread: only for an app that just
+    /// sent a notification about it, or just answered a read, so it answers.
     func bringFocusedWindowToFront(of tracked: TrackedApp) {
-        guard let focused = tracked.element.element(kAXFocusedWindowAttribute),
-              let id = tracked.id(of: focused), windows[id] != nil else { return }
+        guard let focused = tracked.element.element(kAXFocusedWindowAttribute) else { return }
+        moveToFront(focused, of: tracked)
+    }
+
+    private func moveToFront(_ focused: AXUIElement, of tracked: TrackedApp) {
+        guard let id = tracked.id(of: focused), windows[id] != nil else { return }
         mru.moveToFront(id)
         notifyChange()
+    }
+
+    // MARK: - Activate, hide, unhide
+
+    /// macOS activated the app. It brings a hung app forward without its help, so
+    /// the app is asked on its own queue, never on the main thread.
+    func appActivated(_ tracked: TrackedApp) {
+        // Windows missed earlier because the app was busy: read them now.
+        // Its focused window comes forward once they are read.
+        if tracked.windowElements.isEmpty || tracked.observer == nil {
+            tracked.retryCount = 0
+            tracked.bringFocusedForward = true
+            refreshWindows(of: tracked)
+        } else {
+            bringFocusedWindowToFrontLater(of: tracked)
+        }
+    }
+
+    /// Asks for the focused window on the app's queue, and puts it first once the
+    /// app answered, if it is still the active app.
+    func bringFocusedWindowToFrontLater(of tracked: TrackedApp) {
+        let app = SendableElement(element: tracked.element)
+        let read = tracked.readFocusedWindow
+        appQueues.run(for: tracked.pid, { read(app.element) }, then: { [weak self] focused in
+            // Another app activated while this one answered late: its window stays first.
+            guard let self, let focused, self.apps[tracked.pid] === tracked,
+                  self.activePID == tracked.pid else { return }
+            self.moveToFront(focused.element, of: tracked)
+        })
+    }
+
+    /// The app was hidden or shown again (⌘H, Show Desktop). Whether it is hidden
+    /// is the app's own flag, set at once; its windows' state is read on its queue,
+    /// as a hung app is hidden too.
+    func appHiddenOrShown(_ tracked: TrackedApp) {
+        for id in tracked.windowElements.keys {
+            windows[id]?.isAppHidden = tracked.app.isHidden
+        }
+        notifyChange()
+        guard !tracked.windowElements.isEmpty else { return }
+        let known = tracked.windowElements.mapValues { SendableElement(element: $0) }
+        let read = tracked.readKnownWindows
+        appQueues.run(for: tracked.pid, { read(known) }, then: { [weak self] answer in
+            guard let self, self.apps[tracked.pid] === tracked else { return }
+            // A window closed meanwhile stays gone.
+            for window in answer where tracked.windowElements[window.id] != nil {
+                self.update(id: window.id, with: window.attributes, tracked: tracked)
+            }
+            self.notifyChange()
+        })
     }
 }

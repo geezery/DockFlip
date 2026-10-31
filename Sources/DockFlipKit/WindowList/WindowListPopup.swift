@@ -24,6 +24,8 @@ final class WindowListPopup {
     private var previewTasks: [Task<Void, Never>] = []
     /// Windows whose pictures are loading or loaded, so a redraw does not start them over.
     private var previewIDs: [CGWindowID] = []
+    /// The hovered icon whose windows had not arrived when its list wanted to open.
+    private var waiting = WindowListWait()
 
     var isVisible: Bool { panel?.isVisible == true }
     /// The popup's frame on screen while it is visible.
@@ -40,6 +42,7 @@ final class WindowListPopup {
     func itemEntered(_ key: String) {
         hideTask?.cancel()
         showTask?.cancel()
+        waiting.stop()
         if isVisible {
             present(key)
             return
@@ -53,7 +56,14 @@ final class WindowListPopup {
 
     func itemExited() {
         showTask?.cancel()
+        waiting.stop()
         scheduleHide()
+    }
+
+    /// A press on a Dock icon: whatever it opens, no list pops up under the mouse
+    /// for it until the mouse rests on an icon again.
+    func dockPressed() {
+        waiting.stop()
     }
 
     /// The mouse came back onto the icon from the list: keep the list.
@@ -71,6 +81,12 @@ final class WindowListPopup {
     }
 
     func hideNow() {
+        waiting.stop()
+        hidePanel()
+    }
+
+    /// Hides the list but keeps waiting for the hovered icon's windows.
+    private func hidePanel() {
         showTask?.cancel()
         hideTask?.cancel()
         previewTasks.forEach { $0.cancel() }
@@ -82,9 +98,15 @@ final class WindowListPopup {
         model.thumbnails = [:]
     }
 
+    /// Redraws the open list, or opens the waiting icon's list once its windows
+    /// arrived (window reads run off the main thread, so they can come after the
+    /// hover delay).
     func refreshIfVisible() {
-        guard isVisible, let currentKey else { return }
-        present(currentKey)
+        if isVisible, let currentKey {
+            present(currentKey)
+        } else if let key = waiting.keyToOpen(isVisible: isVisible, hasWindows: { self.source?.windowListItem(for: $0) != nil }) {
+            present(key)
+        }
     }
 
     private func scheduleHide() {
@@ -103,12 +125,20 @@ final class WindowListPopup {
     }
 
     private func presentUnmeasured(_ key: String) {
-        // Nothing to list (say, the mouse moved on to an app with no windows):
-        // the previous app's list must not stay up.
-        guard let source, let item = source.windowListItem(for: key), let anchor = source.anchor(for: key) else {
+        // The mouse is no longer on this icon.
+        guard let source, let anchor = source.anchor(for: key) else {
             hideNow()
             return
         }
+        // Nothing to list (say, the mouse moved on to an app with no windows):
+        // the previous app's list must not stay up. The app may still be
+        // answering, so its list opens if its windows arrive while the mouse stays.
+        guard let item = source.windowListItem(for: key) else {
+            hidePanel()
+            waiting.nothingToList(key)
+            return
+        }
+        waiting.stop()
         let changedItem = currentKey != key
         currentKey = key
         if changedItem { model.startNewList() }

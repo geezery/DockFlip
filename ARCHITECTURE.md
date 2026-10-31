@@ -38,26 +38,28 @@ thread.
 | `Core/` | `WindowRegistry` — all windows, their state and most-recently-used order; `WindowServer` — the window server's view (all Spaces); Accessibility helpers; geometry and displays. |
 | `Shortcuts/` | `GlobalHotKeys` (Carbon hot keys: ⌘Tab, ⌃⌥…), `SwitcherKeyTaps` (the two event taps a ⌘Tab session needs), `NativeCommandTab` (turns macOS's own ⌘Tab off while DockFlip runs). |
 | `Switcher/` | The ⌘Tab switcher: controller, Flip 3D view, selection and type-to-filter rules, `SwitcherStack` (which cards are drawn). |
-| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it. |
+| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it; `DockAttachRetry` tries a failed attach to the Dock again after 1, 2 and 4 s (login, a Dock relaunch). |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`. |
-| `Diagnostics/` | Logging, timing statistics, the debug log export. |
+| `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapDrag`, `EdgeTilingHint`, `SwitcherSelection`,
-`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
+`SwitcherFilter`, `SwitcherRelease`, `SwitcherStack`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
-that acts on them: `SwitcherReveal`, `DockPress`, `DockClick`, `DockAppOrder`,
+that acts on them: `DockAppOrder`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
 `LoginItemProblem`, `ThumbnailAccess`, `DebugLogFile` and `UnavailableFeature`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
-The Dock list's sizing rules (`WindowListLayout`) are tested there too.
+The Dock list's sizing rules (`WindowListLayout`) are tested there too, and so are
+the registry's rules for an app's window reads (`WindowsReconcile`) and moves
+(`FrameSetter`), and the debug log's `SelfCheck`.
 So is the ⌘Tab flow in `SwitcherController` (open, step, release, filter, cancel):
 it gets its windows, focusing and the ⌘ state as closures and draws through a
 `SwitcherPresenter` (`SwitcherPanel` in the app), so tests pass fakes for all of them.
@@ -81,6 +83,10 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
+- **A list waits for a slow app.** Window reads run off the main thread, so an
+  app's windows can arrive after the 250 ms hover delay; `WindowListWait` keeps
+  the hovered icon whose list found nothing and opens it when they arrive, until
+  the mouse leaves or the Dock is pressed.
 - **A click costs nothing.** Drag-to-edge snapping sees every left click on the
   Mac, so a mouse down only stores where it was; `SnapDrag` reads the window list
   once the mouse has moved 8 points, and takes the window's frame from the
@@ -88,7 +94,9 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 - **No tap waits on an app.** The Dock click tap answers from memory
   (`DockClick`: the highlighted icon, the registry's windows) and does the
   click's work after it has answered. The registry's calls to an app (focus,
-  minimize, close and its follow-up looks, moving and resizing, the hover probe)
+  minimize, close and its follow-up looks, moving and resizing, the hover probe,
+  the focused window when it is activated, its windows' state when it is hidden
+  or shown)
   run on that app's own queue (`AppQueues`), so a
   hung app, which answers only after the 1 s timeout, never holds up a click.
 

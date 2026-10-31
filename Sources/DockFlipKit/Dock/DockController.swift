@@ -50,15 +50,18 @@ final class DockController: WindowListSource {
     /// Bundle IDs of the Dock's apps by URL, for ⌃⌥1…9.
     var bundleIDs = BundleIDCache()
     private(set) var dockEdge: DockEdge = .bottom
+    /// Tries a failed attach again a few times (login, Dock relaunch).
+    private let attachRetry: DockAttachRetry
 
     init(registry: WindowRegistry) {
         self.registry = registry
         self.popup = WindowListPopup(registry: registry)
+        self.attachRetry = DockAttachRetry()
         popup.source = self
     }
 
     func start() {
-        attach()
+        attachWithRetries()
         installClickTap()
         // The Dock restarts after its settings change; follow it.
         tokens.append(NSWorkspace.shared.notificationCenter.addObserver(
@@ -68,15 +71,26 @@ final class DockController: WindowListSource {
             guard app?.bundleIdentifier == "com.apple.dock" else { return }
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(1))
-                self?.attach()
+                self?.attachWithRetries()
             }
         })
     }
 
     // MARK: - Watching the Dock
 
+    /// Attaches now and, when the Dock's tree is not ready yet (login, a Dock
+    /// relaunch, a slow Mac), a few more times with one-shot waits (`DockAttachRetry`).
+    private func attachWithRetries() {
+        attachRetry.start { [weak self] in
+            // Gone: nothing left to attach for, so the series ends.
+            self?.attach() ?? true
+        }
+    }
+
     /// Finds the Dock's icon list and subscribes to its "highlighted icon" changes.
-    private func attach() {
+    /// Returns whether it attached; each failure is logged and recorded.
+    @discardableResult
+    private func attach() -> Bool {
         if let observer {
             CFRunLoopRemoveSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
         }
@@ -86,26 +100,26 @@ final class DockController: WindowListSource {
         guard let dock = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.dock").first else {
             Log.app.error("Dock not running")
             SelfCheck.record { $0.recordDock(.failed("Dock not running")) }
-            return
+            return false
         }
         let app = AXUIElementCreateApplication(dock.processIdentifier)
         guard let list = app.elements(kAXChildrenAttribute).first(where: { $0.string(kAXRoleAttribute) == kAXListRole }) else {
             Log.app.error("Dock list not found")
             SelfCheck.record { $0.recordDock(.failed("Dock list not found")) }
-            return
+            return false
         }
         var newObserver: AXObserver?
         guard AXObserverCreate(dock.processIdentifier, dockObserverCallback, &newObserver) == .success, let newObserver else {
             Log.app.error("Could not observe the Dock")
             SelfCheck.record { $0.recordDock(.failed("could not observe the Dock")) }
-            return
+            return false
         }
         let refcon = Unmanaged.passUnretained(self).toOpaque()
         let status = AXObserverAddNotification(newObserver, list, kAXSelectedChildrenChangedNotification as CFString, refcon)
         guard status == .success else {
             Log.app.error("Could not subscribe to Dock hover (\(status.rawValue, privacy: .public))")
             SelfCheck.record { $0.recordDock(.failed("could not subscribe to Dock hover (error \(status.rawValue))")) }
-            return
+            return false
         }
         CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(newObserver), .commonModes)
         observer = newObserver
@@ -116,6 +130,7 @@ final class DockController: WindowListSource {
         dockEdge = orientation == "left" ? .left : orientation == "right" ? .right : .bottom
         SelfCheck.record { $0.recordDock(.attached) }
         Log.app.notice("Attached to the Dock")
+        return true
     }
 
     /// The Dock's highlighted icon changed: the mouse moved onto an icon or off the Dock.

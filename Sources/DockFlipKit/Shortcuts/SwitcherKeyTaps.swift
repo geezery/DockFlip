@@ -12,6 +12,8 @@ import CoreGraphics
 @MainActor
 final class SwitcherKeyTaps {
     var onCommandReleased: (() -> Void)?
+    /// A modifier change with ⌘ down; lets the switcher arm release-to-switch again.
+    var onCommandPressed: (() -> Void)?
     /// Returns true when Esc was consumed.
     var onEscape: (() -> Bool)?
 
@@ -73,7 +75,11 @@ final class SwitcherKeyTaps {
             Log.keys.error("Modifier tap was disabled by macOS; re-enabling")
             if let flagsTap { CGEvent.tapEnable(tap: flagsTap, enable: true) }
         case .flagsChanged:
-            if !event.flags.contains(.maskCommand) { onCommandReleased?() }
+            if event.flags.contains(.maskCommand) {
+                onCommandPressed?()
+            } else {
+                onCommandReleased?()
+            }
         default:
             break
         }
