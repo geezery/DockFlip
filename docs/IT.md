@@ -46,7 +46,8 @@ Keep the `.sha256` file in the same folder as the file it names.
    step.
 3. **Done.** On first launch DockFlip finds Accessibility already allowed. The
    user confirms a short setup and picks whether to turn on thumbnails, which
-   are off by default.
+   are off by default. If your profile sets `previewsEnabled`, setup skips
+   that question and keeps your value.
 
 **Package signing.** The `.pkg` isn't signed with an Apple Developer ID yet. Your
 MDM's standard app or policy deployment handles that fine, but some methods,

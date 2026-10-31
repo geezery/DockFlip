@@ -5,6 +5,19 @@ import SwiftUI
 final class OnboardingModel: ObservableObject {
     enum Step: Int, CaseIterable {
         case welcome, accessibility, previews, finish
+
+        /// The steps setup shows. A profile that manages thumbnails has made the choice
+        /// already, so asking would only throw the answer away (Settings keeps the forced value).
+        static func shown(previewsManaged: Bool) -> [Step] {
+            previewsManaged ? allCases.filter { $0 != .previews } : allCases
+        }
+    }
+
+    /// The steps in order, without those a profile has decided.
+    let steps: [Step]
+
+    init(previewsManaged: Bool = false) {
+        steps = Step.shown(previewsManaged: previewsManaged)
     }
 
     @Published var step: Step = .welcome
@@ -26,7 +39,8 @@ final class OnboardingModel: ObservableObject {
 
     func next() {
         guard canContinue else { return }
-        if let following = Step(rawValue: step.rawValue + 1) {
+        if let index = steps.firstIndex(of: step), index + 1 < steps.count {
+            let following = steps[index + 1]
             withAnimation(.snappy(duration: 0.35)) { step = following }
         } else {
             onFinish?()
@@ -34,7 +48,8 @@ final class OnboardingModel: ObservableObject {
     }
 
     func back() {
-        guard let previous = Step(rawValue: step.rawValue - 1) else { return }
+        guard let index = steps.firstIndex(of: step), index > 0 else { return }
+        let previous = steps[index - 1]
         withAnimation(.snappy(duration: 0.35)) { step = previous }
     }
 }
@@ -44,7 +59,7 @@ final class OnboardingModel: ObservableObject {
 /// The permission step notices the switch by events, not a timer (`AccessibilityWatch`).
 @MainActor
 final class OnboardingController: NSObject, NSWindowDelegate {
-    private let model = OnboardingModel()
+    private let model = OnboardingModel(previewsManaged: Settings.shared.previewsManaged)
     private let watch = AccessibilityWatch()
     private var window: NSWindow?
     private var axObserver: NSObjectProtocol?
