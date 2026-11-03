@@ -40,6 +40,24 @@ final class DockController: WindowListSource {
     /// Mouse-move monitor, present only while the mouse is on the Dock or the list.
     private var mouseMonitor: Any?
 
+    /// The icon whose list opened last, kept while the mouse crosses to the list.
+    var listIcon: HoveredIcon?
+    /// The mouse's recent positions, to tell a diagonal towards the list from a move
+    /// to the next icon.
+    var aim = DockAim()
+    /// A neighbouring icon the Dock highlighted while the mouse was heading for the
+    /// open list. It takes over only if the mouse rests on it or turns away.
+    var pending: HoveredIcon?
+    /// Where the mouse was when `pending` began: the tip of the aiming triangle.
+    var pendingApex: CGPoint?
+    /// The mouse's distance to the list at its closest so far while pending.
+    var pendingDistance: CGFloat = 0
+    var pendingTask: Task<Void, Never>?
+    /// How long the mouse may rest on the neighbour before its list takes over: long
+    /// enough for a hand slowing down near the list, short enough that pointing at
+    /// the neighbour on purpose still feels immediate.
+    static let aimGrace: Duration = .milliseconds(150)
+
     var clickTap: CFMachPort?
     var held: HeldPress?
     /// The Dock's icon list in AX coordinates, kept so a click anywhere on the
@@ -145,17 +163,26 @@ final class DockController: WindowListSource {
         guard let list = dockList,
               let element = list.elements(kAXSelectedChildrenAttribute).first,
               let icon = Self.appIcon(element) else {
+            endAim()
             hovered = nil
             popup.itemExited()
             return
         }
+        if deferIfAiming(at: icon) { return }
+        endAim()
+        enter(icon)
+    }
+
+    /// The mouse is on `icon`: it becomes the hovered icon and its list opens.
+    func enter(_ icon: HoveredIcon) {
         hovered = icon
+        listIcon = icon
         if let app = NSRunningApplication.runningApplications(withBundleIdentifier: icon.bundleID).first {
             // Catches hung apps and windows missed earlier, while the user points at it.
             registry.probe(pid: app.processIdentifier)
         }
         popup.itemEntered(icon.bundleID)
-        if let frame = list.frame {
+        if let frame = dockList?.frame {
             dockListAXFrame = frame
             dockFrame = Geometry.cocoaRect(fromAX: frame, primaryHeight: DisplayLayout.primaryHeight)
         }
@@ -193,11 +220,18 @@ final class DockController: WindowListSource {
         if let mouseMonitor { NSEvent.removeMonitor(mouseMonitor) }
         mouseMonitor = nil
         lastHovered = nil
+        aim = DockAim()
     }
 
     private func mouseMoved() {
         let mouse = NSEvent.mouseLocation
+        aim.moved(to: mouse)
         let onPopup = popup.visibleFrame?.insetBy(dx: -6, dy: -6).contains(mouse) ?? false
+        if pending != nil {
+            // On its way to the list over the neighbour: the list's icon stays hovered.
+            followAim(mouse, onPopup: onPopup)
+            return
+        }
         if let hovered {
             if Self.zone(of: hovered, edge: dockEdge).contains(mouse) {
                 // Back on the icon from the list: the list's own exit must not close it.

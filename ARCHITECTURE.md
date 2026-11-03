@@ -38,7 +38,7 @@ thread.
 | `Core/` | `WindowRegistry` — all windows, their state and most-recently-used order; `WindowServer` — the window server's view (all Spaces); Accessibility helpers; geometry and displays. |
 | `Shortcuts/` | `GlobalHotKeys` (Carbon hot keys: ⌘Tab, ⌃⌥…), `SwitcherKeyTaps` (the two event taps a ⌘Tab session needs), `NativeCommandTab` (turns macOS's own ⌘Tab off while DockFlip runs). |
 | `Switcher/` | The ⌘Tab switcher: controller, the Flip 3D view and the Windows 11 grid view (`SwitcherRootView` picks by `SwitcherStyle`), selection and type-to-filter rules, `SwitcherStack` (which cards are drawn), `SwitcherGrid` (the grid's rows). |
-| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it; `DockAttachRetry` tries a failed attach to the Dock again after 1, 2 and 4 s (login, a Dock relaunch). |
+| `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it; `DockAim` tells a diagonal towards the open list from a move to the next icon; `DockAttachRetry` tries a failed attach to the Dock again after 1, 2 and 4 s (login, a Dock relaunch). |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine` and `SnapZone`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview, the Snap Assist cards in `SnapAssistPanel`), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
@@ -84,6 +84,11 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
+- **A diagonal to the list keeps it.** The list is wider than its icon, so the way
+  to its far end crosses the neighbouring icon. While the mouse moves inside the
+  triangle from where it was to the list's near edge (`DockAim`, in
+  `DockController+Aim`), the neighbour waits; it takes over if the mouse turns away
+  or makes no progress for 150 ms (a one-shot wait).
 - **A list waits for a slow app.** Window reads run off the main thread, so an
   app's windows can arrive after the 250 ms hover delay; `WindowListWait` keeps
   the hovered icon whose list found nothing and opens it when they arrive, until
