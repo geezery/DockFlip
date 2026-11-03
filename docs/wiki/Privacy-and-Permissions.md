@@ -52,11 +52,13 @@ opt-in.
 
 If you turn thumbnails on:
 
-- Pictures are taken **on demand**: when you hover a Dock icon or open ⌘Tab.
+- Pictures are taken **on demand**: when you hover a Dock icon or press ⌘Tab,
+  and only of windows that may look different since their last picture (ones
+  you worked in, or whose title or size changed).
 - They're taken **at thumbnail size**, one window at a time.
-- They're kept **in memory only**: at most 24 pictures, for up to two minutes,
-  and dropped when the screen locks or the Mac sleeps. They're never written
-  to disk.
+- They're kept **in memory only**: the last picture of each open window, at
+  most 64, dropped when the window closes, the screen locks or the Mac sleeps.
+  They're never written to disk.
 - They're **never** taken while a password field is active.
 - **Password managers and System Settings are never pictured.** That covers
   1Password, Bitwarden, Proton Pass, Enpass, Strongbox, NordPass, KeePassXC,

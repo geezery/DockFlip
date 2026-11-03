@@ -101,11 +101,14 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
 ### Previews (opt-in)
 - Offered explicitly as a choice during onboarding — not preselected, not hidden
   in settings.
-- When on: captured only on hover and while ⌘Tab is visible, at thumbnail size,
-  side by side. The last picture of a window stays in memory for up to two
-  minutes (at most 24), so lists open with pictures at once and minimized or
-  other-desktop windows still show how they looked. Never written to disk;
-  dropped on screen lock and sleep.
+- When on: captured only on hover and when ⌘Tab is pressed, at thumbnail size,
+  at most three at a time, and only windows whose picture may be out of date:
+  worked in since (active), or retitled or resized. A window left in the
+  background keeps its picture; one that changes on its own (a video) shows how
+  it was left. The last picture of each open window stays in memory, packed as
+  HEIC (at most 64), so ⌘Tab and the Dock share them, lists open with pictures
+  at once and minimized or other-desktop windows still show how they looked.
+  Never written to disk; dropped when the window closes, on screen lock and sleep.
 - Browsers with previews on: the tab list stays, with one picture of the window
   under the mouse below it.
 - When off: large app icon, window title, and a mini-map of the window's outline

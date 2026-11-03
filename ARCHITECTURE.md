@@ -53,7 +53,7 @@ in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `BootTime`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
-`LoginItemProblem`, `ThumbnailAccess`, `ThumbnailCover`, `DebugLogFile`, `UnavailableFeature`, `AccessibilityLoss` and `ShowDesktopFront`.
+`LoginItemProblem`, `ThumbnailAccess`, `ThumbnailCover`, `DebugLogFile`, `UnavailableFeature`, `AccessibilityLoss`, `ShowDesktopFront`, `PreviewFreshness` (when a window's picture is out of date) and `CaptureQueue` (at most three captures at a time).
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).
