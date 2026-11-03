@@ -29,6 +29,9 @@ and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
   have open.
 - Long lists fold after eight tabs; "Show all N tabs" unfolds them and "Show fewer" folds them back.
 - Click a tab to go straight to it.
+- Point at a tab and click its × to close it. The browser stays where it is, as
+  a Windows 7 taskbar thumbnail's × left you where you were. Pinned tabs have
+  no × in the browser, so they stay.
 
 Tabs are read from the browser's tab bar, never from page content.
 
