@@ -201,6 +201,10 @@ final class SwitcherController {
         presenter.show()
         isShown = true
         onActiveChanged?(true)
+        // Pictures load from the press, not from the draw 150 ms later: memory's
+        // are unpacked and the windows worked in since are captured while the
+        // stack waits, so it appears with them.
+        loadPreviews(lookAhead: true)
         scheduleReveal()
         return true
     }
@@ -317,28 +321,27 @@ final class SwitcherController {
         if wasShown { onActiveChanged?(false) }
     }
 
-    /// Pictures memory already has appear with the stack; fresh ones are
-    /// captured side by side, the windows nearest the front first. Called again
-    /// on every step and filter change for the cards not asked for yet (see
-    /// `SwitcherPreviews`); captures already running keep going. Nothing is
-    /// captured before the switcher is drawn, so a quick hop takes no pictures.
+    /// Pictures memory already has appear with the stack; windows whose picture
+    /// is out of date are captured (`PreviewProvider`), the ones nearest the front
+    /// first. Called as ⌘Tab is pressed and again on every step and filter change
+    /// for the cards not asked for yet (see `SwitcherPreviews`); loads already
+    /// running keep going.
     private func loadPreviews(lookAhead: Bool) {
-        guard isDrawn else { return }
+        guard isShown, PreviewProvider.shared.isAvailable else { return }
         let ids = previewsToCapture(lookAhead: lookAhead)
-        guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
+        guard !ids.isEmpty else { return }
         askedPreviews.formUnion(ids)
         let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
-        for window in wanted where model.thumbnails[window.id] == nil && !PreviewProvider.neverPictured(window) {
-            if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
-                model.thumbnails[window.id] = cached
-            }
-        }
+        // The grid's tiles are small; the stack's front card is large.
+        let size = model.style == .grid ? SwitcherGrid.picturePixelSize : Int(PreviewProvider.maxPixelWidth)
         previewTasks += wanted.map { window in
             Task { @MainActor [weak self] in
-                let image = await PreviewProvider.shared.thumbnail(for: window)
-                // The switcher may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, let self, self.isActive, let image else { return }
-                self.model.thumbnails[window.id] = image
+                // A step to a card puts it ahead of the look-ahead ones.
+                await PreviewProvider.shared.loadPicture(of: window, maxPixelSize: size, urgent: !lookAhead) { image in
+                    // The switcher may have closed meanwhile: drop the image then.
+                    guard let self, self.isActive else { return }
+                    self.model.thumbnails[window.id] = image
+                }
             }
         }
     }

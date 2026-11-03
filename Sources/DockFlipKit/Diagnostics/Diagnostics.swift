@@ -12,6 +12,7 @@ enum Log {
     static let keys = Logger(subsystem: subsystem, category: "keys")
     static let snap = Logger(subsystem: subsystem, category: "snap")
     static let perf = Logger(subsystem: subsystem, category: "perf")
+    static let previews = Logger(subsystem: subsystem, category: "previews")
 }
 
 /// In-memory timing statistics for the hot paths. Always on (it is a clock read

@@ -88,21 +88,18 @@ final class SnapAssistPanel {
         onPick?(id, region)
     }
 
-    /// Pictures memory holds appear with the cards; the rest are captured side by
-    /// side and drop in as they come. Only while thumbnails are on.
+    /// Pictures memory holds appear with the cards; windows whose picture is out
+    /// of date are captured (`PreviewProvider`) and drop in as they come. Only
+    /// while thumbnails are on.
     private func loadPreviews(of windows: [WindowSnapshot], enabled: Bool) {
         guard enabled else { return }
-        for window in windows where !PreviewProvider.neverPictured(window) {
-            if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
-                model.thumbnails[window.id] = cached
-            }
-        }
         previewTasks = windows.map { window in
             Task { @MainActor [weak self] in
-                let image = await PreviewProvider.shared.thumbnail(for: window)
-                // The cards may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, let self, self.isShown, let image else { return }
-                self.model.thumbnails[window.id] = image
+                await PreviewProvider.shared.loadPicture(of: window) { image in
+                    // The cards may have closed meanwhile: drop the image then.
+                    guard let self, self.isShown else { return }
+                    self.model.thumbnails[window.id] = image
+                }
             }
         }
     }
