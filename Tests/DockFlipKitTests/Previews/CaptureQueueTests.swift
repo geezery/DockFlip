@@ -2,15 +2,13 @@ import Testing
 @testable import DockFlipKit
 
 /// At most a few captures run together; the rest wait their turn.
+/// (Mutating calls stay outside `#expect`, which cannot call them.)
 @Suite("Thumbnails: capture queue")
 struct CaptureQueueTests {
     @Test func startsUpToTheLimitThenWaits() {
         var queue = CaptureQueue<Int>(limit: 3)
-        #expect(queue.request(1, urgent: false))
-        #expect(queue.request(2, urgent: false))
-        #expect(queue.request(3, urgent: false))
-        #expect(!queue.request(4, urgent: false))
-        #expect(!queue.request(5, urgent: false))
+        let started = (1...5).map { queue.request($0, urgent: false) }
+        #expect(started == [true, true, true, false, false])
         #expect(queue.running == [1, 2, 3])
         #expect(queue.waiting == [4, 5])
     }
@@ -20,9 +18,12 @@ struct CaptureQueueTests {
         _ = queue.request(1, urgent: false)
         _ = queue.request(2, urgent: false)
         _ = queue.request(3, urgent: false)
-        #expect(queue.finish(1) == [2])
-        #expect(queue.finish(2) == [3])
-        #expect(queue.finish(3) == [])
+        let afterFirst = queue.finish(1)
+        let afterSecond = queue.finish(2)
+        let afterThird = queue.finish(3)
+        #expect(afterFirst == [2])
+        #expect(afterSecond == [3])
+        #expect(afterThird == [])
         #expect(queue.running.isEmpty)
     }
 
@@ -43,10 +44,13 @@ struct CaptureQueueTests {
 
     @Test func askingTwiceDoesNotQueueTwice() {
         var queue = CaptureQueue<Int>(limit: 1)
-        #expect(queue.request(1, urgent: false))
-        #expect(!queue.request(1, urgent: false))
+        let first = queue.request(1, urgent: false)
+        let again = queue.request(1, urgent: false)
         _ = queue.request(2, urgent: false)
-        #expect(!queue.request(2, urgent: true))
+        let urgentAgain = queue.request(2, urgent: true)
+        #expect(first)
+        #expect(!again)
+        #expect(!urgentAgain)
         #expect(queue.waiting == [2])
     }
 }
