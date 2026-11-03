@@ -71,9 +71,13 @@ final class SwitcherModel: ObservableObject {
     @Published var thumbnails: [CGWindowID: NSImage] = [:]
     /// Typed filter text; empty when not filtering.
     @Published var query = ""
-    /// Flip 3D or the Windows 11 grid; set as the switcher opens.
+    /// Flip 3D or the Windows 11 grid; set as the switcher opens, and by its style toggle.
     @Published var style: SwitcherStyle = .flip3D
+    /// Whether the style toggle shows: not when the organization's profile sets the look.
+    @Published var canChangeStyle = true
     var onPick: ((Int) -> Void)?
+    /// The style toggle was clicked.
+    var onChangeStyle: ((SwitcherStyle) -> Void)?
     var onCancel: (() -> Void)?
 
     /// 0 for the card in front, 1 for the one behind it, and so on (wrapping).

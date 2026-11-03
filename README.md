@@ -131,7 +131,8 @@ front.
 - **Survives password fields.** It keeps working while another app holds
   secure keyboard input, which is exactly when lesser switchers give up.
 - **Or the Windows 11 look.** Prefer a grid of window tiles in one panel?
-  Pick *Grid* under *⌘Tab switcher* in Settings. Same keys, same filter.
+  Click *Grid* at the bottom of the open switcher (or pick it under *⌘Tab
+  switcher* in Settings). Same keys, same filter, and it sticks.
 
 ### 📐 Snapping
 
