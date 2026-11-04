@@ -29,6 +29,9 @@ and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
   have open.
 - Long lists fold after eight tabs; "Show all N tabs" unfolds them and "Show fewer" folds them back.
 - Click a tab to go straight to it.
+- Point at a tab and click its × to close it. The browser stays where it is, as
+  a Windows 7 taskbar thumbnail's × left you where you were. Pinned tabs have
+  no × in the browser, so they stay.
 
 Tabs are read from the browser's tab bar, never from page content.
 
@@ -36,7 +39,7 @@ Tabs are read from the browser's tab bar, never from page content.
 
 With thumbnails on, apps with up to five windows show picture cards. Browsers
 and apps with more windows keep the list, with one big picture of the window
-under the mouse.
+under the mouse, and each window's own small picture at the front of its row.
 As in ⌘Tab, each picture has the app's icon at its top-left corner, over the
 window's own close, minimize and zoom buttons.
 
@@ -75,10 +78,12 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
 - **Works under secure input.** Password fields and some terminal modes turn on
   macOS's secure keyboard input, which blinds most switchers. DockFlip's keeps
   working.
-- **Or the Windows 11 look.** Choose *Grid* under *⌘Tab switcher* in Settings
+- **Or the Windows 11 look.** Click *Grid* in the Flip 3D | Grid switch at the
+  bottom of the open switcher (or choose it under *⌘Tab switcher* in Settings)
   and ⌘Tab shows one frosted panel with a tile per window, its icon and title
   above its picture, in rows like Windows 11's Alt+Tab. The selected tile is
-  outlined. The keys, the order and type to filter work just the same.
+  outlined. The keys, the order and type to filter work just the same, and
+  the look you click stays for the next ⌘Tab.
 - **No windows open?** ⌘Tab then shows the running apps instead, one card each
   marked *No open windows*. Picking one brings the app forward and asks it for
   a window, as a click on its Dock icon does.

@@ -51,6 +51,8 @@ final class WindowListPopup {
         hideTask?.cancel()
         showTask?.cancel()
         waiting.stop()
+        // The window list is the slow part of a first picture: fetch it while the list waits to open.
+        PreviewProvider.shared.prefetchWindowList()
         if isVisible {
             present(key)
             return
@@ -232,44 +234,41 @@ final class WindowListPopup {
         panel.orderFrontRegardless()
     }
 
-    /// Shows the pictures memory already has at once, then captures fresh ones
-    /// side by side — not one after another.
+    /// Shows the pictures memory already has at once, then captures the windows
+    /// whose picture is out of date (`PreviewProvider`, which also limits how many
+    /// run together).
     private func loadPreviews(for windows: [WindowSnapshot]) {
         let ids = windows.map(\.id)
         guard ids != previewIDs else { return }
         previewTasks.forEach { $0.cancel() }
         previewIDs = ids
-        // A window that turned private keeps no earlier picture; thumbnail(for:) drops it from memory.
-        let skipped = Set(windows.filter { PreviewProvider.neverPictured($0) }.map(\.id))
-        for id in ids where model.thumbnails[id] == nil && !skipped.contains(id) {
-            if let cached = PreviewProvider.shared.cachedThumbnail(for: id) { model.thumbnails[id] = cached }
-        }
+        // Cards are small; the peek pane shows one window large.
+        let size = model.usesCards ? PreviewProvider.cardPixelSize : Int(PreviewProvider.maxPixelWidth)
         previewTasks = windows.map { window in
             Task { @MainActor [weak self] in
-                let image = await PreviewProvider.shared.thumbnail(for: window)
-                // The list may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, let self, self.isVisible, let image else { return }
-                self.model.thumbnails[window.id] = image
+                await PreviewProvider.shared.loadPicture(of: window, maxPixelSize: size) { image in
+                    // The list may have closed meanwhile: drop the image then.
+                    guard let self, self.isVisible else { return }
+                    self.model.thumbnails[window.id] = image
+                }
             }
         }
     }
 
     /// The peek pane turned to a window the first batch left out (the 9th
-    /// onwards): capture just that one.
+    /// onwards): load just that one, ahead of any other capture.
     private func loadHoveredPreview(_ id: CGWindowID) {
         guard isVisible, model.showsPreviews,
               let target = WindowListPreviews.onHover(id, listed: shownWindows.map(\.id),
                                                       requested: Set(previewIDs).union(hoverPreviewIDs),
                                                       shown: Set(model.thumbnails.keys)),
-              let window = shownWindows.first(where: { $0.id == target }),
-              // A picture memory kept from before the window turned private stays unshown.
-              !PreviewProvider.neverPictured(window) else { return }
+              let window = shownWindows.first(where: { $0.id == target }) else { return }
         hoverPreviewIDs.insert(target)
-        if let cached = PreviewProvider.shared.cachedThumbnail(for: target) { model.thumbnails[target] = cached }
         hoverPreviewTasks.append(Task { @MainActor [weak self] in
-            let image = await PreviewProvider.shared.thumbnail(for: window)
-            guard !Task.isCancelled, let self, self.isVisible, let image else { return }
-            self.model.thumbnails[target] = image
+            await PreviewProvider.shared.loadPicture(of: window, urgent: true) { image in
+                guard let self, self.isVisible else { return }
+                self.model.thumbnails[target] = image
+            }
         })
     }
 
@@ -308,6 +307,13 @@ final class WindowListPopup {
         BrowserTabs.select(tab)
         TabStore.shared.forget(tab.windowID)
         registry.focus(tab.windowID)
+    }
+
+    /// The tab's ×: closes it in the browser, which stays behind; the list stays open.
+    func closeTab(_ tab: BrowserTab) {
+        // The next line moves up under the mouse without a new hover event.
+        model.hoveredTab = nil
+        TabCloser.close(tab, queues: registry.appQueues) { [weak self] in self?.refreshIfVisible() }
     }
 
     func toggleExpanded(_ id: CGWindowID) {

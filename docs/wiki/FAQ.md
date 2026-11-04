@@ -29,8 +29,8 @@ app's windows.
 **Why Flip 3D, of all things?**
 Because it was great and nobody should have taken it away. A stack also fits
 more windows on screen than a grid, and the one in front is unmistakable.
-If you'd rather have Windows 11's grid of tiles, choose *Grid* under
-*⌘Tab switcher* in Settings.
+If you'd rather have Windows 11's grid of tiles, click *Grid* at the bottom
+of the open switcher, or choose it under *⌘Tab switcher* in Settings.
 
 **Why ⌃⌥ instead of ⌘ for snapping?**
 ⌘ shortcuts belong to apps, and Globe shortcuts belong to macOS's own tiling.

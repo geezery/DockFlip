@@ -21,6 +21,10 @@ final class SwitcherController {
     private let sleep: @MainActor (Duration) async -> Void
     /// Flip 3D or the Windows 11 grid, read as the switcher opens.
     private let style: @MainActor () -> SwitcherStyle
+    /// Saves the look picked with the switcher's toggle, as the Settings choice.
+    private let setStyle: @MainActor (SwitcherStyle) -> Void
+    /// False when the organization's profile sets the look: no toggle then.
+    private let canChangeStyle: @MainActor () -> Bool
     /// Running apps with no open window, listed only when there are no windows at all.
     private let windowlessApps: @MainActor () -> [SwitcherApp]
     /// Brings a windowless app forward, asking it to reopen a window.
@@ -62,6 +66,8 @@ final class SwitcherController {
             isCommandHeld: { NSEvent.modifierFlags.contains(.command) },
             sleep: { try? await Task.sleep(for: $0) },
             style: { Settings.shared.switcherStyle },
+            setStyle: { Settings.shared.switcherStyle = $0 },
+            canChangeStyle: { !Settings.shared.switcherStyleManaged },
             windowlessApps: { registry.windowlessApps() },
             openApp: { registry.openApp(pid: $0) },
             presenter: nil
@@ -74,6 +80,7 @@ final class SwitcherController {
     func prepare() {
         // Built in the chosen look, so the first ⌘Tab of a grid user is not the one building it.
         model.style = style()
+        model.canChangeStyle = canChangeStyle()
         presenter.prepare()
     }
 
@@ -84,6 +91,8 @@ final class SwitcherController {
         isCommandHeld: @escaping @MainActor () -> Bool,
         sleep: @escaping @MainActor (Duration) async -> Void,
         style: @escaping @MainActor () -> SwitcherStyle = { .flip3D },
+        setStyle: @escaping @MainActor (SwitcherStyle) -> Void = { _ in },
+        canChangeStyle: @escaping @MainActor () -> Bool = { true },
         windowlessApps: @escaping @MainActor () -> [SwitcherApp] = { [] },
         openApp: @escaping @MainActor (pid_t) -> Void = { _ in },
         presenter: (any SwitcherPresenter)?
@@ -96,10 +105,13 @@ final class SwitcherController {
         self.isCommandHeld = isCommandHeld
         self.sleep = sleep
         self.style = style
+        self.setStyle = setStyle
+        self.canChangeStyle = canChangeStyle
         self.model = model
         self.presenter = presenter ?? SwitcherPanel(model: model)
         model.onPick = { [weak self] index in self?.commit(at: index) }
         model.onCancel = { [weak self] in self?.cancel() }
+        model.onChangeStyle = { [weak self] style in self?.changeStyle(to: style) }
         self.presenter.onInput = { [weak self] input in _ = self?.handle(input) }
     }
 
@@ -176,6 +188,7 @@ final class SwitcherController {
         model.query = ""
         model.thumbnails = [:]
         model.style = style()
+        model.canChangeStyle = canChangeStyle()
         let windowItems = windows.map { SwitcherItem(window: $0, previews: previews) }
         model.items = apps.map { Self.appCard($0) } + windowItems
         allItems = model.items
@@ -201,6 +214,10 @@ final class SwitcherController {
         presenter.show()
         isShown = true
         onActiveChanged?(true)
+        // Pictures load from the press, not from the draw 150 ms later: memory's
+        // are unpacked and the windows worked in since are captured while the
+        // stack waits, so it appears with them.
+        loadPreviews(lookAhead: true)
         scheduleReveal()
         return true
     }
@@ -234,6 +251,20 @@ final class SwitcherController {
         // Pictures memory holds go in first, so the stack appears with them.
         loadPreviews(lookAhead: true)
         presenter.draw()
+    }
+
+    /// The switcher's style toggle: redraws the open switcher in the other look,
+    /// keeping its windows, filter and selected window, and saves the look for the
+    /// next ⌘Tab. Internal, not private, so tests can click it.
+    func changeStyle(to newStyle: SwitcherStyle) {
+        guard isActive, model.canChangeStyle, newStyle != model.style else { return }
+        Log.keys.debug("Switcher style changed from the switcher: \(newStyle.rawValue, privacy: .public)")
+        setStyle(newStyle)
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { model.style = newStyle }
+        // The grid shows other windows than the stack's front cards: ask for their pictures.
+        loadPreviews(lookAhead: true)
     }
 
     private func showSelection(_ index: Int, animated: Bool) {
@@ -317,28 +348,27 @@ final class SwitcherController {
         if wasShown { onActiveChanged?(false) }
     }
 
-    /// Pictures memory already has appear with the stack; fresh ones are
-    /// captured side by side, the windows nearest the front first. Called again
-    /// on every step and filter change for the cards not asked for yet (see
-    /// `SwitcherPreviews`); captures already running keep going. Nothing is
-    /// captured before the switcher is drawn, so a quick hop takes no pictures.
+    /// Pictures memory already has appear with the stack; windows whose picture
+    /// is out of date are captured (`PreviewProvider`), the ones nearest the front
+    /// first. Called as ⌘Tab is pressed and again on every step and filter change
+    /// for the cards not asked for yet (see `SwitcherPreviews`); loads already
+    /// running keep going.
     private func loadPreviews(lookAhead: Bool) {
-        guard isDrawn else { return }
+        guard isShown, PreviewProvider.shared.isAvailable else { return }
         let ids = previewsToCapture(lookAhead: lookAhead)
-        guard !ids.isEmpty, PreviewProvider.shared.isAvailable else { return }
+        guard !ids.isEmpty else { return }
         askedPreviews.formUnion(ids)
         let wanted = ids.compactMap { id in allWindows.first { $0.id == id } }
-        for window in wanted where model.thumbnails[window.id] == nil && !PreviewProvider.neverPictured(window) {
-            if let cached = PreviewProvider.shared.cachedThumbnail(for: window.id) {
-                model.thumbnails[window.id] = cached
-            }
-        }
+        // The grid's tiles are small; the stack's front card is large.
+        let size = model.style == .grid ? SwitcherGrid.picturePixelSize : Int(PreviewProvider.maxPixelWidth)
         previewTasks += wanted.map { window in
             Task { @MainActor [weak self] in
-                let image = await PreviewProvider.shared.thumbnail(for: window)
-                // The switcher may have closed while capturing: drop the image then.
-                guard !Task.isCancelled, let self, self.isActive, let image else { return }
-                self.model.thumbnails[window.id] = image
+                // A step to a card puts it ahead of the look-ahead ones.
+                await PreviewProvider.shared.loadPicture(of: window, maxPixelSize: size, urgent: !lookAhead) { image in
+                    // The switcher may have closed meanwhile: drop the image then.
+                    guard let self, self.isActive else { return }
+                    self.model.thumbnails[window.id] = image
+                }
             }
         }
     }

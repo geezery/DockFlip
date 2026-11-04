@@ -48,6 +48,9 @@ the space left beside it, as on Windows:
 | Esc | Clear the filter, or cancel |
 | Release ⌘ | Switch (when not filtering; once ⌘ is up, Return, a click or holding ⌘ again and letting go switches) |
 
+The Flip 3D | Grid switch at the bottom of the switcher changes its look with a
+click; the switcher stays open and keeps the look for next time.
+
 ## Forgot one?
 
 DockFlip's menu bar menu → **Window Layout** lists them all. Clicking one

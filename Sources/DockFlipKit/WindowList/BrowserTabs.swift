@@ -185,6 +185,13 @@ final class TabStore {
         cache[windowID] = nil
     }
 
+    /// Takes a tab out of its window's list at once, while the browser closes it.
+    /// Counts as a fresh read, so the list does not read the tab back in meanwhile.
+    func remove(_ tab: BrowserTab) {
+        guard let entry = cache[tab.windowID] else { return }
+        cache[tab.windowID] = (ProcessInfo.processInfo.systemUptime, entry.tabs.filter { $0.id != tab.id })
+    }
+
     /// Cached tabs of a window (nil when not read yet).
     func tabs(of windowID: CGWindowID) -> [BrowserTab]? {
         cache[windowID]?.tabs
