@@ -48,7 +48,7 @@ final class Services {
         keyTaps.onCommandReleased = { [weak self] in _ = self?.switcher.handle(.commandReleased) }
         keyTaps.onCommandPressed = { [weak self] in _ = self?.switcher.handle(.commandPressed) }
         keyTaps.onEscape = { [weak self] in self?.switcher.handle(.escape) ?? false }
-        switcher.onActiveChanged = { [weak self] active in self?.keyTaps.setSwitcherKeysEnabled(active) }
+        switcher.onActiveChanged = { [weak self] active in self?.keyTaps.setSwitcherOpen(active) }
         tapsRunning = keyTaps.start()
         if !tapsRunning {
             Log.keys.error("Could not create the keyboard event taps")

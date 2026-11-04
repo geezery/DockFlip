@@ -1,14 +1,19 @@
 import AppKit
 import CoreGraphics
 
-/// The two event taps the ⌘Tab switcher needs on top of the hot keys:
+/// The two event taps the ⌘Tab switcher needs on top of the hot keys. Both are
+/// switched on only while the switcher is open; the rest of the time DockFlip
+/// sees no keyboard event at all, not even ⇧ (a tap filters by event type, not
+/// by key, so a modifier tap left on would see every modifier press on the Mac).
 /// - a listen-only tap for modifier changes, to notice ⌘ being released (secure
 ///   input does not hide modifier changes);
-/// - a key tap that is switched on only while the switcher is open, for Esc alone.
-///   It sits at the HID level, the earliest point: on macOS 26 the Game Overlay
-///   grabs ⌘Esc further down the line, and ⌘ is held while switching (AltTab #5585).
-///   Every other key reaches the switcher panel, which is the key window, as an
-///   ordinary key event — as AltTab does. The rest of the time no tap touches typing.
+/// - a key tap for Esc alone. It sits at the HID level, the earliest point: on
+///   macOS 26 the Game Overlay grabs ⌘Esc further down the line, and ⌘ is held
+///   while switching (AltTab #5585). Every other key reaches the switcher panel,
+///   which is the key window, as an ordinary key event — as AltTab does.
+///
+/// A ⌘ release in the moment before the taps are on is not lost: the switcher
+/// reads ⌘ itself when it opens and again when its short hold ends.
 @MainActor
 final class SwitcherKeyTaps {
     var onCommandReleased: (() -> Void)?
@@ -19,9 +24,9 @@ final class SwitcherKeyTaps {
 
     private var flagsTap: CFMachPort?
     private var keysTap: CFMachPort?
-    /// The switcher is open and wants Esc. The key tap is on only while this is
-    /// true; anything else would leave a tap in front of all typing.
-    private var keysWanted = false
+    /// The switcher is open. Both taps are on only while this is true; anything
+    /// else would leave a tap watching all typing.
+    private var switcherOpen = false
     /// We swallowed Esc's keyDown; its keyUp is swallowed too.
     private var escapeSwallowed = false
 
@@ -52,28 +57,33 @@ final class SwitcherKeyTaps {
         for port in [flags, keys] {
             CFRunLoopAddSource(CFRunLoopGetMain(), CFMachPortCreateRunLoopSource(kCFAllocatorDefault, port, 0), .commonModes)
         }
-        CGEvent.tapEnable(tap: flags, enable: true)
+        CGEvent.tapEnable(tap: flags, enable: false)
         CGEvent.tapEnable(tap: keys, enable: false)
         flagsTap = flags
         keysTap = keys
         return true
     }
 
-    /// The key tap is on only while the switcher is open.
-    func setSwitcherKeysEnabled(_ enabled: Bool) {
-        keysWanted = enabled
-        guard let keysTap else { return }
-        if CGEvent.tapIsEnabled(tap: keysTap) != enabled {
-            CGEvent.tapEnable(tap: keysTap, enable: enabled)
+    /// Both taps are on only while the switcher is open.
+    func setSwitcherOpen(_ open: Bool) {
+        switcherOpen = open
+        for tap in [flagsTap, keysTap].compactMap({ $0 }) where CGEvent.tapIsEnabled(tap: tap) != open {
+            CGEvent.tapEnable(tap: tap, enable: open)
         }
-        if !enabled { escapeSwallowed = false }
+        if !open { escapeSwallowed = false }
     }
 
     fileprivate func flagsChanged(type: CGEventType, event: CGEvent) {
         switch type {
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
+            // Back on only while switching: this notice can arrive after the
+            // switcher has closed, and turning the tap on then would leave it on.
+            guard switcherOpen, let flagsTap else { return }
             Log.keys.error("Modifier tap was disabled by macOS; re-enabling")
-            if let flagsTap { CGEvent.tapEnable(tap: flagsTap, enable: true) }
+            CGEvent.tapEnable(tap: flagsTap, enable: true)
+        case .flagsChanged where !switcherOpen:
+            // On although the switcher is closed: switch it off.
+            if let flagsTap { CGEvent.tapEnable(tap: flagsTap, enable: false) }
         case .flagsChanged:
             switch SwitcherInput.fromFlags(command: event.flags.contains(.maskCommand)) {
             case .commandPressed: onCommandPressed?()
@@ -91,9 +101,9 @@ final class SwitcherKeyTaps {
             // macOS switched the tap off (it was slow): back on only while switching.
             // This notice can arrive after the switcher has closed; turning the tap
             // on then would leave it on for good.
-            if keysWanted, let keysTap { CGEvent.tapEnable(tap: keysTap, enable: true) }
+            if switcherOpen, let keysTap { CGEvent.tapEnable(tap: keysTap, enable: true) }
             return false
-        case .keyDown where !keysWanted:
+        case .keyDown where !switcherOpen:
             // The tap is on although the switcher is closed: switch it off and
             // let typing through untouched.
             if let keysTap { CGEvent.tapEnable(tap: keysTap, enable: false) }
