@@ -36,6 +36,7 @@ final class Services {
         placement = PlacementMemory(registry: registry)
         cleanup = CleanupController(registry: registry, usage: usage)
 
+        PreviewProvider.shared.follow(registry)
         registry.start()
         snapper.start()
         dock.start()
@@ -153,7 +154,8 @@ final class Services {
     func debugLines() -> [String] {
         let failed = hotKeys.registration.failed.map(\.shortcutName).joined(separator: " ")
         return registry.debugSummary() + [
-            "hotKeys=\(hotKeys.registeredCount) commandTab=\(hotKeys.ownsCommandTab) failed=[\(failed)] keyTaps=\(tapsRunning) suspended=\(suspended) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())"
+            "hotKeys=\(hotKeys.registeredCount) commandTab=\(hotKeys.ownsCommandTab) failed=[\(failed)] keyTaps=\(tapsRunning) suspended=\(suspended) secureInput=\(IsSecureEventInputEnabled()) cleanupSuggestions=\(cleanup.candidateCount())",
+            PreviewProvider.shared.debugLine()
         ]
     }
 }

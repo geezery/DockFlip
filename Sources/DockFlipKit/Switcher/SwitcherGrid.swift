@@ -14,6 +14,9 @@ public enum SwitcherGrid {
     /// The grid draws many windows at once, so it asks for more pictures as it
     /// opens than the stack does (`SwitcherPreviews.toCaptureAround`).
     public static let previewBatch = 24
+    /// The longer side a tile's picture is unpacked to: the widest tile (160 points
+    /// high, 1.9 times as wide) on a Retina screen.
+    public static let picturePixelSize = 640
 
     /// Around each tile's icon, title and picture.
     public static let tilePadding = 8.0

@@ -101,7 +101,7 @@ What DockFlip sees of input:
 
 If Accessibility is switched off while DockFlip runs, it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second, stops drag snapping and Snap Assist, and opens its setup at the Accessibility step.
 
-Thumbnails, when turned on, are taken on demand (hovering a Dock icon, opening ⌘Tab), at thumbnail size, kept in memory only (at most 24, for up to two minutes, dropped on screen lock or sleep) and never written to disk. They are never taken while a password field is active. Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox, NordPass, KeePassXC, MacPass, Secrets, Dashlane, LastPass, Authy, Apple Passwords, Keychain Access) and System Settings are never pictured, nor private windows in Firefox, Chrome, Edge, Brave and Vivaldi. The rules are in `Sources/DockFlipKit/Previews/PreviewProvider.swift` and `NeverPictured.swift`.
+Thumbnails, when turned on, are taken on demand (hovering a Dock icon, pressing ⌘Tab) and only of windows that may have changed since their last picture, at thumbnail size, kept in memory only (the last picture of each open window, at most 64, dropped when the window closes, on screen lock or sleep) and never written to disk. They are never taken while a password field is active. Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox, NordPass, KeePassXC, MacPass, Secrets, Dashlane, LastPass, Authy, Apple Passwords, Keychain Access) and System Settings are never pictured, nor private windows in Firefox, Chrome, Edge, Brave and Vivaldi. The rules are in `Sources/DockFlipKit/Previews/PreviewProvider.swift` and `NeverPictured.swift`.
 
 ## Privacy
 

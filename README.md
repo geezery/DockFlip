@@ -253,7 +253,7 @@ polished from the first second without ever seeing your screen.
   pointer positions only, for Dock icon clicks and drag snapping; clicks
   outside the Dock reach your apps untouched.
 - **Thumbnails are opt-in.** If you want real pictures, they're taken on demand,
-  kept in memory for two minutes at most, and never taken of password managers,
+  kept in memory only while the window is open, and never taken of password managers,
   System Settings or while a password field is active.
 
 The details, and how to check every claim yourself, are in [SECURITY.md](SECURITY.md).

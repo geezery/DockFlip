@@ -64,10 +64,13 @@ where you save it.
 Thumbnails are the only feature that uses Screen Recording, and they come with
 rules:
 
-- Pictures are taken on demand, when you hover a Dock icon or open ⌘Tab, one
-  window at a time and at thumbnail size.
-- They're kept in memory only: at most 24, for up to two minutes. They're never
-  written to disk and are dropped when the screen locks or the Mac sleeps.
+- Pictures are taken on demand, when you hover a Dock icon or press ⌘Tab, one
+  window at a time and at thumbnail size, and only of windows that may look
+  different since their last picture: ones you worked in, or whose title or
+  size changed. Usually that is one or two windows.
+- They're kept in memory only, packed as HEIC: the last picture of each open
+  window, at most 64. They're never written to disk and are dropped when the
+  window closes, the screen locks or the Mac sleeps.
 - They're never taken while a password field is active.
 - Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox,
   NordPass, KeePassXC and others), Authy, Keychain Access and System Settings
