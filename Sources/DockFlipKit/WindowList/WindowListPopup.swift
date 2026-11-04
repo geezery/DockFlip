@@ -35,6 +35,8 @@ final class WindowListPopup {
     var isVisible: Bool { panel?.isVisible == true }
     /// The popup's frame on screen while it is visible.
     var visibleFrame: NSRect? { isVisible ? panel?.frame : nil }
+    /// The icon whose list is on screen, by its source's key.
+    var shownKey: String? { isVisible ? currentKey : nil }
 
     init(registry: WindowRegistry) {
         self.registry = registry

@@ -101,6 +101,7 @@ extension DockController {
         // A press on an app with no windows yet (launch, reopen) goes to the Dock:
         // the window it opens must not pop a list up under the mouse.
         popup.dockPressed()
+        dockPressedWhileAiming()
         guard let bundleID = iconBundleID(at: location), registry.hasWindows(bundleID: bundleID),
               let down = event.copy() else { return false }
         popup.hideNow()
