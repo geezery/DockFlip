@@ -21,6 +21,10 @@ final class SwitcherController {
     private let sleep: @MainActor (Duration) async -> Void
     /// Flip 3D or the Windows 11 grid, read as the switcher opens.
     private let style: @MainActor () -> SwitcherStyle
+    /// Saves the look picked with the switcher's toggle, as the Settings choice.
+    private let setStyle: @MainActor (SwitcherStyle) -> Void
+    /// False when the organization's profile sets the look: no toggle then.
+    private let canChangeStyle: @MainActor () -> Bool
     /// Running apps with no open window, listed only when there are no windows at all.
     private let windowlessApps: @MainActor () -> [SwitcherApp]
     /// Brings a windowless app forward, asking it to reopen a window.
@@ -62,6 +66,8 @@ final class SwitcherController {
             isCommandHeld: { NSEvent.modifierFlags.contains(.command) },
             sleep: { try? await Task.sleep(for: $0) },
             style: { Settings.shared.switcherStyle },
+            setStyle: { Settings.shared.switcherStyle = $0 },
+            canChangeStyle: { !Settings.shared.switcherStyleManaged },
             windowlessApps: { registry.windowlessApps() },
             openApp: { registry.openApp(pid: $0) },
             presenter: nil
@@ -74,6 +80,7 @@ final class SwitcherController {
     func prepare() {
         // Built in the chosen look, so the first ⌘Tab of a grid user is not the one building it.
         model.style = style()
+        model.canChangeStyle = canChangeStyle()
         presenter.prepare()
     }
 
@@ -84,6 +91,8 @@ final class SwitcherController {
         isCommandHeld: @escaping @MainActor () -> Bool,
         sleep: @escaping @MainActor (Duration) async -> Void,
         style: @escaping @MainActor () -> SwitcherStyle = { .flip3D },
+        setStyle: @escaping @MainActor (SwitcherStyle) -> Void = { _ in },
+        canChangeStyle: @escaping @MainActor () -> Bool = { true },
         windowlessApps: @escaping @MainActor () -> [SwitcherApp] = { [] },
         openApp: @escaping @MainActor (pid_t) -> Void = { _ in },
         presenter: (any SwitcherPresenter)?
@@ -96,10 +105,13 @@ final class SwitcherController {
         self.isCommandHeld = isCommandHeld
         self.sleep = sleep
         self.style = style
+        self.setStyle = setStyle
+        self.canChangeStyle = canChangeStyle
         self.model = model
         self.presenter = presenter ?? SwitcherPanel(model: model)
         model.onPick = { [weak self] index in self?.commit(at: index) }
         model.onCancel = { [weak self] in self?.cancel() }
+        model.onChangeStyle = { [weak self] style in self?.changeStyle(to: style) }
         self.presenter.onInput = { [weak self] input in _ = self?.handle(input) }
     }
 
@@ -176,6 +188,7 @@ final class SwitcherController {
         model.query = ""
         model.thumbnails = [:]
         model.style = style()
+        model.canChangeStyle = canChangeStyle()
         let windowItems = windows.map { SwitcherItem(window: $0, previews: previews) }
         model.items = apps.map { Self.appCard($0) } + windowItems
         allItems = model.items
@@ -234,6 +247,20 @@ final class SwitcherController {
         // Pictures memory holds go in first, so the stack appears with them.
         loadPreviews(lookAhead: true)
         presenter.draw()
+    }
+
+    /// The switcher's style toggle: redraws the open switcher in the other look,
+    /// keeping its windows, filter and selected window, and saves the look for the
+    /// next ⌘Tab. Internal, not private, so tests can click it.
+    func changeStyle(to newStyle: SwitcherStyle) {
+        guard isActive, model.canChangeStyle, newStyle != model.style else { return }
+        Log.keys.debug("Switcher style changed from the switcher: \(newStyle.rawValue, privacy: .public)")
+        setStyle(newStyle)
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { model.style = newStyle }
+        // The grid shows other windows than the stack's front cards: ask for their pictures.
+        loadPreviews(lookAhead: true)
     }
 
     private func showSelection(_ index: Int, animated: Bool) {
