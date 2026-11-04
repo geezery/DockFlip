@@ -17,7 +17,7 @@ opt-in.
 
 | Permission | Needed? | Used for |
 |---|---|---|
-| Accessibility | **Yes** | Listing, focusing, moving and minimizing windows; reading browser tab titles; the keyboard shortcuts; watching left mouse clicks and drags for Dock icon clicks and drag snapping |
+| Accessibility | **Yes** | Listing, focusing, moving and minimizing windows; reading browser tab titles and closing a tab you click × on; the keyboard shortcuts; watching left mouse clicks and drags for Dock icon clicks and drag snapping |
 | Screen Recording | **No, opt-in** | Window thumbnails, and nothing else |
 
 ## What DockFlip sees of your mouse and keyboard

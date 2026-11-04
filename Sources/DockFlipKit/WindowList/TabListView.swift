@@ -135,9 +135,22 @@ struct TabRowView: View {
             if let site = tab.site {
                 SiteChip(site: site)
             }
+            // Windows 7's taskbar thumbnails had a × on hover; so does each tab here.
+            // Always there, only drawn on hover, so the titles never shift.
+            Button {
+                popup.closeTab(tab)
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9, weight: .semibold))
+                    .frame(width: 18, height: 18)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .opacity(hovering ? 1 : 0)
+            .accessibilityLabel(Text("Close tab"))
         }
         .padding(.leading, 30)
-        .padding(.trailing, 10)
+        .padding(.trailing, 4)
         .frame(height: WindowListLayout.tabRowHeight)
         .tabHighlight(hovering)
         .contentShape(Rectangle())
