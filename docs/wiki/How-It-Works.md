@@ -29,6 +29,8 @@ DockFlip never polls. It listens:
   to notice it leaving.
 - **Carbon hot keys** for shortcuts. They keep working under secure keyboard
   input, and an event tap that only listens notices ⌘ being pressed and released.
+  That tap is on only while the ⌘Tab switcher is open, so DockFlip sees no
+  typing at all the rest of the time.
 
 ## Seeing windows on other desktops
 

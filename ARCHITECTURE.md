@@ -80,7 +80,8 @@ invisible panel and holds it to SCOPE's ⌘Tab budget; it needs a window server.
   active and its secure keyboard input does not block the switcher.
 - **⌘Tab survives secure keyboard input.** Carbon hot keys still fire, the
   listen-only modifier tap still sees ⌘ released, and the key panel gets the
-  rest as ordinary key events.
+  rest as ordinary key events. Both event taps are on only while the switcher
+  is open; the rest of the time no tap sees the keyboard.
 - **Dock hover comes from the Dock itself** (`kAXSelectedChildrenChangedNotification`
   on its icon list); a mouse-move monitor exists only while the mouse is on the
   Dock or the list, to notice it leaving.
