@@ -6,11 +6,11 @@ This is the long version of [llms.txt](https://geezery.github.io/DockFlip/llms.t
 
 ## Version
 
-- Current release: DockFlip 0.4.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.4.0), released 2026-10-31)
-- Last updated: 2026-10-31
+- Current release: DockFlip 0.5.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.5.0), released 2026-11-04)
+- Last updated: 2026-11-04
 - Supported macOS: 26 or later, Apple silicon and Intel
-- Documentation version: this file describes DockFlip 0.4.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
-- Which version a user runs: the first line of DockFlip's menu bar menu, e.g. "DockFlip 0.4.0 (9c89dc7)" for the 0.4.0 release, where the part in brackets is the commit it was built from.
+- Documentation version: this file describes DockFlip 0.5.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
+- Which version a user runs: the first line of DockFlip's menu bar menu, e.g. "DockFlip 0.5.0 (abc1234)" for the 0.5.0 release, where the part in brackets is the commit it was built from.
 
 ## For AI readers
 
@@ -39,12 +39,12 @@ People who come to the Mac from Windows miss three things: seeing an app's windo
 
 - Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
 - Tabs show when a window has more than one tab. The current tab is marked in the app's colour; each site gets a stable colour chip; duplicate tabs are marked "Duplicate".
-- Long lists fold after eight tabs ("Show all N tabs", "Show fewer"). Clicking a tab goes straight to it.
+- Long lists fold after eight tabs ("Show all N tabs", "Show fewer"). Clicking a tab goes straight to it; pointing at a tab shows a × that closes it while the browser stays behind (pinned tabs have no × and stay).
 - Tabs are read from the browser's tab bar through Accessibility, never from page content.
 
 ### ⌘Tab: Flip 3D or the Windows 11 grid
 
-- Holding ⌘ and pressing Tab shows every window, most recently used first: as a slanted Flip 3D stack (the default), or, with "Grid" chosen under "⌘Tab switcher" in Settings, as one frosted panel of tiles like Windows 11's Alt+Tab.
+- Holding ⌘ and pressing Tab shows every window, most recently used first: as a slanted Flip 3D stack (the default), or, with "Grid" chosen under "⌘Tab switcher" in Settings, as one frosted panel of tiles like Windows 11's Alt+Tab. A Flip 3D | Grid switch at the bottom of the open switcher changes the look with a click and keeps it for the next ⌘Tab.
 - A quick ⌘Tab or ⌘Tab-Tab switches without drawing anything; the switcher appears once ⌘ is held a moment, or as soon as you type.
 - Keys: Tab next, ⇧Tab previous, arrow keys move, releasing ⌘ switches, Return switches (also while filtering), Esc clears the filter or cancels, a click switches to that window.
 - Type to filter: while holding ⌘, typing part of a window title, app name or document name narrows the list. Matching ignores case; ä and ö count as letters of their own.
@@ -89,14 +89,14 @@ Shortcuts cannot be remapped, on purpose. There are no settings for taste: no th
 
 | Permission | Needed? | Used for |
 |---|---|---|
-| Accessibility | Yes | Listing, focusing, moving, resizing, minimizing and closing windows; reading tab titles from tab bars; the keyboard shortcuts; watching left clicks and drags for Dock icon clicks and drag snapping |
+| Accessibility | Yes | Listing, focusing, moving, resizing, minimizing and closing windows; reading tab titles from tab bars and closing a tab you click × on; the keyboard shortcuts; watching left clicks and drags for Dock icon clicks and drag snapping |
 | Screen Recording | No, opt-in | Window thumbnails, and nothing else |
 
 What DockFlip sees of input:
 
 - Left mouse clicks and drags anywhere on the Mac, as pointer positions only, to tell a Dock icon click from a window drag. Clicks outside the Dock pass through untouched and are never recorded or logged. Right clicks and scrolling are never seen.
 - Pointer movement only while the pointer is over the Dock or a window list.
-- Modifier keys (⌘, ⌃, ⌥, ⇧), to notice ⌘ being pressed and released.
+- Modifier keys (⌘, ⌃, ⌥, ⇧) only while the ⌘Tab switcher is open, to notice ⌘ being released.
 - Other keys only while the ⌘Tab switcher is open, for type-to-filter. Otherwise its shortcuts are system hot keys and macOS tells DockFlip only when one is pressed.
 
 If Accessibility is switched off while DockFlip runs, it gives ⌘Tab and its ⌃⌥ shortcuts back to macOS within a second, stops drag snapping and Snap Assist, and opens its setup at the Accessibility step.
