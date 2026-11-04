@@ -39,7 +39,7 @@ Tabs are read from the browser's tab bar, never from page content.
 
 With thumbnails on, apps with up to five windows show picture cards. Browsers
 and apps with more windows keep the list, with one big picture of the window
-under the mouse.
+under the mouse, and each window's own small picture at the front of its row.
 As in ⌘Tab, each picture has the app's icon at its top-left corner, over the
 window's own close, minimize and zoom buttons.
 

@@ -5,7 +5,8 @@ import SwiftUI
 // panel; these views only draw the model and call back into the popup.
 //
 // Three layouts, picked by `WindowListLayout`:
-// - a list of windows (title, mini-map, state), tabs hanging under browser windows;
+// - a list of windows (title, mini-map or, with previews on, a small picture,
+//   state), tabs hanging under browser windows;
 // - with previews on: a row of picture cards;
 // - with previews on and tabs, or more than five windows: the list, with one
 //   big picture underneath (`PeekPane`).
@@ -127,7 +128,7 @@ struct WindowRowView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
+            RowPicture(row: row, thumbnail: model.showsPreviews ? model.thumbnails[row.id] : nil)
                 .frame(width: 52, height: 33)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -188,6 +189,30 @@ struct WindowRowView: View {
         .onTapGesture { popup.pick(row.id) }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
+    }
+}
+
+/// The small picture at the front of a window row: the window itself when
+/// thumbnails are on and its picture is in, else the mini-map of where it sits.
+/// Two maximized windows have identical mini-maps, so with thumbnails on the
+/// real picture is what tells them apart. It is the same picture the peek pane
+/// shows, so no capture is added for it.
+struct RowPicture: View {
+    let row: WindowListRow
+    let thumbnail: NSImage?
+
+    var body: some View {
+        if let thumbnail {
+            ZStack {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(Color.primary.opacity(0.06))
+                ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, cornerRadius: 3)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .accessibilityHidden(true)
+        } else {
+            Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
+        }
     }
 }
 
