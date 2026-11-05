@@ -37,9 +37,9 @@ thread.
 | `App/` | Lifecycle (`AppDelegate`), feature wiring and shortcut routing (`Services`), the menu bar menu (`StatusMenu`), settings, setup (`Onboarding`), languages, the Accessibility permission. |
 | `Core/` | `WindowRegistry` — all windows, their state and most-recently-used order; `WindowServer` — the window server's view (all Spaces); Accessibility helpers; geometry and displays. |
 | `Shortcuts/` | `GlobalHotKeys` (Carbon hot keys: ⌘Tab, ⌃⌥…), `SwitcherKeyTaps` (the two event taps a ⌘Tab session needs), `NativeCommandTab` (turns macOS's own ⌘Tab off while DockFlip runs). |
-| `Switcher/` | The ⌘Tab switcher: controller, the Flip 3D view and the Windows 11 grid view (`SwitcherRootView` picks by `SwitcherStyle`; `SwitcherStyleToggle` switches it from inside the switcher and saves it as the setting), selection and type-to-filter rules, `SwitcherStack` (which cards are drawn), `SwitcherGrid` (the grid's rows). |
+| `Switcher/` | The ⌘Tab switcher: controller, the Flip 3D view and the Windows 11 grid view (`SwitcherRootView` picks by `SwitcherStyle`), selection and type-to-filter rules, `SwitcherStack` (which cards are drawn), `SwitcherGrid` (the grid's rows). |
 | `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it; `DockAim` tells a diagonal towards the open list from a move to the next icon; `DockAttachRetry` tries a failed attach to the Dock again after 1, 2 and 4 s (login, a Dock relaunch). |
-| `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading, the tab list and closing a tab (`TabClose`). |
+| `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
 | `WindowLayout/` | Snapping (rules in `SnapEngine` and `SnapZone`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview, the Snap Assist cards in `SnapAssistPanel`), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
@@ -48,12 +48,12 @@ thread.
 | `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
 Pure rules with no AppKit in them (`SnapEngine`, `SnapAssist`, `SnapAssistGrid`, `SnapDrag`, `SnapZone`, `SnapRestoreFrames`, `EdgeTilingHint`, `SwitcherSelection`,
-`SwitcherFilter`, `SwitcherRelease`, `SwitcherCommandArm`, `SwitcherStack`, `SwitcherGrid`, `SwitcherStyle`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `TabCloseButton`, `MRUList`, `Geometry`) are unit-tested
+`SwitcherFilter`, `SwitcherRelease`, `SwitcherCommandArm`, `SwitcherStack`, `SwitcherGrid`, `SwitcherStyle`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
 `HotKeyRegistration`, `ShortcutConflicts`, `PlacementLayouts`, `PlacementRestore`, `CloseFollowUp`,
 `QuitFollowUp`, `UsageDates`, `BootTime`, `CleanupSelection`, `KeptApps`, `SetupEnd`,
-`LoginItemProblem`, `ThumbnailAccess`, `ThumbnailCover`, `DebugLogFile`, `UnavailableFeature`, `AccessibilityLoss`, `ShowDesktopFront`, `PreviewFreshness` (when a window's picture is out of date) and `CaptureQueue` (at most three captures at a time).
+`LoginItemProblem`, `ThumbnailAccess`, `ThumbnailCover`, `DebugLogFile`, `UnavailableFeature`, `AccessibilityLoss` and `ShowDesktopFront`.
 
 The tests mirror the source folders: each type's suite is in
 `Tests/DockFlipKitTests/<Feature>/<Type>Tests.swift` (`Core/MRUListTests.swift`).

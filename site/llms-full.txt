@@ -39,7 +39,7 @@ People who come to the Mac from Windows miss three things: seeing an app's windo
 
 - Safari, Chrome, Edge, Firefox, Arc, Brave, Vivaldi, Opera, Zen, Orion, Chromium and DuckDuckGo list each window's tabs under it, and so do Finder and Terminal.
 - Tabs show when a window has more than one tab. The current tab is marked in the app's colour; each site gets a stable colour chip; duplicate tabs are marked "Duplicate".
-- Long lists fold after eight tabs ("Show all N tabs", "Show fewer"). Clicking a tab goes straight to it; pointing at a tab shows a × that closes it while the browser stays behind (pinned tabs have no × and stay).
+- Long lists fold after eight tabs ("Show all N tabs", "Show fewer"). Clicking a tab goes straight to it.
 - Tabs are read from the browser's tab bar through Accessibility, never from page content.
 
 ### ⌘Tab: Flip 3D or the Windows 11 grid
@@ -89,7 +89,7 @@ Shortcuts cannot be remapped, on purpose. There are no settings for taste: no th
 
 | Permission | Needed? | Used for |
 |---|---|---|
-| Accessibility | Yes | Listing, focusing, moving, resizing, minimizing and closing windows; reading tab titles from tab bars and closing a tab you click × on; the keyboard shortcuts; watching left clicks and drags for Dock icon clicks and drag snapping |
+| Accessibility | Yes | Listing, focusing, moving, resizing, minimizing and closing windows; reading tab titles from tab bars; the keyboard shortcuts; watching left clicks and drags for Dock icon clicks and drag snapping |
 | Screen Recording | No, opt-in | Window thumbnails, and nothing else |
 
 What DockFlip sees of input:

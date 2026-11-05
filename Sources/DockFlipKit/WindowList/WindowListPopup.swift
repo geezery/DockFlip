@@ -309,13 +309,6 @@ final class WindowListPopup {
         registry.focus(tab.windowID)
     }
 
-    /// The tab's ×: closes it in the browser, which stays behind; the list stays open.
-    func closeTab(_ tab: BrowserTab) {
-        // The next line moves up under the mouse without a new hover event.
-        model.hoveredTab = nil
-        TabCloser.close(tab, window: registry.axElement(for: tab.windowID), queues: registry.appQueues) { [weak self] in self?.refreshIfVisible() }
-    }
-
     func toggleExpanded(_ id: CGWindowID) {
         if model.expanded.contains(id) {
             model.expanded.remove(id)
