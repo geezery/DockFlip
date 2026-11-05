@@ -289,12 +289,16 @@ cycles an app's windows the macOS way. If DockFlip ever crashes and your ⌘Tab
 seems to be missing, start DockFlip and quit it once.
 </details>
 
-<details><summary><b>⌘Tab does nothing after I rebuilt it</b></summary>
+<details><summary><b>A permission is on, but DockFlip acts as if it isn't</b></summary>
 
-macOS may be holding on to an Accessibility entry for an older signature. Press
-**Reset Permission** in the setup window, or run
-`tccutil reset Accessibility io.github.dockflip.DockFlip`, and then allow
-DockFlip again.
+macOS remembers a permission for one signature of the app, and a build from
+source and a download are signed differently. After switching between them, or
+rebuilding, ⌘Tab may do nothing or thumbnails stay empty while System Settings
+shows DockFlip allowed. Quit DockFlip and run
+`tccutil reset Accessibility io.github.dockflip.DockFlip` and, for thumbnails,
+`tccutil reset ScreenCapture io.github.dockflip.DockFlip` (or press **Reset
+Permission** in the setup window for Accessibility). Then allow DockFlip again and
+restart it once. More in the [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting) wiki page.
 </details>
 
 <details><summary><b>I picked a language I can't read</b></summary>
