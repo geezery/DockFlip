@@ -49,11 +49,7 @@ extension SwitcherGridView {
             }
         }
         .padding(CGFloat(SwitcherGrid.panelPadding))
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
-        )
+        .frostedPanel(in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .shadow(color: .black.opacity(0.35), radius: 30, y: 12)
         // Taps on the panel's own background must not fall through to cancel.
         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))

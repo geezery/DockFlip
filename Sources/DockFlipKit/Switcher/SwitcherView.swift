@@ -127,7 +127,7 @@ struct SwitcherView: View {
                             .font(.system(size: 17, weight: .semibold))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
-                            .background(.regularMaterial, in: Capsule())
+                            .frostedBackground(in: Capsule())
                     } else if model.items.indices.contains(model.selection) {
                         let front = model.items[model.selection]
                         HStack(spacing: 12) {
@@ -143,7 +143,7 @@ struct SwitcherView: View {
                         }
                         .padding(.horizontal, 18)
                         .padding(.vertical, 12)
-                        .background(.regularMaterial, in: Capsule())
+                        .frostedBackground(in: Capsule())
                         .animation(nil, value: model.selection)
                     }
                     if model.query.isEmpty {
@@ -217,7 +217,7 @@ struct SearchPill: View {
         }
         .padding(.horizontal, 22)
         .padding(.vertical, 12)
-        .background(.regularMaterial, in: Capsule())
+        .frostedBackground(in: Capsule())
         .overlay(Capsule().strokeBorder(Color.accentColor.opacity(0.6), lineWidth: 1.5))
         .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
         .accessibilityElement(children: .combine)

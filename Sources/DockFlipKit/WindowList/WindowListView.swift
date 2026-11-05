@@ -74,16 +74,13 @@ struct WindowListView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         // Pictures need a calm, nearly solid backdrop; the lighter glass suits the plain list.
-        .background(
-            model.showsPreviews ? AnyShapeStyle(.thickMaterial) : AnyShapeStyle(.regularMaterial),
+        .frostedBackground(
+            model.showsPreviews ? .thickMaterial : .regularMaterial,
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
         // A window scrolled to the panel's foot, or the cue's fade, stays inside the rounded corners.
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
-        )
+        .overlay(FrostedEdge(shape: RoundedRectangle(cornerRadius: 12, style: .continuous)))
     }
 }
 
@@ -107,8 +104,7 @@ struct MoreWindowsCue: View {
         .frame(maxWidth: .infinity)
         .frame(height: WindowListLayout.moreCueHeight)
         .background(
-            Rectangle()
-                .fill(previews ? AnyShapeStyle(.thickMaterial) : AnyShapeStyle(.regularMaterial))
+            FrostedFill(material: previews ? .thickMaterial : .regularMaterial, shape: Rectangle())
                 .mask(LinearGradient(
                     stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.6)],
                     startPoint: .top, endPoint: .bottom

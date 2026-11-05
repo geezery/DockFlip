@@ -14,8 +14,7 @@ struct SwitcherStyleToggle: View {
             segment(.grid, symbol: "square.grid.2x2", label: Text("Grid"))
         }
         .padding(3)
-        .background(.regularMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(Color.white.opacity(0.18), lineWidth: 1))
+        .frostedPanel(in: Capsule())
         // Clicks between the segments must not fall through to cancel.
         .contentShape(Capsule())
         .onTapGesture {}
