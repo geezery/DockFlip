@@ -62,10 +62,6 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   title suffix, duplicates marked, more than 8 folded. Windows 7 showed IE tabs on
   the taskbar; Windows 11 shows Edge tabs in Alt+Tab. Tab titles are never logged.
   Firefox turns on its accessibility engine when asked for its tabs.
-  Each tab has a × on hover (Windows 7 thumbnails had one): DockFlip presses the
-  tab's own × through Accessibility, so the browser stays behind and no other
-  permission is asked. A tab whose × the browser hides (Chrome and Firefox on
-  narrow tabs) is selected in the background first, then its × pressed.
 - How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
   takes over clicks only on icons of apps that have windows (DockDoor's approach).
 
