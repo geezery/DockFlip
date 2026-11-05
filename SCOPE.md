@@ -65,7 +65,9 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   Each tab has a × on hover (Windows 7 thumbnails had one): DockFlip presses the
   tab's own × through Accessibility, so the browser stays behind and no other
   permission is asked. A tab whose × the browser hides (Chrome and Firefox on
-  narrow tabs) is selected in the background first, then its × pressed.
+  narrow tabs, Safari when the mouse is elsewhere) is selected in the background
+  first, then its × or the app's own ⌘W menu item pressed. Each step checks that
+  the tab is gone; the log names the steps and the tab's roles, never a title.
 - How: the Dock's accessibility tree reports the hovered icon; a mouse event tap
   takes over clicks only on icons of apps that have windows (DockDoor's approach).
 

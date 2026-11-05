@@ -29,3 +29,19 @@ struct TabCloseButtonTests {
         #expect(TabCloseButton.pick([]) == nil)
     }
 }
+
+/// The menu fallback presses ⌘W, and only ⌘W: ⇧⌘W closes the whole window.
+@Suite("CloseTabShortcut")
+struct CloseTabShortcutTests {
+    @Test func commandWAlone() {
+        #expect(CloseTabShortcut.matches(cmdChar: "W", modifiers: 0))
+        #expect(CloseTabShortcut.matches(cmdChar: "w", modifiers: 0))
+    }
+
+    @Test func notOtherShortcuts() {
+        #expect(!CloseTabShortcut.matches(cmdChar: "W", modifiers: 1)) // ⇧⌘W: Close Window
+        #expect(!CloseTabShortcut.matches(cmdChar: "W", modifiers: 2)) // ⌥⌘W: Close All
+        #expect(!CloseTabShortcut.matches(cmdChar: "Q", modifiers: 0))
+        #expect(!CloseTabShortcut.matches(cmdChar: nil, modifiers: nil))
+    }
+}
