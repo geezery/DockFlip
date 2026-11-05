@@ -21,11 +21,7 @@ struct SnapAssistView: View {
         }
         .padding(CGFloat(SnapAssistGrid.margin) - 6) // the panel already sits 6 pt inside the region
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
-        )
+        .frostedPanel(in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private func tile(_ index: Int, grid: SnapAssistGrid) -> some View {

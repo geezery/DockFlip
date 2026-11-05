@@ -76,7 +76,7 @@ struct SnapHintView: View {
             .font(.system(size: 13, weight: .medium))
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .frostedBackground(in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .padding(16)
         }
     }
