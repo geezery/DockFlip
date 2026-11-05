@@ -8,17 +8,27 @@ from source all carry the same version number, so the commit tells you whether
 yours has a fix. A build made with changes that commit doesn't hold says so:
 *DockFlip 0.3.0 (c79a704-dirty)*. Settings and **Save Debug Log…** show the same.
 
-## ⌘Tab does nothing after a rebuild
+## A permission is on, but DockFlip acts as if it isn't
 
-macOS may be holding on to an Accessibility entry for an older signature. Open
-DockFlip's setup and press **Reset Permission**, or run:
+macOS remembers each permission for one signature of the app. A build from
+source (`make install`) and a download from Releases are signed differently, and
+a rebuild can change the signature too. After you switch between them, or
+rebuild, *System Settings* can show DockFlip switched on while macOS refuses the
+new copy: ⌘Tab does nothing, or thumbnails stay empty. Switching DockFlip off
+and on in System Settings does not fix it; forgetting the old entry does.
+
+For Accessibility, open DockFlip's setup and press **Reset Permission**. Or quit
+DockFlip and run, in Terminal:
 
 ```sh
 tccutil reset Accessibility io.github.dockflip.DockFlip
+tccutil reset ScreenCapture io.github.dockflip.DockFlip
 ```
 
-Then allow DockFlip again in *System Settings → Privacy & Security →
-Accessibility*.
+The first line is Accessibility, the second *Screen & System Audio Recording*
+(thumbnails). Then open DockFlip, allow it again in *System Settings → Privacy &
+Security*, and restart DockFlip once, because macOS often applies a permission
+only after a restart.
 
 ## macOS's own ⌘Tab is gone
 
@@ -123,6 +133,10 @@ menu bar menu shows *Screen Recording is not allowed yet*; click it for Settings
 which says so under **Window thumbnails**: press **Open System Settings**,
 allow DockFlip there, then press **Restart DockFlip**, because macOS often
 applies the permission only after a restart.
+
+If System Settings already shows DockFlip allowed and pictures still don't come,
+macOS is holding on to an older signature: see
+[A permission is on, but DockFlip acts as if it isn't](#a-permission-is-on-but-dockflip-acts-as-if-it-isnt).
 
 ## DockFlip doesn't start when I log in
 
