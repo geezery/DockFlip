@@ -161,35 +161,40 @@ enum TabCloser {
         refresh()
 
         Task { @MainActor in
-            func ask<T: Sendable>(_ work: @escaping @Sendable () -> T) async -> T {
-                await withCheckedContinuation { continuation in
-                    queues.run(for: appPID, work, then: { continuation.resume(returning: $0) })
-                }
-            }
-            func done(_ step: String) {
-                Log.registry.notice("Tab close in window \(windowID, privacy: .public): \(step, privacy: .public)")
-                TabStore.shared.forget(windowID)
-                refresh()
-            }
-
-            let shape = await ask { TabClose.describe(target.element) }
+            let shape = await ask(queues, appPID) { TabClose.describe(target.element) }
             Log.registry.notice("Tab close in window \(windowID, privacy: .public), tab shows \(shape, privacy: .public)")
 
-            if await ask({ TabClose.pressCloseButton(target.element) }) {
+            if await ask(queues, appPID, { TabClose.pressCloseButton(target.element) }) {
                 try? await Task.sleep(for: settle)
-                if await ask({ TabClose.isGone(target.element) }) { return done("closed by its ×") }
+                if await ask(queues, appPID, { TabClose.isGone(target.element) }) { return finish(windowID, refresh, "closed by its ×") }
             }
-            guard await ask({ TabClose.select(target.element) }) else { return done("could not select the tab") }
+            guard await ask(queues, appPID, { TabClose.select(target.element) }) else { return finish(windowID, refresh, "could not select the tab") }
             try? await Task.sleep(for: settle)
-            if await ask({ TabClose.isGone(target.element) }) { return done("closed") }
+            if await ask(queues, appPID, { TabClose.isGone(target.element) }) { return finish(windowID, refresh, "closed") }
 
-            let second = await ask { TabClose.closeSelected(target.element, window: windowElement?.element, pid: appPID) }
+            let second = await ask(queues, appPID) { TabClose.closeSelected(target.element, window: windowElement?.element, pid: appPID) }
             try? await Task.sleep(for: settle)
-            if await ask({ TabClose.isGone(target.element) }) { return done("closed by \(second.rawValue)") }
+            if await ask(queues, appPID, { TabClose.isGone(target.element) }) { return finish(windowID, refresh, "closed by \(second.rawValue)") }
             // Not closed (a pinned tab, or a browser that refused): leave the
             // window showing the tab it showed before.
-            if let previous { _ = await ask { previous.element.perform(kAXPressAction) } }
-            done("not closed, tried \(second.rawValue)")
+            if let previous { _ = await ask(queues, appPID) { previous.element.perform(kAXPressAction) } }
+            finish(windowID, refresh, "not closed, tried \(second.rawValue)")
         }
+    }
+
+    /// Runs `work` on the app's queue and waits for its answer.
+    private static func ask<T: Sendable>(_ queues: AppQueues, _ pid: pid_t, _ work: @escaping @Sendable () -> T) async -> T {
+        await withCheckedContinuation { continuation in
+            // The body runs at once, on the caller's actor: the main actor.
+            MainActor.assumeIsolated {
+                queues.run(for: pid, work, then: { continuation.resume(returning: $0) })
+            }
+        }
+    }
+
+    private static func finish(_ windowID: CGWindowID, _ refresh: @MainActor @Sendable () -> Void, _ step: String) {
+        Log.registry.notice("Tab close in window \(windowID, privacy: .public): \(step, privacy: .public)")
+        TabStore.shared.forget(windowID)
+        refresh()
     }
 }
