@@ -8,6 +8,7 @@ import SwiftUI
 /// model as Flip 3D (`SwitcherView`); the layout rules are in `SwitcherGrid`.
 struct SwitcherGridView: View {
     @ObservedObject var model: SwitcherModel
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         GeometryReader { geo in
@@ -49,10 +50,21 @@ extension SwitcherGridView {
             }
         }
         .padding(CGFloat(SwitcherGrid.panelPadding))
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background {
+            let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+            ZStack {
+                shape.fill(.regularMaterial)
+                // In Dark Mode the material is about as dark as the windows behind
+                // it, so the panel melts into them; a light wash lifts it to the
+                // grey of Windows 11's own dark Alt+Tab.
+                if colorScheme == .dark {
+                    shape.fill(Color.white.opacity(0.09))
+                }
+            }
+        }
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
+                .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.26 : 0.18), lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.35), radius: 30, y: 12)
         // Taps on the panel's own background must not fall through to cancel.
