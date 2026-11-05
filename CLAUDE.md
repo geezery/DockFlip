@@ -42,7 +42,7 @@ Xcode is optional. Run from the repository root:
 | `make install` | Create the local signing certificate (first time), build, install to `/Applications`. |
 | `make uninstall` | Quit and remove the app, its permission, settings and certificate. |
 | `make clean` | Remove `.build/` and `build/`. |
-| `make app VERSION=0.5.0 SWIFT_FLAGS="--arch arm64 --arch x86_64"` | Universal build, as `release.yml` does. |
+| `make app VERSION=0.5.1 SWIFT_FLAGS="--arch arm64 --arch x86_64"` | Universal build, as `release.yml` does. |
 
 Known state (GitHub CI run 40022353598 on `main` at `c79a704`, 2026-10-23, `macos-26`):
 `make app` takes about 42 s from clean (Swift compile 30 s), `make test` about 24 s

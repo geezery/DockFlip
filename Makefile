@@ -11,7 +11,7 @@
 
 APP_NAME  := DockFlip
 BUNDLE_ID ?= io.github.dockflip.DockFlip
-VERSION   ?= 0.5.0
+VERSION   ?= 0.5.1
 BUILD_NUM ?= 1
 # The commit the app is built from, shown in the menu bar menu next to the version:
 # builds from source all say 0.3.0, so this is what tells them apart. It ends in -dirty
