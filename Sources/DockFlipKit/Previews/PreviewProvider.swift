@@ -14,8 +14,10 @@ import ScreenCaptureKit
 /// - The last picture of each open window is kept in memory, packed as HEIC
 ///   (`PictureCodec`), at most `maxKept`, so ⌘Tab and the Dock share them and open
 ///   with pictures at once, and windows that cannot be captured right now
-///   (minimized, on another desktop) still show how they looked. Never written
-///   to disk; dropped when the window closes, the screen locks or the Mac sleeps.
+///   (minimized, on another desktop) still show how they looked. The last few
+///   shown are also kept unpacked (at most `maxUnpacked`), so a list opens with
+///   them in its first frame. Never written to disk; dropped when the window
+///   closes, the screen locks or the Mac sleeps.
 /// - Never while a password field is focused anywhere (secure keyboard entry),
 ///   and never for password managers, Keychain Access, System Settings or
 ///   browsers' private windows (`NeverPictured`).
@@ -29,6 +31,8 @@ final class PreviewProvider {
     nonisolated static let cardPixelSize = 400
     /// Pictures kept, the least recently used dropped first.
     nonisolated static let maxKept = 64
+    /// Pictures also kept unpacked: the last ones shown (see `Unpacked`).
+    nonisolated static let maxUnpacked = 16
     /// A picture this fresh is used without capturing again, even of the active
     /// window, so the Dock list and a ⌘Tab right after it do not both capture it.
     private static let freshFor: TimeInterval = 1
@@ -45,7 +49,21 @@ final class PreviewProvider {
         var bytes: Int { heic?.count ?? (bitmap.map { $0.bytesPerRow * $0.height } ?? 0) }
     }
 
+    /// A picture shown lately, unpacked, so a list that opens again has it in its
+    /// first frame. Unpacking HEIC runs off the main thread and lands a frame or
+    /// two after the list appears, which flashed the placeholder every time.
+    private struct Unpacked {
+        let image: NSImage
+        let pixelSize: Int
+        /// The kept picture it was unpacked from; a newer one makes it stale.
+        let takenAt: Date
+        var lastUsed: Date
+        /// `unpack` sizes the image in pixels: four bytes each.
+        var bytes: Int { Int(image.size.width * image.size.height) * 4 }
+    }
+
     private var kept: [CGWindowID: Kept] = [:]
+    private var unpacked: [CGWindowID: Unpacked] = [:]
     private var freshness = PreviewFreshness<CGWindowID>()
     private var queue = CaptureQueue<CGWindowID>()
     /// Captures under way, shared by everyone who asks for the same window. They
@@ -90,6 +108,7 @@ final class PreviewProvider {
     private func dropAll() {
         generation += 1
         kept.removeAll()
+        unpacked.removeAll()
         freshness.forgetAll()
         content = nil
     }
@@ -113,6 +132,7 @@ final class PreviewProvider {
         let closed = kept.keys.filter { !exists($0) }
         for id in closed {
             kept[id] = nil
+            unpacked[id] = nil
             freshness.forget(id)
         }
     }
@@ -161,6 +181,7 @@ final class PreviewProvider {
         // Drop any picture taken before the window became private (a title change).
         if Self.neverPictured(window) {
             kept[window.id] = nil
+            unpacked[window.id] = nil
             freshness.forget(window.id)
             return
         }
@@ -168,7 +189,9 @@ final class PreviewProvider {
         if var picture = kept[id] {
             picture.lastUsed = Date()
             kept[id] = picture
-            if let image = await unpack(picture, maxPixelSize: maxPixelSize), !Task.isCancelled {
+            var image = unpackedPicture(id, maxPixelSize: maxPixelSize)
+            if image == nil { image = await unpackAndRemember(id, picture, maxPixelSize: maxPixelSize) }
+            if let image, !Task.isCancelled {
                 deliver(image)
             }
         }
@@ -177,8 +200,46 @@ final class PreviewProvider {
             return
         }
         guard let fresh = await capture(window, urgent: urgent).value, !Task.isCancelled,
-              let image = await unpack(fresh, maxPixelSize: maxPixelSize), !Task.isCancelled else { return }
+              let image = await unpackAndRemember(id, fresh, maxPixelSize: maxPixelSize), !Task.isCancelled else { return }
         deliver(image)
+    }
+
+    /// `window`'s picture right now, without waiting: the one memory holds
+    /// unpacked, when it is still the kept picture and at least `maxPixelSize`.
+    /// Nil otherwise; `loadPicture` then unpacks or captures it. Lets the Dock list
+    /// open with its pictures in place instead of filling them in a frame later.
+    func pictureAtHand(of window: WindowSnapshot, maxPixelSize: Int) -> NSImage? {
+        guard !Self.neverPictured(window) else { return nil }
+        return unpackedPicture(window.id, maxPixelSize: maxPixelSize)
+    }
+
+    /// True when `window` has a picture or will get one when asked: kept, or
+    /// capturable now. A list shows a calm placeholder for these while the picture
+    /// loads, and the mini-map for the rest.
+    func expectsPicture(of window: WindowSnapshot) -> Bool {
+        guard !Self.neverPictured(window) else { return false }
+        return kept[window.id] != nil || (!window.isMinimized && !window.isAppHidden && !window.isOnOtherSpace)
+    }
+
+    private func unpackedPicture(_ id: CGWindowID, maxPixelSize: Int) -> NSImage? {
+        guard let picture = kept[id], var entry = unpacked[id],
+              entry.takenAt == picture.takenAt, entry.pixelSize >= maxPixelSize else { return nil }
+        entry.lastUsed = Date()
+        unpacked[id] = entry
+        return entry.image
+    }
+
+    /// Unpacks `picture` and remembers the result for `pictureAtHand`, unless the
+    /// kept picture changed or went meanwhile (closed, turned private, screen locked).
+    private func unpackAndRemember(_ id: CGWindowID, _ picture: Kept, maxPixelSize: Int) async -> NSImage? {
+        guard let image = await unpack(picture, maxPixelSize: maxPixelSize) else { return nil }
+        guard kept[id]?.takenAt == picture.takenAt else { return image }
+        unpacked[id] = Unpacked(image: image, pixelSize: maxPixelSize, takenAt: picture.takenAt, lastUsed: Date())
+        if unpacked.count > Self.maxUnpacked {
+            let oldest = unpacked.sorted { $0.value.lastUsed < $1.value.lastUsed }.prefix(unpacked.count - Self.maxUnpacked)
+            for (id, _) in oldest { unpacked[id] = nil }
+        }
+        return image
     }
 
     private func needsCapture(_ window: WindowSnapshot) -> Bool {
@@ -322,6 +383,7 @@ final class PreviewProvider {
         let oldest = kept.sorted { $0.value.lastUsed < $1.value.lastUsed }.prefix(kept.count - Self.maxKept)
         for (id, _) in oldest {
             kept[id] = nil
+            unpacked[id] = nil
             freshness.forget(id)
         }
     }
@@ -329,6 +391,7 @@ final class PreviewProvider {
     /// One line for the debug log: counts and sizes only.
     func debugLine() -> String {
         let bytes = kept.values.reduce(0) { $0 + $1.bytes }
-        return "previews available=\(isAvailable) kept=\(kept.count) keptKB=\(bytes / 1024) captured=\(stats.captured) reused=\(stats.reused) failed=\(stats.failed) retried=\(stats.retried) packFailed=\(stats.packFailed) waiting=\(queue.waiting.count)"
+        let unpackedBytes = unpacked.values.reduce(0) { $0 + $1.bytes }
+        return "previews available=\(isAvailable) kept=\(kept.count) keptKB=\(bytes / 1024) unpacked=\(unpacked.count) unpackedKB=\(unpackedBytes / 1024) captured=\(stats.captured) reused=\(stats.reused) failed=\(stats.failed) retried=\(stats.retried) packFailed=\(stats.packFailed) waiting=\(queue.waiting.count)"
     }
 }

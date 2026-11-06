@@ -173,7 +173,8 @@ final class WindowListPopup {
                 tint: WindowAppearance.tint(of: window),
                 tabs: TabStore.shared.tabs(of: window.id) ?? [],
                 windowSize: window.frame.size,
-                neverPictured: PreviewProvider.neverPictured(window)
+                neverPictured: PreviewProvider.neverPictured(window),
+                expectsPicture: PreviewProvider.shared.expectsPicture(of: window)
             )
         }
 
@@ -201,11 +202,17 @@ final class WindowListPopup {
         }
         let previews = PreviewProvider.shared.isAvailable
         model.showsPreviews = previews
+        let first = Set(WindowListPreviews.firstBatch(item.windows.map(\.id)))
+        let firstWindows = previews ? item.windows.filter { first.contains($0.id) } : []
+        // Pictures memory holds unpacked go in before the panel shows: filled in
+        // a frame later, each card flashed its placeholder first.
+        for window in firstWindows where model.thumbnails[window.id] == nil {
+            model.thumbnails[window.id] = PreviewProvider.shared.pictureAtHand(of: window, maxPixelSize: pictureSize)
+        }
 
         showPanel(size: WindowListLayout.size(rows: rows, expanded: model.expanded, previews: previews), at: anchor, edge: source.dockEdge)
         if previews {
-            let first = Set(WindowListPreviews.firstBatch(item.windows.map(\.id)))
-            loadPreviews(for: item.windows.filter { first.contains($0.id) })
+            loadPreviews(for: firstWindows)
         }
     }
 
@@ -242,8 +249,7 @@ final class WindowListPopup {
         guard ids != previewIDs else { return }
         previewTasks.forEach { $0.cancel() }
         previewIDs = ids
-        // Cards are small; the peek pane shows one window large.
-        let size = model.usesCards ? PreviewProvider.cardPixelSize : Int(PreviewProvider.maxPixelWidth)
+        let size = pictureSize
         previewTasks = windows.map { window in
             Task { @MainActor [weak self] in
                 await PreviewProvider.shared.loadPicture(of: window, maxPixelSize: size) { image in
@@ -255,6 +261,11 @@ final class WindowListPopup {
         }
     }
 
+    /// Cards are small; the peek pane shows one window large.
+    private var pictureSize: Int {
+        model.usesCards ? PreviewProvider.cardPixelSize : Int(PreviewProvider.maxPixelWidth)
+    }
+
     /// The peek pane turned to a window the first batch left out (the 9th
     /// onwards): load just that one, ahead of any other capture.
     private func loadHoveredPreview(_ id: CGWindowID) {
@@ -264,6 +275,10 @@ final class WindowListPopup {
                                                       shown: Set(model.thumbnails.keys)),
               let window = shownWindows.first(where: { $0.id == target }) else { return }
         hoverPreviewIDs.insert(target)
+        // At once when memory has it unpacked, so the pane does not flash its placeholder.
+        if let image = PreviewProvider.shared.pictureAtHand(of: window, maxPixelSize: Int(PreviewProvider.maxPixelWidth)) {
+            model.thumbnails[target] = image
+        }
         hoverPreviewTasks.append(Task { @MainActor [weak self] in
             await PreviewProvider.shared.loadPicture(of: window, urgent: true) { image in
                 guard let self, self.isVisible else { return }

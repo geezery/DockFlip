@@ -124,7 +124,8 @@ struct WindowRowView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            RowPicture(row: row, thumbnail: model.showsPreviews ? model.thumbnails[row.id] : nil)
+            RowPicture(row: row, thumbnail: model.showsPreviews ? model.thumbnails[row.id] : nil,
+                       pending: model.showsPreviews && row.expectsPicture)
                 .frame(width: 52, height: 33)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
@@ -196,19 +197,42 @@ struct WindowRowView: View {
 struct RowPicture: View {
     let row: WindowListRow
     let thumbnail: NSImage?
+    /// The picture is on its way: a calm placeholder, not the mini-map, until it is in.
+    var pending = false
 
     var body: some View {
-        if let thumbnail {
+        if thumbnail != nil || pending {
             ZStack {
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(Color.primary.opacity(0.06))
-                ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, cornerRadius: 3)
+                if let thumbnail {
+                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, cornerRadius: 3)
+                        .transition(.opacity)
+                } else {
+                    PicturePending(icon: row.icon, iconSize: 14)
+                }
             }
+            .animation(.easeOut(duration: 0.15), value: thumbnail != nil)
             .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
             .accessibilityHidden(true)
         } else {
             Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
         }
+    }
+}
+
+/// Where a window's picture goes while it loads: the app's icon, dimmed, on the
+/// card's plain fill. Nothing in it looks like a picture, so nothing "wrong"
+/// shows before the real one fades in.
+struct PicturePending: View {
+    let icon: NSImage?
+    var iconSize: CGFloat = 28
+
+    var body: some View {
+        AppIconView(icon: icon, size: iconSize)
+            .opacity(0.35)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .accessibilityHidden(true)
     }
 }
 
@@ -250,6 +274,9 @@ struct WindowCardView: View {
                 RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color.primary.opacity(0.06))
                 if let thumbnail {
                     ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon)
+                        .transition(.opacity)
+                } else if row.expectsPicture && model.showsPreviews {
+                    PicturePending(icon: row.icon)
                 } else {
                     Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                 }
@@ -266,6 +293,7 @@ struct WindowCardView: View {
                     }
                 }
             }
+            .animation(.easeOut(duration: 0.15), value: thumbnail != nil)
             .frame(width: 188, height: 112)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         }
@@ -307,6 +335,8 @@ struct PeekPane: View {
                         .padding(8)
                         .id(row.id)
                         .transition(.opacity)
+                } else if row.expectsPicture {
+                    PicturePending(icon: row.icon, iconSize: 40)
                 } else {
                     Minimap(rect: row.minimap, isMinimized: row.isMinimized, tint: row.tint, icon: row.icon)
                         .padding(14)
@@ -318,6 +348,7 @@ struct PeekPane: View {
                 .strokeBorder(Color.accentColor, lineWidth: model.hoveringPeek ? 2 : 0)
         )
         .animation(.easeOut(duration: 0.15), value: row?.id)
+        .animation(.easeOut(duration: 0.15), value: row.map { model.thumbnails[$0.id] != nil })
         .frame(height: WindowListLayout.peekHeight)
         .contentShape(Rectangle())
         .onHover { model.hoveringPeek = $0 }
