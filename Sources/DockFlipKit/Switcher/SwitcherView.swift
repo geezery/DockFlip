@@ -257,7 +257,7 @@ struct FanCard: View {
                     LinearGradient(colors: [item.tint.opacity(0.16), item.tint.opacity(0.03)], startPoint: .top, endPoint: .bottom)
                 }
                 if let thumbnail {
-                    ThumbnailView(image: thumbnail, windowSize: item.windowSize, icon: item.icon)
+                    ThumbnailView(image: thumbnail, windowSize: item.windowSize, icon: item.icon, showsIcon: false)
                 } else {
                     details
                 }
@@ -331,6 +331,10 @@ struct ThumbnailView: View {
     let icon: NSImage?
     /// Rounds the picture's own corners, not the space around a fitted picture.
     var cornerRadius: CGFloat = 0
+    /// False on a card that already shows the app's icon beside its title just
+    /// above the picture: the frosted glass stays over the buttons, without a
+    /// second icon a few points below the first.
+    var showsIcon = true
 
     var body: some View {
         GeometryReader { geo in
@@ -343,8 +347,10 @@ struct ThumbnailView: View {
                 if let cover = ThumbnailCover.layout(picture: shown.size, window: windowSize) {
                     ZStack(alignment: .topLeading) {
                         Rectangle().fill(.ultraThinMaterial)
-                        AppIconView(icon: icon, size: cover.iconSide)
-                            .offset(x: cover.iconOrigin.x, y: cover.iconOrigin.y)
+                        if showsIcon {
+                            AppIconView(icon: icon, size: cover.iconSide)
+                                .offset(x: cover.iconOrigin.x, y: cover.iconOrigin.y)
+                        }
                     }
                     .frame(width: cover.plate.width, height: cover.plate.height, alignment: .topLeading)
                     .clipShape(UnevenRoundedRectangle(bottomTrailingRadius: cover.plate.height * 0.3, style: .continuous))

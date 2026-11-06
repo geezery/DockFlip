@@ -273,7 +273,7 @@ struct WindowCardView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color.primary.opacity(0.06))
                 if let thumbnail {
-                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon)
+                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, showsIcon: false)
                         .transition(.opacity)
                 } else if row.expectsPicture && model.showsPreviews {
                     PicturePending(icon: row.icon)

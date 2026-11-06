@@ -37,8 +37,10 @@ Tabs are read from the browser's tab bar, never from page content.
 With thumbnails on, apps with up to five windows show picture cards. Browsers
 and apps with more windows keep the list, with one big picture of the window
 under the mouse, and each window's own small picture at the front of its row.
-As in ⌘Tab, each picture has the app's icon at its top-left corner, over the
-window's own close, minimize and zoom buttons.
+As in ⌘Tab, the window's own close, minimize and zoom buttons are frosted over
+in each picture. A card shows the app's icon once, beside its title; the big
+picture under a browser's list, with no title above it, has the icon on that
+frosted corner.
 
 ## 🃏 ⌘Tab, Flip 3D edition
 
@@ -70,8 +72,8 @@ stack at all; it appears once ⌘ is held a moment, or as soon as you type.
   app's colour, the app icon, the document name, the display it's on, its size
   and a mini-map.
 - **With thumbnails** the window's own close, minimize and zoom buttons are
-  covered by the app's icon, because forty identical traffic lights aren't
-  helping anyone.
+  frosted over, because forty identical traffic lights aren't helping anyone.
+  The app's icon shows once, in the card's title bar.
 - **Works under secure input.** Password fields and some terminal modes turn on
   macOS's secure keyboard input, which blinds most switchers. DockFlip's keeps
   working.
