@@ -43,6 +43,9 @@ struct WindowListRow: Identifiable {
     var windowSize: CGSize = .zero
     /// A window thumbnails never picture (`NeverPictured`); its card says so when previews are on.
     var neverPictured = false
+    /// With previews on: the window has a picture or gets one when asked, so
+    /// while it loads the card shows a calm placeholder, not the mini-map.
+    var expectsPicture = false
 }
 
 /// State the views draw. Hover state lives here, not in SwiftUI's @State: @State

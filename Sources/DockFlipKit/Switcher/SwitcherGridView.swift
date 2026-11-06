@@ -136,7 +136,7 @@ struct GridTile: View {
     @ViewBuilder
     private var picture: some View {
         if let thumbnail {
-            ThumbnailView(image: thumbnail, windowSize: item.windowSize, icon: item.icon)
+            ThumbnailView(image: thumbnail, windowSize: item.windowSize, icon: item.icon, showsIcon: false)
         } else {
             ZStack {
                 Color(nsColor: .windowBackgroundColor).opacity(0.7)

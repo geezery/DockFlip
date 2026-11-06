@@ -69,7 +69,8 @@ rules:
   different since their last picture: ones you worked in, or whose title or
   size changed. Usually that is one or two windows.
 - They're kept in memory only, packed as HEIC: the last picture of each open
-  window, at most 64. They're never written to disk and are dropped when the
+  window, at most 64. The last 16 shown are also kept unpacked, ready to draw,
+  so a list opens with its pictures already in place. They're never written to disk and are dropped when the
   window closes, the screen locks or the Mac sleeps.
 - They're never taken while a password field is active.
 - Password managers (1Password, Bitwarden, Proton Pass, Enpass, Strongbox,

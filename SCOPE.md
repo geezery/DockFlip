@@ -107,7 +107,8 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   worked in since (active), or retitled or resized. A window left in the
   background keeps its picture; one that changes on its own (a video) shows how
   it was left. The last picture of each open window stays in memory, packed as
-  HEIC (at most 64), so ⌘Tab and the Dock share them, lists open with pictures
+  HEIC (at most 64; the last 16 shown also unpacked, ready for a list's first
+  frame), so ⌘Tab and the Dock share them, lists open with pictures
   at once and minimized or other-desktop windows still show how they looked.
   Never written to disk; dropped when the window closes, on screen lock and sleep.
 - Browsers with previews on: the tab list stays, with one picture of the window
