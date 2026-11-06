@@ -38,9 +38,8 @@ With thumbnails on, apps with up to five windows show picture cards. Browsers
 and apps with more windows keep the list, with one big picture of the window
 under the mouse, and each window's own small picture at the front of its row.
 As in ⌘Tab, the window's own close, minimize and zoom buttons are frosted over
-in each picture. A card shows the app's icon once, beside its title; the big
-picture under a browser's list, with no title above it, has the icon on that
-frosted corner.
+in each picture, and the app's icon shows once: beside each card's title, or
+beside the app's name at the top of the list.
 
 ## 🃏 ⌘Tab, Flip 3D edition
 

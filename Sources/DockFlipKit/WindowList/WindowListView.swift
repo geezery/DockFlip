@@ -16,14 +16,24 @@ struct WindowListView: View {
     @ObservedObject var model: WindowListModel
     let popup: WindowListPopup
 
+    /// The list with pictures (browsers, many windows): its pictures carry no icon.
+    private var listShowsIcon: Bool { model.showsPreviews && !model.usesCards && !model.rows.isEmpty }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(verbatim: model.title)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .padding(.horizontal, 14)
-                .frame(height: model.rows.isEmpty ? 44 : 36, alignment: .center)
+            HStack(spacing: 6) {
+                // The list layout shows the app's icon once, here, and not in
+                // each picture below; cards carry their own icon beside each title.
+                if listShowsIcon {
+                    AppIconView(icon: model.rows.first?.icon, size: 16)
+                }
+                Text(verbatim: model.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 14)
+            .frame(height: model.rows.isEmpty ? 44 : 36, alignment: .center)
 
             if !model.rows.isEmpty {
                 if model.usesCards {
@@ -206,7 +216,7 @@ struct RowPicture: View {
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(Color.primary.opacity(0.06))
                 if let thumbnail {
-                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, cornerRadius: 3)
+                    ThumbnailView(image: thumbnail, windowSize: row.windowSize, icon: row.icon, cornerRadius: 3, showsIcon: false)
                         .transition(.opacity)
                 } else {
                     PicturePending(icon: row.icon, iconSize: 14)
@@ -330,7 +340,7 @@ struct PeekPane: View {
                 .fill(Color.primary.opacity(0.06))
             if let row {
                 if let image = model.thumbnails[row.id] {
-                    ThumbnailView(image: image, windowSize: row.windowSize, icon: row.icon, cornerRadius: 6)
+                    ThumbnailView(image: image, windowSize: row.windowSize, icon: row.icon, cornerRadius: 6, showsIcon: false)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                         .padding(8)
                         .id(row.id)
