@@ -53,7 +53,7 @@
   'cmp.r5a': `Fäst fönster`, 'cmp.r5b': `✓ ⌃⌥ + pilar, dra till kanter`, 'cmp.r5d': `Av som standard`,
   'cmp.r6a': `Skärminspelning`, 'cmp.r6b': `Behövs inte`, 'cmp.r6c': `För miniatyrer`, 'cmp.r6d': `Krävs`,
   'cmp.r7a': `Pris`, 'cmp.r7b': `Gratis`, 'cmp.r7c': `Gratis; Pro från 9,99 $`, 'cmp.r7e': `Ingår`,
-  'cmp.src': `Kontrollerat den 30 oktober 2026 mot varje apps egen webbplats. <a href="https://github.com/geezery/DockFlip#how-it-compares">Hela tabellen, med källor</a>.`,
+  'cmp.src': `Kontrollerat den 12 november 2026 mot varje apps egen webbplats. <a href="https://github.com/geezery/DockFlip#how-it-compares">Hela tabellen, med källor</a>.`,
   'cmp.it': `Ska ett team få Macar? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip för IT</a>: ett paket och en profil som godkänner behörigheten i förväg, så att ingen får någon fråga.`,
   'inst.kicker': `Installera`, 'inst.h': `Två minuter, en omväg.`,
   'inst.1h': `Hämta`, 'inst.1p': `Öppna DockFlip.dmg och dra DockFlip till mappen Program.`,

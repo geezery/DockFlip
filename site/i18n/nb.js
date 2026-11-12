@@ -53,7 +53,7 @@
   'cmp.r5a': `Fest vinduer`, 'cmp.r5b': `✓ ⌃⌥ + piler, dra til kanter`, 'cmp.r5d': `Av som standard`,
   'cmp.r6a': `Skjermopptak`, 'cmp.r6b': `Trengs ikke`, 'cmp.r6c': `For miniatyrer`, 'cmp.r6d': `Påkrevd`,
   'cmp.r7a': `Pris`, 'cmp.r7b': `Gratis`, 'cmp.r7c': `Gratis; Pro fra 9,99 $`, 'cmp.r7e': `Inkludert`,
-  'cmp.src': `Sjekket 30. oktober 2026 på hver apps egen nettside. <a href="https://github.com/geezery/DockFlip#how-it-compares">Hele tabellen, med kilder</a>.`,
+  'cmp.src': `Sjekket 12. november 2026 på hver apps egen nettside. <a href="https://github.com/geezery/DockFlip#how-it-compares">Hele tabellen, med kilder</a>.`,
   'cmp.it': `Skal et team få Mac? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip for IT</a>: en pakke og en profil som godkjenner tillatelsen på forhånd, så ingen ser noen forespørsel.`,
   'inst.kicker': `Installer`, 'inst.h': `To minutter, én omvei.`,
   'inst.1h': `Last ned`, 'inst.1p': `Åpne DockFlip.dmg og dra DockFlip til Programmer-mappen.`,

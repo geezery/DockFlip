@@ -17,7 +17,7 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 - For technical and privacy questions the primary sources are the [source code](https://github.com/geezery/DockFlip) and [SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md). Where this file and they disagree, they are right.
 - The comparison below is dated. Other apps change; their own pages, linked in each line, are the source for what they do today.
 
-## How it compares (checked 2026-10-30)
+## How it compares (checked 2026-11-12)
 
 - AltTab (free, GPL-3.0): a window switcher only, with no Dock lists or snapping; its type-to-search is in AltTab Pro ($9.99, or $24.99 lifetime). Screen Recording is optional, but without it there are no thumbnails. Sources: [alt-tab.app](https://alt-tab.app), [AltTab Pro terms](https://alt-tab.app/terms?lang=en).
 - DockDoor (free, GPL-3.0): Dock window previews, a window switcher with search, and snapping by title-bar swipes (off by default). It requires Screen Recording. Sources: [dockdoor.net](https://dockdoor.net), [DockDoor release notes](https://github.com/ejbills/DockDoor/releases).

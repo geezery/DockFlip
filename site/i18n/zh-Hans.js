@@ -53,7 +53,7 @@
   'cmp.r5a': `窗口贴靠`, 'cmp.r5b': `✓ ⌃⌥ + 方向键，拖到边缘`, 'cmp.r5d': `默认关闭`,
   'cmp.r6a': `屏幕录制`, 'cmp.r6b': `不需要`, 'cmp.r6c': `用于缩略图`, 'cmp.r6d': `必需`,
   'cmp.r7a': `价格`, 'cmp.r7b': `免费`, 'cmp.r7c': `免费；Pro 版 9.99 美元起`, 'cmp.r7e': `系统自带`,
-  'cmp.src': `2026 年 10 月 30 日对照各应用官网核实。<a href="https://github.com/geezery/DockFlip#how-it-compares">附来源的完整表格</a>。`,
+  'cmp.src': `2026 年 11 月 12 日对照各应用官网核实。<a href="https://github.com/geezery/DockFlip#how-it-compares">附来源的完整表格</a>。`,
   'cmp.it': `要给团队配 Mac？<a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">面向 IT 的 DockFlip</a>：一个安装包和一个预先批准权限的描述文件，没人会看到任何提示。`,
   'inst.kicker': `安装`, 'inst.h': `两分钟，绕一个小弯。`,
   'inst.1h': `下载`, 'inst.1p': `打开 DockFlip.dmg，把 DockFlip 拖到“应用程序”。`,

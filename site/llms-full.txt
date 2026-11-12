@@ -148,7 +148,7 @@ Thumbnails, when turned on, are taken on demand (hovering a Dock icon, pressing 
 - No thirds, gaps, "almost maximize", per-app rules, themes or Start menu, by design (see [SCOPE.md](https://github.com/geezery/DockFlip/blob/main/SCOPE.md)).
 - More in [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting) and the [issues](https://github.com/geezery/DockFlip/issues).
 
-## How it compares (checked 2026-10-30)
+## How it compares (checked 2026-11-12)
 
 | | DockFlip | AltTab | DockDoor | DockDoor Pro | macOS 27 alone |
 |---|---|---|---|---|---|

@@ -53,7 +53,7 @@
   'cmp.r5a': `스냅`, 'cmp.r5b': `✓ ⌃⌥ + 화살표, 가장자리로 드래그`, 'cmp.r5d': `기본값은 꺼짐`,
   'cmp.r6a': `화면 기록`, 'cmp.r6b': `필요 없음`, 'cmp.r6c': `축소판용`, 'cmp.r6d': `필수`,
   'cmp.r7a': `가격`, 'cmp.r7b': `무료`, 'cmp.r7c': `무료, Pro는 $9.99부터`, 'cmp.r7e': `기본 제공`,
-  'cmp.src': `2026년 10월 30일 각 앱의 공식 사이트에서 확인. <a href="https://github.com/geezery/DockFlip#how-it-compares">출처가 포함된 전체 표</a>.`,
+  'cmp.src': `2026년 11월 12일 각 앱의 공식 사이트에서 확인. <a href="https://github.com/geezery/DockFlip#how-it-compares">출처가 포함된 전체 표</a>.`,
   'cmp.it': `팀에 Mac을 배포하나요? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">IT용 DockFlip</a>: 패키지와 권한을 미리 승인하는 프로파일이 있어 아무에게도 확인 창이 뜨지 않습니다.`,
   'inst.kicker': `설치`, 'inst.h': `2분이면 됩니다. 우회는 한 번뿐.`,
   'inst.1h': `다운로드`, 'inst.1p': `DockFlip.dmg를 열고 DockFlip을 응용 프로그램으로 드래그하세요.`,

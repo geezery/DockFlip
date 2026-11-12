@@ -132,7 +132,7 @@ and Settings say so (see [Troubleshooting](Troubleshooting)). ⌘` stays the mac
 
 ## Compared with AltTab, DockDoor and macOS 27
 
-Checked on 30 October 2026; the full table with sources is in the
+Checked on 12 November 2026; the full table with sources is in the
 [README](https://github.com/geezery/DockFlip#how-it-compares).
 
 - **Only DockFlip** does all three jobs (Dock window lists, a window switcher

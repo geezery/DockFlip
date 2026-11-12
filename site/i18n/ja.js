@@ -53,7 +53,7 @@
   'cmp.r5a': `スナップ`, 'cmp.r5b': `✓ ⌃⌥＋矢印、端へドラッグ`, 'cmp.r5d': `初期設定はオフ`,
   'cmp.r6a': `画面収録`, 'cmp.r6b': `不要`, 'cmp.r6c': `サムネール用`, 'cmp.r6d': `必須`,
   'cmp.r7a': `価格`, 'cmp.r7b': `無料`, 'cmp.r7c': `無料、Proは9.99ドルから`, 'cmp.r7e': `標準搭載`,
-  'cmp.src': `2026年10月30日に各アプリの公式サイトで確認。<a href="https://github.com/geezery/DockFlip#how-it-compares">出典付きの完全な表</a>。`,
+  'cmp.src': `2026年11月12日に各アプリの公式サイトで確認。<a href="https://github.com/geezery/DockFlip#how-it-compares">出典付きの完全な表</a>。`,
   'cmp.it': `チームにMacを配りますか？ <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">IT担当者向けDockFlip</a>：パッケージと、許可をあらかじめ承認するプロファイルがあるので、誰の画面にも確認が出ません。`,
   'inst.kicker': `インストール`, 'inst.h': `2分、寄り道は1回。`,
   'inst.1h': `ダウンロード`, 'inst.1p': `DockFlip.dmgを開き、DockFlipを「アプリケーション」へドラッグ。`,

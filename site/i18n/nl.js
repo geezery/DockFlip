@@ -53,7 +53,7 @@
   'cmp.r5a': `Vensters uitlijnen`, 'cmp.r5b': `✓ ⌃⌥ + pijlen, slepen naar randen`, 'cmp.r5d': `Standaard uit`,
   'cmp.r6a': `Schermopname`, 'cmp.r6b': `Niet nodig`, 'cmp.r6c': `Voor miniaturen`, 'cmp.r6d': `Vereist`,
   'cmp.r7a': `Prijs`, 'cmp.r7b': `Gratis`, 'cmp.r7c': `Gratis; Pro vanaf $ 9,99`, 'cmp.r7e': `Inbegrepen`,
-  'cmp.src': `Gecontroleerd op 30 oktober 2026 op de eigen site van elke app. <a href="https://github.com/geezery/DockFlip#how-it-compares">De hele tabel, met bronnen</a>.`,
+  'cmp.src': `Gecontroleerd op 12 november 2026 op de eigen site van elke app. <a href="https://github.com/geezery/DockFlip#how-it-compares">De hele tabel, met bronnen</a>.`,
   'cmp.it': `Krijgt een team Macs? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip voor IT</a>: een pakket en een profiel dat de toestemming vooraf goedkeurt, zodat niemand een melding krijgt.`,
   'inst.kicker': `Installeren`, 'inst.h': `Twee minuten, één omweg.`,
   'inst.1h': `Download`, 'inst.1p': `Open DockFlip.dmg en sleep DockFlip naar de map Apps.`,

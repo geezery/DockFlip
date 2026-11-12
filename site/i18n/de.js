@@ -53,7 +53,7 @@
   'cmp.r5a': `Andocken`, 'cmp.r5b': `✓ ⌃⌥ + Pfeile, an Ränder ziehen`, 'cmp.r5d': `Standardmäßig aus`,
   'cmp.r6a': `Bildschirmaufnahme`, 'cmp.r6b': `Nicht nötig`, 'cmp.r6c': `Für Vorschaubilder`, 'cmp.r6d': `Erforderlich`,
   'cmp.r7a': `Preis`, 'cmp.r7b': `Kostenlos`, 'cmp.r7c': `Kostenlos; Pro ab 9,99 $`, 'cmp.r7e': `Inklusive`,
-  'cmp.src': `Geprüft am 30. Oktober 2026 auf den Websites der Apps. <a href="https://github.com/geezery/DockFlip#how-it-compares">Die ganze Tabelle, mit Quellen</a>.`,
+  'cmp.src': `Geprüft am 12. November 2026 auf den Websites der Apps. <a href="https://github.com/geezery/DockFlip#how-it-compares">Die ganze Tabelle, mit Quellen</a>.`,
   'cmp.it': `Macs für ein Team? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip für die IT</a>: ein Paket und ein Profil, das die Berechtigung vorab erteilt, sodass niemand eine Abfrage sieht.`,
   'inst.kicker': `Installation`, 'inst.h': `Zwei Minuten, ein Umweg.`,
   'inst.1h': `Herunterladen`, 'inst.1p': `Öffne DockFlip.dmg und zieh DockFlip in den Ordner Programme.`,

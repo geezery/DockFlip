@@ -56,7 +56,7 @@
   'cmp.r5a': `Ikkunoiden kiinnitys`, 'cmp.r5b': `✓ ⌃⌥ ja nuolet, vetäminen reunoille`, 'cmp.r5d': `Oletuksena pois päältä`,
   'cmp.r6a': `Näytön tallennus`, 'cmp.r6b': `Ei tarvita`, 'cmp.r6c': `Esikatselukuviin`, 'cmp.r6d': `Pakollinen`,
   'cmp.r7a': `Hinta`, 'cmp.r7b': `Ilmainen`, 'cmp.r7c': `Ilmainen; Pro alkaen 9,99 $`, 'cmp.r7e': `Sisältyy`,
-  'cmp.src': `Tarkistettu 30.10.2026 kunkin ohjelman omilta sivuilta. <a href="https://github.com/geezery/DockFlip#how-it-compares">Koko taulukko lähteineen</a>.`,
+  'cmp.src': `Tarkistettu 12.11.2026 kunkin ohjelman omilta sivuilta. <a href="https://github.com/geezery/DockFlip#how-it-compares">Koko taulukko lähteineen</a>.`,
   'cmp.it': `Otatko Macit käyttöön koko tiimille? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip IT:lle</a>: asennuspaketti ja profiili, joka myöntää luvan etukäteen, joten kenenkään ei tarvitse vastata kyselyyn.`,
   'inst.kicker': `Asennus`, 'inst.h': `Kaksi minuuttia, yksi kiertotie.`,
   'inst.1h': `Lataa`, 'inst.1p': `Avaa DockFlip.dmg ja vedä DockFlip Ohjelmat-kansioon.`,

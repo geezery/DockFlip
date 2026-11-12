@@ -53,7 +53,7 @@
   'cmp.r5a': `Przyciąganie`, 'cmp.r5b': `✓ ⌃⌥ + strzałki, przeciąganie do krawędzi`, 'cmp.r5d': `Domyślnie wyłączone`,
   'cmp.r6a': `Nagrywanie ekranu`, 'cmp.r6b': `Niepotrzebne`, 'cmp.r6c': `Do miniatur`, 'cmp.r6d': `Wymagane`,
   'cmp.r7a': `Cena`, 'cmp.r7b': `Za darmo`, 'cmp.r7c': `Za darmo; Pro od 9,99 $`, 'cmp.r7e': `W zestawie`,
-  'cmp.src': `Sprawdzone 30 października 2026 na stronie każdej aplikacji. <a href="https://github.com/geezery/DockFlip#how-it-compares">Pełna tabela ze źródłami</a>.`,
+  'cmp.src': `Sprawdzone 12 listopada 2026 na stronie każdej aplikacji. <a href="https://github.com/geezery/DockFlip#how-it-compares">Pełna tabela ze źródłami</a>.`,
   'cmp.it': `Wdrażasz Maki w zespole? <a href="https://github.com/geezery/DockFlip/blob/main/docs/IT.md">DockFlip dla IT</a>: pakiet i profil, który z góry zatwierdza uprawnienie, więc nikt nie zobaczy żadnego monitu.`,
   'inst.kicker': `Instalacja`, 'inst.h': `Dwie minuty, jeden objazd.`,
   'inst.1h': `Pobierz`, 'inst.1p': `Otwórz DockFlip.dmg i przeciągnij DockFlip do folderu Programy.`,
