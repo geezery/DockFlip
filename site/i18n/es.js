@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> mostrar escritorio, <kbd class="sym">⌃⌥E</kbd> nueva ventana del Finder`,
   'snap.l3': `Todos los atajos están en el menú de DockFlip, en la barra de menús.`,
   'snap.l4': `<b>Snap Assist:</b> tras ajustar una ventana, las demás aparecen como tarjetas en el espacio libre de al lado. Elige una y lo ocupará.`,
+  'snap.l5': `<b>Snap layouts:</b> empuja una ventana hacia arriba y bajan los diseños de Windows 11. Suéltala en una zona. Los primeros incluyen tus últimas ventanas, así que un solo gesto lo ordena todo.`,
   'priv.kicker': `Privacidad`, 'priv.h': `Cuidado al detalle, sin espiar.`,
   'priv.p': `La mayoría de los selectores de ventanas piden grabar tu pantalla nada más abrirlos, porque se basan en capturas. DockFlip lo dibuja todo con la información que macOS ya le da, así que nunca necesita ver tu pantalla.`,
   'priv.l1': `<b>Un solo permiso:</b> Accesibilidad. Grabación de pantalla solo si activas las miniaturas.`,

@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> Schreibtisch anzeigen, <kbd class="sym">⌃⌥E</kbd> neues Finder-Fenster`,
   'snap.l3': `Alle Kurzbefehle stehen im DockFlip-Menü in der Menüleiste.`,
   'snap.l4': `<b>Snap Assist:</b> Nach dem Andocken erscheinen deine anderen Fenster als Karten im freien Bereich daneben. Wähle eins aus, und es füllt die Lücke.`,
+  'snap.l5': `<b>Snap Layouts:</b> Schieb ein Fenster nach oben, und die Layouts von Windows 11 kommen herunter. Lass es auf einem Feld los. Die ersten nehmen deine letzten Fenster gleich mit, ein Loslassen ordnet alles.`,
   'priv.kicker': `Datenschutz`, 'priv.h': `Elegant, ohne hinzuschauen.`,
   'priv.p': `Die meisten Fensterumschalter wollen deinen Bildschirm aufnehmen, sobald du sie öffnest, weil sie auf Screenshots basieren. DockFlip zeichnet alles aus dem, was macOS ohnehin bereitstellt, und muss deinen Bildschirm deshalb nie sehen.`,
   'priv.l1': `<b>Eine Berechtigung:</b> Bedienungshilfen. Bildschirmaufnahme nur, wenn du Vorschaubilder einschaltest.`,

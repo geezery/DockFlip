@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> visa skrivbordet, <kbd class="sym">⌃⌥E</kbd> nytt Finder-fönster`,
   'snap.l3': `Alla kortkommandon finns i DockFlips meny i menyraden.`,
   'snap.l4': `<b>Snap Assist:</b> när du har fäst ett fönster visas dina andra fönster som kort i det tomma utrymmet bredvid. Välj ett så fyller det platsen.`,
+  'snap.l5': `<b>Snap layouts:</b> skjut upp ett fönster mot toppen, så kommer layouterna från Windows 11 ner. Släpp det på en ruta. De första tar med dina senaste fönster, så ett släpp ordnar allt.`,
   'priv.kicker': `Integritet`, 'priv.h': `Snyggt utan att snegla.`,
   'priv.p': `De flesta fönsterväxlare ber om att få spela in skärmen så fort du öppnar dem, eftersom de bygger på skärmbilder. DockFlip ritar allt utifrån det macOS redan delar med sig av, så den behöver aldrig se din skärm.`,
   'priv.l1': `<b>En behörighet:</b> Hjälpmedel. Skärminspelning bara om du slår på miniatyrer.`,

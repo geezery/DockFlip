@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> mostra scrivania, <kbd class="sym">⌃⌥E</kbd> nuova finestra del Finder`,
   'snap.l3': `Tutte le abbreviazioni da tastiera sono nel menu di DockFlip, nella barra dei menu.`,
   'snap.l4': `<b>Snap Assist:</b> dopo un aggancio, le altre finestre compaiono come riquadri nello spazio libero accanto. Scegline una per riempirlo.`,
+  'snap.l5': `<b>Snap layouts:</b> spingi una finestra verso l’alto e scendono i layout di Windows 11. Rilasciala su una zona. I primi portano con sé le tue ultime finestre: un solo rilascio sistema tutto.`,
   'priv.kicker': `Privacy`, 'priv.h': `Curato, senza sbirciare.`,
   'priv.p': `La maggior parte dei selettori di finestre chiede di registrare lo schermo appena li apri, perché si basa sugli screenshot. DockFlip disegna tutto con le informazioni che macOS gli fornisce già, quindi non ha mai bisogno di vedere il tuo schermo.`,
   'priv.l1': `<b>Una sola autorizzazione:</b> Accessibilità. Registrazione schermo solo se attivi le miniature.`,

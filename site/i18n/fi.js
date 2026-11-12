@@ -34,6 +34,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> näytä työpöytä, <kbd class="sym">⌃⌥E</kbd> uusi Finder-ikkuna`,
   'snap.l3': `Kaikki pikanäppäimet löytyvät DockFlipin valikosta valikkorivillä.`,
   'snap.l4': `<b>Snap Assist:</b> kun ikkuna on kiinnitetty, muut ikkunasi näkyvät kortteina vapaaksi jääneessä tilassa. Valitse yksi, niin se täyttää tilan.`,
+  'snap.l5': `<b>Snap layouts:</b> työnnä ikkuna yläreunaan, niin Windows 11:n asettelut laskeutuvat esiin. Pudota se haluamaasi kohtaan. Ensimmäiset ottavat mukaan myös viimeisimmät ikkunasi, joten yksi pudotus järjestää kaikki.`,
   'priv.kicker': `Yksityisyys`, 'priv.h': `Hiottu ulkoasu, ei kurkkimista.`,
   'priv.p': `Useimmat ikkunanvaihtajat pyytävät heti lupaa tallentaa näyttöäsi, koska ne perustuvat kuvakaappauksiin. DockFlip piirtää kaiken niistä tiedoista, jotka macOS jo antaa sille, joten sen ei koskaan tarvitse nähdä näyttöäsi.`,
   'priv.l1': `<b>Yksi lupa:</b> Käyttöapu. Näytön tallennus vain, jos otat esikatselukuvat käyttöön.`,

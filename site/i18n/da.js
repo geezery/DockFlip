@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> vis skrivebord, <kbd class="sym">⌃⌥E</kbd> nyt Finder-vindue`,
   'snap.l3': `Alle genveje står i DockFlips menu i menulinjen.`,
   'snap.l4': `<b>Snap Assist:</b> når du har fastgjort et vindue, vises dine andre vinduer som kort på den tomme plads ved siden af. Vælg ét, så fylder det pladsen.`,
+  'snap.l5': `<b>Snap layouts:</b> skub et vindue op mod toppen, så kommer Windows 11's layouts ned. Slip det på et felt. De første tager dine seneste vinduer med, så ét slip ordner det hele.`,
   'priv.kicker': `Privatliv`, 'priv.h': `Flot uden at kigge med.`,
   'priv.p': `De fleste vinduesskiftere beder om at optage skærmen, så snart du åbner dem, fordi de bygger på skærmbilleder. DockFlip tegner alt ud fra det, macOS allerede deler med den, så den behøver aldrig at se din skærm.`,
   'priv.l1': `<b>Én tilladelse:</b> Tilgængelighed. Skærmoptagelse kun hvis du slår miniaturer til.`,

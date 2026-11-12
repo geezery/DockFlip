@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> vis skrivebordet, <kbd class="sym">⌃⌥E</kbd> nytt Finder-vindu`,
   'snap.l3': `Alle snarveier står i DockFlips meny i menylinjen.`,
   'snap.l4': `<b>Snap Assist:</b> når du har festet et vindu, vises de andre vinduene dine som kort på den tomme plassen ved siden av. Velg ett, så fyller det plassen.`,
+  'snap.l5': `<b>Snap layouts:</b> skyv et vindu opp mot toppen, så kommer oppsettene fra Windows 11 ned. Slipp det på et felt. De første tar med de siste vinduene dine, så ett slipp ordner alt.`,
   'priv.kicker': `Personvern`, 'priv.h': `Elegant uten å snoke.`,
   'priv.p': `De fleste vindusvekslere ber om å ta opp skjermen så snart du åpner dem, fordi de bygger på skjermbilder. DockFlip tegner alt ut fra det macOS allerede deler med den, så den trenger aldri å se skjermen din.`,
   'priv.l1': `<b>Én tillatelse:</b> Tilgjengelighet. Skjermopptak bare hvis du slår på miniatyrer.`,

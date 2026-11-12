@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> bureaublad tonen, <kbd class="sym">⌃⌥E</kbd> nieuw Finder-venster`,
   'snap.l3': `Alle sneltoetsen staan in het DockFlip-menu in de menubalk.`,
   'snap.l4': `<b>Snap Assist:</b> nadat je een venster hebt uitgelijnd, verschijnen je andere vensters als kaarten in de lege ruimte ernaast. Kies er een om die ruimte te vullen.`,
+  'snap.l5': `<b>Snap layouts:</b> duw een venster naar boven en de indelingen van Windows 11 zakken naar beneden. Laat het los op een vak. De eerste nemen je laatste vensters mee, dus één keer loslaten regelt alles.`,
   'priv.kicker': `Privacy`, 'priv.h': `Mooi, zonder mee te kijken.`,
   'priv.p': `De meeste vensterwisselaars willen je scherm opnemen zodra je ze opent, omdat ze op schermafbeeldingen zijn gebouwd. DockFlip tekent alles op basis van wat macOS al met hem deelt, dus hij hoeft je scherm nooit te zien.`,
   'priv.l1': `<b>Eén toestemming:</b> Toegankelijkheid. Schermopname alleen als je miniaturen aanzet.`,

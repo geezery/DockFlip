@@ -31,6 +31,7 @@
   'snap.l2': `<kbd class="sym">⌃⌥D</kbd> pokaż biurko, <kbd class="sym">⌃⌥E</kbd> nowe okno Findera`,
   'snap.l3': `Wszystkie skróty są w menu DockFlip na pasku menu.`,
   'snap.l4': `<b>Snap Assist:</b> po przyciągnięciu okna pozostałe okna pojawiają się jako kafelki w wolnym miejscu obok. Wybierz jedno, a zajmie to miejsce.`,
+  'snap.l5': `<b>Snap layouts:</b> dosuń okno do górnej krawędzi, a zjadą układy z Windows 11. Upuść je na wybranym polu. Pierwsze zabierają też ostatnie okna, więc jedno upuszczenie układa wszystko.`,
   'priv.kicker': `Prywatność`, 'priv.h': `Dopracowany bez podglądania.`,
   'priv.p': `Większość przełączników okien od razu prosi o nagrywanie ekranu, bo opiera się na zrzutach ekranu. DockFlip rysuje wszystko z tego, co macOS już mu udostępnia, więc nigdy nie musi widzieć Twojego ekranu.`,
   'priv.l1': `<b>Jedno uprawnienie:</b> Dostępność. Nagrywanie ekranu tylko wtedy, gdy włączysz miniatury.`,
