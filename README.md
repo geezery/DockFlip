@@ -140,7 +140,10 @@ front.
 
 **⌃⌥ is your Win key.** Use the arrows for halves, maximize and quarters, or
 drag a window to an edge or a corner and let go; drag it away and it takes back
-its earlier size. Then **Snap Assist** shows your other windows in the space
+its earlier size. Push a window up to the top of the screen and the **snap
+layouts** come down: halves, thirds, two thirds, quarters. Let go over a zone
+and the window fills it. The first pictures are suggestions with your last
+windows already in place: one drop arranges them all. Then **Snap Assist** shows your other windows in the space
 left beside a half or a quarter: click one, or pick it with the arrows and Return,
 and it fills that space. Esc or a click elsewhere closes them.
 

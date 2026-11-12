@@ -94,6 +94,11 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   move to next display.
 - Drag snapping: drag to left/right edge (half), top edge (maximize),
   corners (quarter).
+- Snap layouts bar: push a window up to the top of a display and Windows 11's
+  layouts come down (halves, 2/3 + 1/3, half + quarters, quarters, thirds,
+  wide middle); drop on a zone to fill it. First come up to two snap suggestions
+  (the last windows already in place; one drop arranges them all). Fixed layouts,
+  no layout editor.
 - Snap Assist: after a snap to a half or a quarter, the other windows appear as
   cards in the space beside it; pick one to fill it.
 - If macOS's native edge tiling is on, DockFlip detects it and offers to turn it off
@@ -165,8 +170,9 @@ fondly, both are the best bits of Windows, and neither would call the other
 - Per-app CPU/memory, cross-display drag.
 - Mac App Store distribution (the sandbox forbids the Accessibility API).
 - macOS versions older than 26.
-- Snap layouts (hover over the maximize button for a grid of layouts): macOS's
-  own green-button menu has offered tile layouts since Sequoia.
+- Snap layouts on the maximize button (hover for a grid of layouts): macOS's
+  own green-button menu has offered tile layouts since Sequoia. (The bar that
+  comes down when a window is dragged to the top is in, above.)
 
 ### Not from Windows, but earned their place
 - **Clean Up**: suggests closing windows unused for three days and quitting apps
