@@ -37,9 +37,10 @@ of the open switcher, or choose it under *⌘Tab switcher* in Settings.
 ⌃⌥ is the closest thing a Mac keyboard has to a free Win key.
 
 **Where are Snap layouts?**
-macOS already has them: hover over a window's green button for a menu of
-tile layouts. DockFlip adds what macOS lacks: Windows' own keys (⌃⌥ for the
-Win key) and Snap Assist.
+Push a window up to the top of the screen, as on Windows 11: a bar of layouts
+comes down, and letting go over a zone puts the window there. Hovering over a
+window's green button gives macOS's own menu of tile layouts, so DockFlip does
+not add a second one there.
 
 **Can I change the shortcuts?**
 Not yet, on purpose: good defaults beat a settings window. You can switch all

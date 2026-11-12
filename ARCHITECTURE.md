@@ -40,14 +40,14 @@ thread.
 | `Switcher/` | The ⌘Tab switcher: controller, the Flip 3D view and the Windows 11 grid view (`SwitcherRootView` picks by `SwitcherStyle`; `SwitcherStyleToggle` switches it from inside the switcher and saves it as the setting), selection and type-to-filter rules, `SwitcherStack` (which cards are drawn), `SwitcherGrid` (the grid's rows). |
 | `Dock/` | `DockController`: watches the real Dock (hovered icon, clicks, ⌃⌥1…9; the click tap is in `DockController+Clicks`); `DockPress` tells a click from a drag or press-and-hold, which go on to the Dock; `DockClick` decides what a click does; `DockAppOrder` finds the n-th app for ⌃⌥1…9, reading the Dock's icons only up to it; `DockAim` tells a diagonal towards the open list from a move to the next icon; `DockAttachRetry` tries a failed attach to the Dock again after 1, 2 and 4 s (login, a Dock relaunch). |
 | `WindowList/` | The window list above a Dock icon: popup controller, views, browser tab reading and the tab list. |
-| `WindowLayout/` | Snapping (rules in `SnapEngine` and `SnapZone`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview, the Snap Assist cards in `SnapAssistPanel`), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
+| `WindowLayout/` | Snapping (rules in `SnapEngine` and `SnapZone`, input in `SnapController`, drag or click in `SnapDrag`, the drag preview, the Snap Assist cards in `SnapAssistPanel`, the snap layouts bar: `SnapLayouts` and `SnapLayoutBar` rules, `SnapLayoutBarPanel`), Show Desktop, macOS's own edge tiling switch and the one-time hint about it in the preview (`EdgeTilingHint`). |
 | `Previews/` | Opt-in thumbnails and every safety rule around them. |
 | `Placement/` | Window positions remembered per display setup, kept in UserDefaults until the Mac restarts. |
 | `Cleanup/` | Usage tracking, the Clean Up window and the apps it never suggests (`KeptApps`). |
 | `UI/` | Small shared pieces: panels, the mini-map, window colours, `WindowPresenter`, `ThumbnailCover` (where the app's icon covers a window's buttons in its picture). |
 | `Diagnostics/` | Logging, timing statistics, the debug log export and its self-check of the private calls and the Dock hook (`SelfCheck`). |
 
-Pure rules with no AppKit in them (`SnapEngine`, `SnapAssist`, `SnapAssistGrid`, `SnapDrag`, `SnapZone`, `SnapRestoreFrames`, `EdgeTilingHint`, `SwitcherSelection`,
+Pure rules with no AppKit in them (`SnapEngine`, `SnapAssist`, `SnapAssistGrid`, `SnapDrag`, `SnapZone`, `SnapLayouts`, `SnapLayoutBar`, `SnapRestoreFrames`, `EdgeTilingHint`, `SwitcherSelection`,
 `SwitcherFilter`, `SwitcherRelease`, `SwitcherCommandArm`, `SwitcherStack`, `SwitcherGrid`, `SwitcherStyle`, `SwitcherPreviews`, `SwitcherReveal`, `DockPress`, `DockClick`, `CleanupEngine`, `TabTitle`, `MRUList`, `Geometry`) are unit-tested
 in `Tests/DockFlipKitTests`. So are the smaller decisions beside the AppKit code
 that acts on them: `DockAppOrder`, `DockAttachRetry`, `WindowListWait`,
