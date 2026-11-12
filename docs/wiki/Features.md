@@ -104,8 +104,10 @@ and Settings say so (see [Troubleshooting](Troubleshooting)). ⌘` stays the mac
 - **Snap layouts:** push a window up to the top of the screen and a bar of
   layouts comes down at the top centre: halves, two thirds and a third, a half
   and two quarters, quarters, thirds, and a wide middle. Let go over a zone and
-  the window fills it; ⌃⌥↓ gives it its earlier size back. The very top edge
-  still maximizes.
+  the window fills it; ⌃⌥↓ gives it its earlier size back. Before them come
+  up to two suggestions, as on Windows: a half beside your last window, and a
+  half beside your last two stacked, their app icons in place. Let go over one
+  and all of them snap. The very top edge still maximizes.
 - **Snap Assist:** after a half, a quarter or a zone of a layout, the space left beside the window
   shows your other windows as cards. Click one, or pick it with the arrows and
   Return, and it fills that space. Esc, a click elsewhere or the next snap

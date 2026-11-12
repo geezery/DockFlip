@@ -96,7 +96,9 @@ a quick ⌘Tab never flashes it; the 50 ms is the switcher's own work, done in t
   corners (quarter).
 - Snap layouts bar: push a window up to the top of a display and Windows 11's
   layouts come down (halves, 2/3 + 1/3, half + quarters, quarters, thirds,
-  wide middle); drop on a zone to fill it. Fixed layouts, no layout editor.
+  wide middle); drop on a zone to fill it. First come up to two snap suggestions
+  (the last windows already in place; one drop arranges them all). Fixed layouts,
+  no layout editor.
 - Snap Assist: after a snap to a half or a quarter, the other windows appear as
   cards in the space beside it; pick one to fill it.
 - If macOS's native edge tiling is on, DockFlip detects it and offers to turn it off

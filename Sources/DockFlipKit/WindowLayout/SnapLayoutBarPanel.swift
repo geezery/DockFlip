@@ -4,6 +4,9 @@ import SwiftUI
 /// What the layouts bar draws; `SnapLayoutBarPanel` changes it, the view only reads it.
 @MainActor
 final class SnapLayoutBarModel: ObservableObject {
+    @Published var tiles: [SnapLayoutBar.Tile] = SnapLayoutBar.tiles(others: [])
+    /// The app icons shown in a suggestion's taken zones, by window.
+    @Published var icons: [CGWindowID: NSImage] = [:]
     @Published var hovered: SnapLayoutBar.Hit?
 }
 
@@ -15,6 +18,12 @@ final class SnapLayoutBarModel: ObservableObject {
 final class SnapLayoutBarPanel {
     private let model = SnapLayoutBarModel()
     private var panel: NSPanel?
+
+    /// The pictures and the suggested windows' app icons for the next drag.
+    func prepare(_ tiles: [SnapLayoutBar.Tile], icons: [CGWindowID: NSImage]) {
+        model.tiles = tiles
+        model.icons = icons
+    }
 
     /// Shows the bar at `frame` (Cocoa space) with `hovered` lit up. Coming in, it
     /// slides down a little and fades in, as Windows' does.
@@ -57,47 +66,60 @@ final class SnapLayoutBarPanel {
         // pictures on dark glass read at a glance over any window.
         panel.appearance = NSAppearance(named: .darkAqua)
         let hosting = NSHostingView(rootView: SnapLayoutBarView(model: model))
-        hosting.sizingOptions = [] // `SnapLayoutBar.size` decides the size, not SwiftUI
+        hosting.sizingOptions = [] // `SnapLayoutBar.frame` decides the size, not SwiftUI
+        hosting.autoresizingMask = [.width, .height]
         panel.contentView = hosting
         return panel
     }
 }
 
-/// The bar: a picture per layout on a frosted plate. The zone under the mouse
-/// takes the accent colour.
+/// The bar: a picture per suggestion and layout on a frosted plate. The zone under
+/// the mouse takes the accent colour; a suggestion's taken zones show their app's icon.
 struct SnapLayoutBarView: View {
     @ObservedObject var model: SnapLayoutBarModel
 
     var body: some View {
+        let size: CGSize = SnapLayoutBar.size(count: model.tiles.count)
         ZStack(alignment: .topLeading) {
-            ForEach(Array(SnapLayouts.all.indices), id: \.self) { (index: Int) in
+            ForEach(Array(model.tiles.indices), id: \.self) { (index: Int) in
                 tile(index)
             }
         }
-        .frame(width: SnapLayoutBar.size.width, height: SnapLayoutBar.size.height, alignment: .topLeading)
+        .frame(width: size.width, height: size.height, alignment: .topLeading)
         .frostedPanel(in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .accessibilityHidden(true) // only ever under a dragging mouse; nothing to press
     }
 
     private func tile(_ index: Int) -> some View {
-        let layout: SnapLayout = SnapLayouts.all[index]
+        let tile: SnapLayoutBar.Tile = model.tiles[index]
         let rect: CGRect = SnapLayoutBar.tileRect(index)
         return ZStack(alignment: .topLeading) {
-            ForEach(Array(layout.zones.indices), id: \.self) { (zone: Int) in
-                cell(layout.zones[zone], lit: model.hovered == SnapLayoutBar.Hit(layout: index, zone: zone))
+            ForEach(Array(tile.layout.zones.indices), id: \.self) { (zone: Int) in
+                cell(tile.layout.zones[zone],
+                     lit: model.hovered == SnapLayoutBar.Hit(tile: index, zone: zone),
+                     icon: tile.filled[zone].flatMap { model.icons[$0] })
             }
         }
         .frame(width: rect.width, height: rect.height, alignment: .topLeading)
         .offset(x: rect.minX, y: rect.minY)
     }
 
-    private func cell(_ zone: LayoutZone, lit: Bool) -> some View {
+    private func cell(_ zone: LayoutZone, lit: Bool, icon: NSImage?) -> some View {
         // Each zone gives up 1.5 pt on every side, so neighbours stand 3 pt apart.
         let rect: CGRect = SnapLayoutBar.rect(of: zone, in: SnapLayoutBar.tile).insetBy(dx: 1.5, dy: 1.5)
         let shape = RoundedRectangle(cornerRadius: 4, style: .continuous)
+        let side: CGFloat = min(16, rect.width - 6, rect.height - 6)
         return shape
             .fill(lit ? Color(nsColor: .controlAccentColor) : Color.white.opacity(0.14))
             .overlay(shape.strokeBorder(Color.white.opacity(lit ? 0.55 : 0.22), lineWidth: 1))
+            .overlay {
+                if let icon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .interpolation(.high)
+                        .frame(width: side, height: side)
+                }
+            }
             .frame(width: rect.width, height: rect.height)
             .offset(x: rect.minX, y: rect.minY)
     }
