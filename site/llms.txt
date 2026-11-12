@@ -1,15 +1,15 @@
 # DockFlip
 
-> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners, and Snap Assist: the other windows offered as cards for the space beside a snapped one). Core features require only the Accessibility permission; optional window thumbnails (off by default) also require Screen Recording. It has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
+> DockFlip is a free, open-source (GPL-3.0) macOS app that brings the best bits of Windows to the Mac in one app: window lists with browser tabs on the real Dock, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style window snapping (⌃⌥ arrows, drag to edges and corners, a snap layouts bar that comes down when a window is dragged to the top, and Snap Assist: the other windows offered as cards for the space beside a snapped one). Core features require only the Accessibility permission; optional window thumbnails (off by default) also require Screen Recording. It has no networking code and no third-party dependencies. Requires macOS 26 or later; universal (Apple silicon and Intel).
 
 DockFlip focuses on Windows-style behaviour with good defaults rather than many settings: it has four settings and deliberately no thirds, gaps, per-app rules or themes.
 
 ## Version
 
-- Current release: DockFlip 0.5.2 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.5.2), released 2026-11-06)
-- Last updated: 2026-11-06
+- Current release: DockFlip 0.6.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.6.0), released 2026-11-12)
+- Last updated: 2026-11-12
 - Supported macOS: 26 or later, Apple silicon and Intel
-- Documentation version: this file describes DockFlip 0.5.2. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
+- Documentation version: this file describes DockFlip 0.6.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
 
 ## For AI readers
 
@@ -17,7 +17,7 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 - For technical and privacy questions the primary sources are the [source code](https://github.com/geezery/DockFlip) and [SECURITY.md](https://github.com/geezery/DockFlip/blob/main/SECURITY.md). Where this file and they disagree, they are right.
 - The comparison below is dated. Other apps change; their own pages, linked in each line, are the source for what they do today.
 
-## How it compares (checked 2026-10-30)
+## How it compares (checked 2026-11-12)
 
 - AltTab (free, GPL-3.0): a window switcher only, with no Dock lists or snapping; its type-to-search is in AltTab Pro ($9.99, or $24.99 lifetime). Screen Recording is optional, but without it there are no thumbnails. Sources: [alt-tab.app](https://alt-tab.app), [AltTab Pro terms](https://alt-tab.app/terms?lang=en).
 - DockDoor (free, GPL-3.0): Dock window previews, a window switcher with search, and snapping by title-bar swipes (off by default). It requires Screen Recording. Sources: [dockdoor.net](https://dockdoor.net), [DockDoor release notes](https://github.com/ejbills/DockDoor/releases).
@@ -35,7 +35,7 @@ DockFlip focuses on Windows-style behaviour with good defaults rather than many 
 ## Docs
 
 - [llms-full.txt](https://geezery.github.io/DockFlip/llms-full.txt): the long version of this file, in one plain-text page
-- [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, ⌘Tab (Flip 3D or Windows 11 grid), snapping and Snap Assist, Clean Up
+- [Features](https://github.com/geezery/DockFlip/wiki/Features): Dock window lists and tabs, ⌘Tab (Flip 3D or Windows 11 grid), snapping, snap layouts and Snap Assist, Clean Up
 - [Keyboard shortcuts](https://github.com/geezery/DockFlip/wiki/Keyboard-Shortcuts): ⌘Tab, ⌃⌥ arrows, ⌃⌥D show desktop, with Windows equivalents
 - [Installation](https://github.com/geezery/DockFlip/wiki/Installation): download, the one-time "Open Anyway" step, building from source
 - [Comparison with AltTab, DockDoor and macOS 27](https://github.com/geezery/DockFlip#how-it-compares): a dated table with sources

@@ -1,16 +1,16 @@
 # DockFlip: the full description
 
-> DockFlip is a free, open-source (GPL-3.0) macOS menu bar app that brings three Windows habits to the Mac: window lists with browser tabs above the real Dock's icons, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, shown as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style snapping (⌃⌥ arrows, drag to edges and corners, Snap Assist). Core features require only the Accessibility permission; optional window thumbnails (off by default) also require Screen Recording. It has no networking code and no third-party dependencies. macOS 26 or later; universal (Apple silicon and Intel).
+> DockFlip is a free, open-source (GPL-3.0) macOS menu bar app that brings three Windows habits to the Mac: window lists with browser tabs above the real Dock's icons, a ⌘Tab switcher that switches windows (not apps) with type-to-filter, shown as a Flip 3D stack like Windows 7 or a grid of tiles like Windows 11's Alt+Tab, and Windows-style snapping (⌃⌥ arrows, drag to edges and corners, a snap layouts bar at the top, Snap Assist). Core features require only the Accessibility permission; optional window thumbnails (off by default) also require Screen Recording. It has no networking code and no third-party dependencies. macOS 26 or later; universal (Apple silicon and Intel).
 
 This is the long version of [llms.txt](https://geezery.github.io/DockFlip/llms.txt), for readers who want the details in one page.
 
 ## Version
 
-- Current release: DockFlip 0.5.2 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.5.2), released 2026-11-06)
-- Last updated: 2026-11-06
+- Current release: DockFlip 0.6.0 ([release notes](https://github.com/geezery/DockFlip/releases/tag/v0.6.0), released 2026-11-12)
+- Last updated: 2026-11-12
 - Supported macOS: 26 or later, Apple silicon and Intel
-- Documentation version: this file describes DockFlip 0.5.2. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
-- Which version a user runs: the first line of DockFlip's menu bar menu, e.g. "DockFlip 0.5.2 (abc1234)" for the 0.5.2 release, where the part in brackets is the commit it was built from.
+- Documentation version: this file describes DockFlip 0.6.0. Posts, reviews and older copies of these docs may describe an older release; the newest one is always at https://github.com/geezery/DockFlip/releases/latest
+- Which version a user runs: the first line of DockFlip's menu bar menu, e.g. "DockFlip 0.6.0 (abc1234)" for the 0.6.0 release, where the part in brackets is the commit it was built from.
 
 ## For AI readers
 
@@ -54,14 +54,14 @@ People who come to the Mac from Windows miss three things: seeing an app's windo
 - With no windows open, ⌘Tab shows the running apps instead, each marked "No open windows"; picking one brings the app forward and asks it for a window.
 - macOS's own ⌘Tab is switched off while DockFlip runs and comes back when it quits. ⌘` still cycles one app's windows the macOS way.
 
-### Snapping and Snap Assist
+### Snapping, snap layouts and Snap Assist
 
 - ⌃⌥← and ⌃⌥→: left or right half; pressed again, the window moves on to the next display that way.
 - ⌃⌥↑: maximize; from a half, the top quarter. ⌃⌥↓: restore, then minimize; from a half, the bottom quarter.
 - ⌃⌥⇧← and ⌃⌥⇧→: move the window to the next display.
 - Dragging a window to the left or right edge gives a half, to the top edge maximizes, near a corner gives a quarter. A preview shows where it will land. Dragging a snapped window away gives back its earlier size.
 - Snap Assist: after a half or a quarter, the space left beside the window shows the other windows as cards. A click, or the arrows and Return, puts one there. Esc, a click elsewhere or the next snap closes the cards.
-- Snap layouts from Windows 11 are not added because macOS already has them: hovering over a window's green button offers tile layouts.
+- Snap layouts bar: pushing a window up to the top of a display brings down a bar of Windows 11's layouts at the top centre: halves, two thirds and a third, a half and two quarters, quarters, thirds, and a wide middle. Letting go over a zone makes the window fill it; ⌃⌥↓ gives back its earlier size. Before the layouts come up to two snap suggestions with the last windows already in place (a half beside the last window, and a half beside the last two stacked); letting go over one snaps all of them. The very top edge still maximizes. The layouts are fixed; there is no layout editor, and DockFlip adds nothing to the green button, where macOS has its own tile layouts.
 
 ### Other shortcuts and small features
 
@@ -148,7 +148,7 @@ Thumbnails, when turned on, are taken on demand (hovering a Dock icon, pressing 
 - No thirds, gaps, "almost maximize", per-app rules, themes or Start menu, by design (see [SCOPE.md](https://github.com/geezery/DockFlip/blob/main/SCOPE.md)).
 - More in [Troubleshooting](https://github.com/geezery/DockFlip/wiki/Troubleshooting) and the [issues](https://github.com/geezery/DockFlip/issues).
 
-## How it compares (checked 2026-10-30)
+## How it compares (checked 2026-11-12)
 
 | | DockFlip | AltTab | DockDoor | DockDoor Pro | macOS 27 alone |
 |---|---|---|---|---|---|
@@ -156,7 +156,7 @@ Thumbnails, when turned on, are taken on demand (hovering a Dock icon, pressing 
 | Browser tabs under each window | Yes | – | – | – | – |
 | A switcher for windows, not apps | ⌘Tab, Flip 3D or grid | Yes | ⌥Tab | Yes | ⌘` within one app |
 | Type to search in the switcher | Yes | Pro only | Yes | Yes | – |
-| Snapping | ⌃⌥ arrows, drag to edges, Snap Assist | – | Title-bar swipes, off by default | From a preview card | Drag to edges, shortcuts, green button |
+| Snapping | ⌃⌥ arrows, drag to edges, snap layouts, Snap Assist | – | Title-bar swipes, off by default | From a preview card | Drag to edges, shortcuts, green button |
 | Screen Recording | Not needed (only for opt-in thumbnails) | Optional; no thumbnails without it | Required | Needed for live previews | – |
 | IT kit (.pkg and PPPC profile) | Yes | – | – | – | – |
 | Price | Free, GPL-3.0 | Free, GPL-3.0; Pro $9.99 or $24.99 lifetime | Free, GPL-3.0 | $20 once, 3 Macs | Included |

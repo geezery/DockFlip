@@ -60,6 +60,11 @@ test('the Snapping section names Snap Assist in every language', () => {
   for (const code of Object.keys(T)) expect(T[code]['snap.l4'], `i18n/${code}.js: no snap.l4`);
 });
 
+test('the Snapping section names the snap layouts bar in every language', () => {
+  expect(/data-i18n="snap\.l5"[^>]*><b>Snap layouts:<\/b>/.test(english), 'index.html: no snap.l5 Snap layouts bullet');
+  for (const code of Object.keys(T)) expect(T[code]['snap.l5'], `i18n/${code}.js: no snap.l5`);
+});
+
 // The ⌘Tab switcher has two looks; a visitor from Windows 11 should see theirs
 // in the section heading, not only in the last bullet.
 test('the ⌘Tab section names the Windows 11 grid in every language', () => {
