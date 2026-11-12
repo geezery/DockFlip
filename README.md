@@ -68,7 +68,7 @@ of date, [tell us](https://github.com/geezery/DockFlip/issues).
 | Browser tabs under each window | ✓ | – | – | – | – |
 | A switcher for windows, not apps | ✓ ⌘Tab, Flip 3D or grid | ✓ | ✓ ⌥Tab | ✓ | ⌘\` within one app |
 | Type to search in the switcher | ✓ | Pro only | ✓ | ✓ | – |
-| Snapping | ✓ ⌃⌥ arrows, drag to edges, Snap Assist | – | Title-bar swipes, off by default | From a preview card | ✓ Drag to edges, shortcuts, green button |
+| Snapping | ✓ ⌃⌥ arrows, drag to edges, snap layouts, Snap Assist | – | Title-bar swipes, off by default | From a preview card | ✓ Drag to edges, shortcuts, green button |
 | Screen Recording | Not needed (only for opt-in thumbnails) | Optional; no thumbnails without it | Required | Needed for live previews | – |
 | IT kit (`.pkg` and PPPC profile) | ✓ [docs/IT.md](docs/IT.md) | – | – | – | – |
 | Price | Free, GPL-3.0 | Free, GPL-3.0; Pro $9.99 or $24.99 lifetime | Free, GPL-3.0 | $20 once, 3 Macs | Included |
